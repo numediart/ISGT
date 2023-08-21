@@ -1,4 +1,4 @@
-# UnityIndoorSceneViewsGenerator
+# Virtual Indoor Scene Generator
 
 ## How to use the project
 
