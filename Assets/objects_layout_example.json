@@ -1,0 +1,76 @@
+{
+  "ObjectsToPlace": [
+    {
+      "Id": "Houseplant_2",
+      "PositionRelativeToRoomOrigin": [
+        1.0,
+        0.378701,
+        0.0
+      ],
+      "Dimensions": {
+        "Width": 0.6126603,
+        "Depth": 0.4871123,
+        "Height": 0.757402
+      },
+      "Angles": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "Id": "Houseplant_2",
+      "PositionRelativeToRoomOrigin": [
+        0.0,
+        0.378701,
+        1.0
+      ],
+      "Dimensions": {
+        "Width": 0.6126603,
+        "Depth": 0.4871123,
+        "Height": 0.757402
+      },
+      "Angles": [
+        0.0,
+        -90.0,
+        0.0
+      ]
+    },
+    {
+      "Id": "Houseplant_2",
+      "PositionRelativeToRoomOrigin": [
+        -1.0,
+        0.378701,
+        0.0
+      ],
+      "Dimensions": {
+        "Width": 0.6126603,
+        "Depth": 0.4871123,
+        "Height": 0.757402
+      },
+      "Angles": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "Id": "Houseplant_2",
+      "PositionRelativeToRoomOrigin": [
+        0.0,
+        0.378701,
+        -1.0
+      ],
+      "Dimensions": {
+        "Width": 0.6126603,
+        "Depth": 0.4871123,
+        "Height": 0.757402
+      },
+      "Angles": [
+        0.0,
+        90.0,
+        0.0
+      ]
+    }
+  ]
+}

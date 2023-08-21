@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baf2388f4923b0b459f0646abaa5ecc4, type: 3}
+  m_Name: DatabaseGenerationData
+  m_EditorClassIdentifier: 
+  ScreenshotsNumberPerRoom: 5
+  TimeBeforeScreenshotsTakingBeginning: 1
+  TimeBetweenCameraPlacementAndScreenshot: 0.01
+  TimeBetweenScreenshotAndDataGetting: 0.01
+  TimeBetweenInitializationAndDataGetting: 0.02
+  TimeBetweenVisibilityRatioAndBoundingBox: 0.02
+  TimeMargin: 0.2
+  CameraMinimumDistanceFromWall: 1
+  CameraMinimumDistanceFromGroundAndCieling: 0.3
+  CameraMinimumDistanceFromObjects: 0.5
+  MaximumCameraXRotation: 45
+  MaximumCameraYRotation: 180
+  MaximumCameraZRotation: 45
