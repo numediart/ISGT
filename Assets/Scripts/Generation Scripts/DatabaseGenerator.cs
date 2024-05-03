@@ -262,9 +262,7 @@ public class DatabaseGenerator : MonoBehaviour
         List<GameObject> walls = RoomsGenerator.GetRoomCategoryObjects(room, RoomCategory.Walls);
 
         ScreenshotData screenshotData = new ScreenshotData();
-        screenshotData.CameraRotation.Add("Right axis rotation", Camera.main.transform.eulerAngles.x);
-        screenshotData.CameraRotation.Add("Up axis rotation", Camera.main.transform.eulerAngles.y);
-        screenshotData.CameraRotation.Add("Forward axis rotation", Camera.main.transform.eulerAngles.z);
+        screenshotData.CameraRotation = Camera.main.transform.rotation;
 
         foreach (GameObject wall in walls)
         {

@@ -23,10 +23,10 @@ public class QuaternionConverter : JsonConverter
     {
         Quaternion q = (Quaternion)value;
         JObject jo = new JObject();
+        jo.Add("w", q.w);
         jo.Add("x", q.x);
         jo.Add("y", q.y);
         jo.Add("z", q.z);
-        jo.Add("w", q.w);
         jo.WriteTo(writer);
     }
 }
