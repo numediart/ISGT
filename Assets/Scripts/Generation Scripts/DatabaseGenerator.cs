@@ -317,12 +317,9 @@ public class DatabaseGenerator : MonoBehaviour
         Vector3 cameraPosition = Camera.main.transform.position;
         Vector3 cameraForwardVector = Camera.main.transform.forward;
         Vector3 cameraToObject = anyObject.transform.position - cameraPosition;
-
-        int screenWidth = Camera.main.pixelWidth;
-        int screenHeight = Camera.main.pixelHeight;
-
+        
         float verticalFieldOfView = Camera.main.fieldOfView;
-        float horizontalFieldOfView = 2 * Mathf.Atan(Mathf.Tan((verticalFieldOfView / 2f) * Mathf.Deg2Rad) * (float)screenWidth / (float)screenHeight) * Mathf.Rad2Deg;
+        float horizontalFieldOfView = Camera.VerticalToHorizontalFieldOfView(verticalFieldOfView, Camera.main.aspect);
 
         Vector3 XZCameraToObject = Vector3.Project(cameraToObject, Camera.main.transform.right.normalized) +
             Vector3.Project(cameraToObject, cameraForwardVector.normalized);
