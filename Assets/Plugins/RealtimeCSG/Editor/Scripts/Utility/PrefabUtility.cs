@@ -127,7 +127,7 @@ namespace RealtimeCSG
     #if UNITY_2018_3_OR_NEWER
             if (AreInPrefabMode())
             {
-                var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+                var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
                 if (prefabStage.IsPartOfPrefabContents(gameObject))
                     return (GameObject)AssetDatabase.LoadMainAssetAtPath(prefabStage.assetPath);
             }
