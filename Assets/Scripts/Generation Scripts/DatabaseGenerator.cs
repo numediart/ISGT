@@ -28,7 +28,7 @@ public class DatabaseGenerator : MonoBehaviour
     {
         string path = Directory.GetCurrentDirectory();
         _openingsDataFolderPath = path + "/OpeningsData";
-        GeneratorsContainer.RoomsGenerator.GenerateRooms();
+        // GeneratorsContainer.RoomsGenerator.GenerateRooms();
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBeforeScreenshotsTakingBeginning);
 
         StartCoroutine(DatabaseGeneration());
@@ -293,7 +293,7 @@ public class DatabaseGenerator : MonoBehaviour
 
                     wallObject.GetComponent<Opening>().InitializeVisibilityRatio();
                     yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenInitializationAndDataGetting);
-                    openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatio();
+                    openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatioBetter();
                     yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenVisibilityRatioAndBoundingBox);
                     openingData.BoundingBox = GetOpeningBoundingBox2D(wallObject);
 

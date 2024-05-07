@@ -179,6 +179,46 @@ public class Opening : MonoBehaviour
     }
 
     #endregion
+
+    public float GetVisibilityRatioBetter()
+    {
+        float visibilityRatio = 0f;
+        // Get 100 aim points in the opening
+        for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
+        {
+            for (float y = -_height / 2f + _height / 20f; y <= _height / 2f; y += _height / 10f)
+            {
+                Vector3 positionOffset = transform.right * x + transform.up * y;
+                Vector3 aimPoint = transform.position + positionOffset;
+                if (IsAimPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
+                    visibilityRatio += 0.01f;
+                
+            }
+        }
+        return visibilityRatio;
+    }
+    
+    private bool IsAimPointVisible(Vector3 aimPoint)
+    {
+        GameObject mainCamera = Camera.main.gameObject;
+        Vector3 aimPointDirection = aimPoint - mainCamera.transform.position;
+
+        if (Physics.Raycast(mainCamera.transform.position, aimPointDirection, out var hit, float.MaxValue))
+        {
+            // Check if the ray hits the opening
+            if (hit.collider.gameObject == gameObject || hit.collider.gameObject.transform.parent == transform
+                || hit.collider.gameObject.tag.Equals("Opening Ratio Sphere") && hit.collider.transform.parent.parent == transform)
+                //TODO : remove check on spheres
+                return true;
+        }
+        return false;
+    }
+    
+    private bool IsPointOnScreen(Vector3 point)
+    {
+        Vector3 screenPoint = Camera.main.WorldToViewportPoint(point);
+        return screenPoint.x is > 0 and < 1 && screenPoint.y is > 0 and < 1 && screenPoint.z > 0;
+    }
 }
 
 public enum OpeningType
