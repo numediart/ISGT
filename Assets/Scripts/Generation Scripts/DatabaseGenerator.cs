@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Utils;
 
 public class DatabaseGenerator : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class DatabaseGenerator : MonoBehaviour
     {
         string path = Directory.GetCurrentDirectory();
         _openingsDataFolderPath = path + "/OpeningsData";
-
+        GeneratorsContainer.RoomsGenerator.GenerateRooms();
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBeforeScreenshotsTakingBeginning);
 
         StartCoroutine(DatabaseGeneration());
@@ -35,11 +36,11 @@ public class DatabaseGenerator : MonoBehaviour
 
     #region Seeds Management Methods
 
-    public void InitiateSeed()
+    public void InitiateSeed(SeedsProvider seedsProvider)
     {
         while (true)
         {
-            int newSeed = UnityEngine.Random.Range(0, int.MaxValue);
+            int newSeed = seedsProvider.CreateSubSeed();
 
             if (!_usedSeeds.Contains(newSeed))
             {
@@ -60,6 +61,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private IEnumerator DatabaseGeneration()
     {
+        //GeneratorsContainer.RoomsGenerator.GenerateRooms();
         foreach(GameObject room in GeneratorsContainer.RoomsGenerator.RoomsCreated)
         {
             _timeBetweenScreenshots = DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot + DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting +
@@ -111,7 +113,7 @@ public class DatabaseGenerator : MonoBehaviour
     #region Random Camera Coordinates Calculation Methods
 
     /// <summary>
-    /// Randomly places the camera in the room volume but respecting distances (choosen by the user) from cieling, ground, walls and objects.
+    /// Randomly places the camera in the room volume but respecting distances (choosen by the user) from ceiling, ground, walls and objects.
     /// </summary>
     /// <param name="room"></param>
     /// <returns></returns>
@@ -119,7 +121,7 @@ public class DatabaseGenerator : MonoBehaviour
     {
         GameObject grounds = RoomsGenerator.GetRoomCategory(room, RoomCategory.Grounds);
         GameObject walls = RoomsGenerator.GetRoomCategory(room, RoomCategory.Walls);
-        float cielingHeight = walls.transform.GetChild(0).transform.localScale.y;
+        float ceilingHeight = walls.transform.GetChild(0).transform.localScale.y;
         Vector3 nextCameraPosition;
 
         try
@@ -148,7 +150,7 @@ public class DatabaseGenerator : MonoBehaviour
                 choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
             float zComponent = UnityEngine.Random.Range(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
                 choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
-            float yComponent = UnityEngine.Random.Range(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCieling, cielingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCieling);
+            float yComponent = UnityEngine.Random.Range(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling, ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling);
 
             nextCameraPosition = choosenGroundPosition + choosenGround.transform.right.normalized * xComponent +
                 choosenGround.transform.forward.normalized * zComponent + choosenGround.transform.up.normalized * yComponent;
@@ -212,7 +214,7 @@ public class DatabaseGenerator : MonoBehaviour
                     choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
                 zComponent = UnityEngine.Random.Range(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
                     choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
-                yComponent = UnityEngine.Random.Range(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCieling, cielingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCieling);
+                yComponent = UnityEngine.Random.Range(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling, ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling);
 
                 nextCameraPosition = choosenGroundPosition + choosenGround.transform.right.normalized * xComponent +
                     choosenGround.transform.forward.normalized * zComponent + choosenGround.transform.up.normalized * yComponent;
@@ -220,7 +222,7 @@ public class DatabaseGenerator : MonoBehaviour
         }
         catch(Exception ex)
         {
-            Debug.Log("Error - Grounds child object not found or empty :\n" + ex);
+            Debug.LogError("Error - Grounds child object not found or empty :\n" + ex);
             nextCameraPosition = Vector3.negativeInfinity;
         }
 

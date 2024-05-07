@@ -3,6 +3,7 @@ using RealtimeCSG.Components;
 using RealtimeCSG.Foundation;
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
 public class OpeningsGenerator : MonoBehaviour
 {
@@ -10,23 +11,36 @@ public class OpeningsGenerator : MonoBehaviour
 
     public RoomsGenerationScriptableObject RoomsGenerationData;
     public GeneratorsContainer GeneratorsContainer;
+    public int OpeningSeed => _openingSeed;
 
     #endregion
 
     #region Private Fields
 
     private GameObject _wallModel;
-
+    
+    private int _openingSeed;// Seed used to generate the doors for replidcable results
+    private SeedsProvider _seedsProvider;
     #endregion
 
     #region Openings Generation Methods
 
+    void InitializeSeed()
+    {
+        _openingSeed = new SeedsProvider().MainSeed;
+        Random.InitState(_openingSeed);
+    }
+    
+    
+    
     /// <summary>
     /// Generates the doors and the the windows on the walls of a room for every room.
     /// </summary>
     /// <param name="rooms"></param>
+    ///
     public void OpeningsGeneration(List<GameObject> rooms)
     {
+        InitializeSeed();
         foreach (GameObject room in rooms)
         {
             List<GameObject> walls = RoomsGenerator.GetRoomCategoryObjects(room, RoomCategory.Walls);
@@ -46,9 +60,16 @@ public class OpeningsGenerator : MonoBehaviour
     /// <returns></returns>
     private GameObject CuttingHole(GameObject wall, Vector3 randomOffset, Vector3 holeSize)
     {
-        if (wall.GetComponent<CSGModel>())
+        wall.TryGetComponent(out CSGModel wallModel);
+        Transform currentWallTransform = wall.transform;
+        Vector3 currentWallPosition = currentWallTransform.position;
+        Vector3 currentWallScale = currentWallTransform.localScale;
+        Quaternion currentWallRotation = currentWallTransform.rotation;
+        
+        if (wallModel)
         {
             _wallModel = wall;
+           // Debug.Log(_wallModel.name);
             Transform wallBrushTransform = _wallModel.transform.GetChild(0);
 
             GameObject holeBrush = Instantiate(RoomsGenerationData.HoleBrushPrefab, wallBrushTransform.position + randomOffset, wallBrushTransform.rotation, _wallModel.transform);
@@ -56,23 +77,26 @@ public class OpeningsGenerator : MonoBehaviour
         }
         else
         {
+            
             float wallHeight = wall.transform.localScale.y;
 
-            _wallModel = Instantiate(RoomsGenerationData.WallModelPrefab, wall.transform.parent);
+            _wallModel = Instantiate(RoomsGenerationData.WallModelPrefab, wall.transform.parent);// instantiate a new wall model with the hole
             GameObject brushesMeshRenderer = GeneratorsContainer.RoomsGenerator.GetBrushesMeshRenderer(_wallModel);
-            brushesMeshRenderer.GetComponent<GeneratedMeshInstance>().RenderMaterial = wall.GetComponent<MeshRenderer>().sharedMaterial;
+            
+            brushesMeshRenderer.TryGetComponent(out GeneratedMeshInstance generatedMeshInstance);
+            wall.TryGetComponent(out MeshRenderer wallGeneratedMeshInstance);
+            generatedMeshInstance.RenderMaterial = wallGeneratedMeshInstance.sharedMaterial;
 
             GameObject wallBrush = _wallModel.transform.GetChild(0).gameObject;
-            wallBrush.transform.position = wall.transform.position - new Vector3(0, wallHeight / 2f, 0);
-            wallBrush.transform.rotation = wall.transform.rotation;
-            wallBrush.transform.localScale = wall.transform.localScale;
-
-            GameObject holeBrush = Instantiate(RoomsGenerationData.HoleBrushPrefab, wallBrush.transform.position + randomOffset, wall.transform.rotation, _wallModel.transform);
+            wallBrush.transform.position = currentWallPosition - new Vector3(0, wallHeight / 2f, 0);
+            wallBrush.transform.rotation = currentWallRotation;
+            wallBrush.transform.localScale = currentWallScale;
+            
+            GameObject holeBrush = Instantiate(RoomsGenerationData.HoleBrushPrefab, wallBrush.transform.position + randomOffset, currentWallTransform.rotation, _wallModel.transform);
             holeBrush.transform.localScale = holeSize;
 
             wall.SetActive(false);
         }
-
         return _wallModel;
     }
 
@@ -87,8 +111,7 @@ public class OpeningsGenerator : MonoBehaviour
     private List<GameObject> DoorsGeneration(List<GameObject> walls)
     {
         List<GameObject> localWallsList = walls;
-
-        int doorsRandomNumber = UnityEngine.Random.Range(RoomsGenerationData.DoorPerRoomMinimumNumber, RoomsGenerationData.DoorPerRoomMaximumNumber);
+        int doorsRandomNumber = Random.Range(RoomsGenerationData.DoorPerRoomMinimumNumber, RoomsGenerationData.DoorPerRoomMaximumNumber);
 
         Dictionary<int, int> doorPerWall = new Dictionary<int, int>();
         for (int i = 0; i < localWallsList.Count; i++)
@@ -98,26 +121,28 @@ public class OpeningsGenerator : MonoBehaviour
 
         while (doorsRandomNumber > 0)
         {
-            int wallRandomIndex = UnityEngine.Random.Range(0, localWallsList.Count);
+            int wallRandomIndex = Random.Range(0, localWallsList.Count);
 
             float wallWidth = (localWallsList[wallRandomIndex].transform.childCount == 0) ? GeneratorsContainer.RoomsGenerator.GetWallWidth(localWallsList[wallRandomIndex]) :
                 GeneratorsContainer.RoomsGenerator.GetWallWidth(localWallsList[wallRandomIndex].transform.GetChild(0).gameObject);
 
             if (doorPerWall[wallRandomIndex] <= RoomsGenerationData.DoorPerWallMaximumNumber)
             {
-                int doorIndex = UnityEngine.Random.Range(0, RoomsGenerationData.Doors.Count);
-                Vector3 doorColliderSize = RoomsGenerationData.Doors[doorIndex].GetComponent<BoxCollider>().size;
+                int doorIndex = Random.Range(0, RoomsGenerationData.Doors.Count);
+                RoomsGenerationData.Doors[doorIndex].TryGetComponent(out BoxCollider doorCollider);
+                Vector3 doorColliderSize = doorCollider.size;
                 Vector3 doorHole = new Vector3(RoomsGenerator.GetOpeningWidth(doorColliderSize), doorColliderSize.y, 1);
 
                 GameObject door;
-
-                if (localWallsList[wallRandomIndex].GetComponent<CSGModel>())
+                
+                localWallsList[wallRandomIndex].TryGetComponent(out CSGModel csgModel);
+                if (csgModel)
                 {
                     List<Vector3> doorPossiblePositionOffsets = DoorPossiblePositionOffsets(localWallsList[wallRandomIndex], doorHole);
 
                     if (doorPossiblePositionOffsets.Count > 0)
                     {
-                        Vector3 randomHorizontalOffset = doorPossiblePositionOffsets[UnityEngine.Random.Range(0, doorPossiblePositionOffsets.Count)];
+                        Vector3 randomHorizontalOffset = doorPossiblePositionOffsets[Random.Range(0, doorPossiblePositionOffsets.Count)];
                         localWallsList[wallRandomIndex] = CuttingHole(localWallsList[wallRandomIndex], randomHorizontalOffset, doorHole);
 
                         Transform wallBrushTransform = localWallsList[wallRandomIndex].transform.GetChild(0);
@@ -130,7 +155,7 @@ public class OpeningsGenerator : MonoBehaviour
                 else
                 {
                     Vector3 horizontalOffset = localWallsList[wallRandomIndex].transform.right.normalized *
-                        UnityEngine.Random.Range(-wallWidth / 2f + RoomsGenerator.GetOpeningWidth(doorColliderSize) / 2f + RoomsGenerationData.MinimumDistanceBetweenBorders,
+                        Random.Range(-wallWidth / 2f + RoomsGenerator.GetOpeningWidth(doorColliderSize) / 2f + RoomsGenerationData.MinimumDistanceBetweenBorders,
                         wallWidth / 2f - RoomsGenerator.GetOpeningWidth(doorColliderSize) / 2f - RoomsGenerationData.MinimumDistanceBetweenBorders);
                     localWallsList[wallRandomIndex] = CuttingHole(localWallsList[wallRandomIndex], horizontalOffset, doorHole);
 
@@ -143,16 +168,18 @@ public class OpeningsGenerator : MonoBehaviour
                 {
                     GameObject doorPart = door.transform.GetChild(i).gameObject;
 
-                    if (doorPart.GetComponent<MeshRenderer>() && doorPart.GetComponent<MeshRenderer>().sharedMaterial.name.Contains("Default-Material"))
+                    doorPart.TryGetComponent(out MeshRenderer meshRenderer);
+                    if (meshRenderer && meshRenderer.sharedMaterial.name.Contains("Default-Material"))
                     {
                         if (doorPart.name.Contains("Frame"))
-                            doorPart.GetComponent<MeshRenderer>().material = RoomsGenerationData.DoorFrameMaterials[UnityEngine.Random.Range(0, RoomsGenerationData.DoorFrameMaterials.Count)];
+                            meshRenderer.material = RoomsGenerationData.DoorFrameMaterials[Random.Range(0, RoomsGenerationData.DoorFrameMaterials.Count)];
                         else
-                            doorPart.GetComponent<MeshRenderer>().material = RoomsGenerationData.DoorMaterials[UnityEngine.Random.Range(0, RoomsGenerationData.DoorMaterials.Count)];
+                            meshRenderer.material = RoomsGenerationData.DoorMaterials[Random.Range(0, RoomsGenerationData.DoorMaterials.Count)];
                     }
                 }
 
-                door.GetComponent<Opening>().Type = OpeningType.Door;
+                door.TryGetComponent(out Opening doorOpeningComponent);
+               doorOpeningComponent.Type = OpeningType.Door;
                 SetOpeningRandomOpeness(door);
 
                 doorPerWall[wallRandomIndex]++;
@@ -175,29 +202,29 @@ public class OpeningsGenerator : MonoBehaviour
         foreach (GameObject wall in walls)
         {
             float wallWidth = (wall.transform.childCount == 0) ? GeneratorsContainer.RoomsGenerator.GetWallWidth(wall) :
-                GeneratorsContainer.RoomsGenerator.GetWallWidth(wall.transform.GetChild(0).gameObject);
+                GeneratorsContainer.RoomsGenerator.GetWallWidth(wall.transform.GetChild(0).gameObject);// get the width of the wall 
             float wallHeight = (wall.transform.childCount == 0) ? wall.transform.localScale.y : wall.transform.GetChild(0).gameObject.transform.localScale.y;
 
-            int holesNumber = UnityEngine.Random.Range(RoomsGenerationData.WindowPerWallMinimumNumber, RoomsGenerationData.WindowPerWallMaximumNumber + 1);
+            int holesNumber = Random.Range(RoomsGenerationData.WindowPerWallMinimumNumber, RoomsGenerationData.WindowPerWallMaximumNumber + 1);
 
             GameObject wallSelected = wall;
 
             for (int i = 0; i < holesNumber; i++)
             {
-                int windowIndex = UnityEngine.Random.Range(0, RoomsGenerationData.Windows.Count);
-                Vector3 windowColliderSize = RoomsGenerationData.Windows[windowIndex].GetComponent<BoxCollider>().size;
+                int windowIndex = Random.Range(0, RoomsGenerationData.Windows.Count);
+                RoomsGenerationData.Windows[windowIndex].TryGetComponent(out BoxCollider windowCollider);
+                Vector3 windowColliderSize = windowCollider.size;
                 Vector3 holeSize = new Vector3(RoomsGenerator.GetOpeningWidth(windowColliderSize), windowColliderSize.y, 1);
                 GameObject window = null;
-
-                if (wallSelected.GetComponent<CSGModel>())
+                wallSelected.TryGetComponent(out CSGModel csgModel);
+                if (csgModel)
                 {
                     GameObject wallBrush = wallSelected.transform.GetChild(0).gameObject;
                     List<Vector3> windowPossiblePositionOffsets = WindowPossiblePositionOffsets(wallSelected, holeSize);
 
                     if (windowPossiblePositionOffsets.Count > 0)
                     {
-                        Vector3 randomOffset = windowPossiblePositionOffsets[UnityEngine.Random.Range(0, windowPossiblePositionOffsets.Count)];
-
+                        Vector3 randomOffset = windowPossiblePositionOffsets[Random.Range(0, windowPossiblePositionOffsets.Count)];
                         wallSelected = CuttingHole(wallSelected, randomOffset, holeSize);
 
                         window = Instantiate(RoomsGenerationData.Windows[windowIndex], wallBrush.transform.position + randomOffset + new Vector3(0, holeSize.y / 2f, 0),
@@ -210,9 +237,9 @@ public class OpeningsGenerator : MonoBehaviour
                 }
                 else
                 {
-                    Vector3 horizontalOffset = wall.transform.right.normalized * UnityEngine.Random.Range(-wallWidth / 2f + RoomsGenerator.GetOpeningWidth(windowColliderSize) / 2f +
+                    Vector3 horizontalOffset = wall.transform.right.normalized * Random.Range(-wallWidth / 2f + RoomsGenerator.GetOpeningWidth(windowColliderSize) / 2f +
                         RoomsGenerationData.MinimumDistanceBetweenBorders, wallWidth / 2f - RoomsGenerator.GetOpeningWidth(windowColliderSize) / 2f - RoomsGenerationData.MinimumDistanceBetweenBorders);
-                    Vector3 verticalOffset = wall.transform.up.normalized * UnityEngine.Random.Range(RoomsGenerationData.MinimumDistanceBetweenBorders, wallHeight - 2 *
+                    Vector3 verticalOffset = wall.transform.up.normalized * Random.Range(RoomsGenerationData.MinimumDistanceBetweenBorders, wallHeight - 2 *
                         windowColliderSize.y / 2f - RoomsGenerationData.MinimumDistanceBetweenBorders);
                     Vector3 randomOffset = horizontalOffset + verticalOffset;
 
@@ -227,12 +254,12 @@ public class OpeningsGenerator : MonoBehaviour
                     for (int k = 0; k < window.transform.childCount; k++)
                     {
                         GameObject windowPart = window.transform.GetChild(k).gameObject;
-
-                        if (windowPart.GetComponent<MeshRenderer>() && windowPart.GetComponent<MeshRenderer>().sharedMaterial.name.Contains("Default-Material"))
-                            windowPart.GetComponent<MeshRenderer>().material = RoomsGenerationData.WindowStructureMaterials[UnityEngine.Random.Range(0, RoomsGenerationData.WindowStructureMaterials.Count)];
+                        windowPart.TryGetComponent(out MeshRenderer meshRenderer);
+                        if (meshRenderer && meshRenderer.sharedMaterial.name.Contains("Default-Material"))
+                            meshRenderer.material = RoomsGenerationData.WindowStructureMaterials[Random.Range(0, RoomsGenerationData.WindowStructureMaterials.Count)];
                     }
-
-                    window.GetComponent<Opening>().Type = OpeningType.Window;
+                    window.TryGetComponent(out Opening windowComponent);
+                   windowComponent.Type = OpeningType.Window;
                     SetOpeningRandomOpeness(window);
                 }
             }
@@ -267,9 +294,8 @@ public class OpeningsGenerator : MonoBehaviour
     /// <param name="opening"></param>
     private void SetOpeningRandomOpeness(GameObject opening)
     {
-        Opening openingComponent = opening.GetComponent<Opening>();
-
-        float openessDegree = UnityEngine.Random.Range(0f, 1f);
+        opening.TryGetComponent(out Opening openingComponent);
+        float openessDegree = Random.Range(0f, 1f);
         openingComponent.OpenessDegree = openessDegree;
 
         Vector3 openingDirection = GetOpeningDirectionVector(openingComponent);
@@ -297,6 +323,7 @@ public class OpeningsGenerator : MonoBehaviour
     #region Position Verification Methods
 
     /// <summary>
+    /// may says overlap verification???
     /// Verifies if there is an overlay between the openings already set on the wall and a new opening that would be placed at a specific position.
     /// </summary>
     /// <param name="wallModel"></param>
@@ -305,23 +332,25 @@ public class OpeningsGenerator : MonoBehaviour
     /// <returns></returns>
     private bool HolesOverlayVerification(GameObject wallModel, Vector3 newHolePositionOffset, Vector3 newHoleSize)
     {
-        if (wallModel.GetComponent<CSGModel>())
+        wallModel.TryGetComponent(out CSGModel wallModelComponent);
+        if (wallModelComponent)
         {
             GameObject wallBrush = wallModel.transform.GetChild(0).gameObject;
 
             for (int i = 0; i < wallModel.transform.childCount; i++)
             {
                 GameObject holeBrush = wallModel.transform.GetChild(i).gameObject;
-
-                if (holeBrush.GetComponent<CSGBrush>() && holeBrush.GetComponent<CSGBrush>().OperationType == CSGOperationType.Subtractive)
+                holeBrush.TryGetComponent(out CSGBrush holeBrushComponent);
+                if (holeBrushComponent&& holeBrushComponent.OperationType == CSGOperationType.Subtractive)
                 {
                     Vector3 formerHolePosition = holeBrush.transform.position;
-                    Vector3 realFormerHolePosition = formerHolePosition + new Vector3(0, holeBrush.transform.localScale.y / 2f, 0);
+                    Vector3 holeBrushLocalScale = holeBrush.transform.localScale;
+                    Vector3 realFormerHolePosition = formerHolePosition + new Vector3(0, holeBrushLocalScale.y / 2f, 0);
                     Vector3 realNewHolePosition = wallBrush.transform.position + newHolePositionOffset + new Vector3(0, newHoleSize.y / 2f, 0);
                     Vector3 holesDistanceVector = realNewHolePosition - realFormerHolePosition;
-
-                    float horizontalMinimumDistance = RoomsGenerator.GetOpeningWidth(holeBrush.transform.localScale) / 2f + RoomsGenerator.GetOpeningWidth(newHoleSize) / 2f + RoomsGenerationData.MinimumDistanceBetweenBorders;
-                    float verticalMinimumDistance = holeBrush.transform.localScale.y / 2f + newHoleSize.y / 2f + RoomsGenerationData.MinimumDistanceBetweenBorders;
+               
+                    float horizontalMinimumDistance = RoomsGenerator.GetOpeningWidth(holeBrushLocalScale) / 2f + RoomsGenerator.GetOpeningWidth(newHoleSize) / 2f + RoomsGenerationData.MinimumDistanceBetweenBorders;
+                    float verticalMinimumDistance = holeBrushLocalScale.y / 2f + newHoleSize.y / 2f + RoomsGenerationData.MinimumDistanceBetweenBorders;
 
                     if (Mathf.Abs(Vector3.Project(holesDistanceVector, wallBrush.transform.right).magnitude) < horizontalMinimumDistance)
                     {

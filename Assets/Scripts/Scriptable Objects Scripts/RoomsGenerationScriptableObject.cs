@@ -15,7 +15,7 @@ public class RoomsGenerationScriptableObject : ScriptableObject
 
     [Header("Materials")]
     public List<Material> GroundMaterials = new List<Material>();
-    public List<Material> CielingMaterials = new List<Material>();
+    public List<Material> CeilingMaterials = new List<Material>();
     public List<Material> WallMaterials = new List<Material>();
     public List<Material> WindowStructureMaterials = new List<Material>();
     public List<Material> DoorFrameMaterials = new List<Material>();

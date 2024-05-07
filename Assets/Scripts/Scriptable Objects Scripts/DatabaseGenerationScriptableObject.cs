@@ -14,7 +14,7 @@ public class DatabaseGenerationScriptableObject : ScriptableObject
 
     [Header("Camera placement requirements")]
     public float CameraMinimumDistanceFromWall;
-    public float CameraMinimumDistanceFromGroundAndCieling;
+    public float CameraMinimumDistanceFromGroundAndCeiling;
     public float CameraMinimumDistanceFromObjects;
     public float MaximumCameraXRotation;
     public float MaximumCameraYRotation;

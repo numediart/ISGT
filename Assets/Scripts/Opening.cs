@@ -13,6 +13,7 @@ public class Opening : MonoBehaviour
     public RoomsGenerationScriptableObject RoomsGenerationData;
     public ObjectsGenerationScriptableObject ObjectsGenerationData;
 
+
     #endregion
 
     #region Private Fields
@@ -22,7 +23,6 @@ public class Opening : MonoBehaviour
     private float _visibilityRatio;
     private float _width;
     private float _height;
-
     #endregion
 
     private void Start()

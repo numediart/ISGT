@@ -12,4 +12,8 @@ public class OpeningData
     public float OpenessDegree;
     public float VisibilityRatio;
     public BoundingBox2D BoundingBox;
+    public int MainSeed; // The seed used to generate the room where the opening is placed
+    public int DoorSeed; // The seed used to generate the door object
+    public int WindowSeed; // The seed used to generate the window object
+    public int DBSeed;
 }

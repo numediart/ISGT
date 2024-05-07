@@ -1,15 +1,19 @@
+using System;
 using RealtimeCSG.Components;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
+using Utils;
+using Random = UnityEngine.Random;
 
 public class ObjectsGenerator : MonoBehaviour
 {
     public ObjectsGenerationScriptableObject ObjectsGenerationData;
-    public ObjectsGenerationType GenerationType; 
+    public ObjectsGenerationType GenerationType;
 
     [SerializeField] private List<int> _usedSeeds = new List<int>();
+    private SeedsProvider _seedsProvider;
 
     #region Seeds Management Methods
 
@@ -17,7 +21,8 @@ public class ObjectsGenerator : MonoBehaviour
     {
         while (true)
         {
-            int newSeed = UnityEngine.Random.Range(0, int.MaxValue);
+            _seedsProvider = new SeedsProvider();
+            int newSeed = _seedsProvider.MainSeed;
 
             if (!_usedSeeds.Contains(newSeed))
             {
@@ -57,21 +62,25 @@ public class ObjectsGenerator : MonoBehaviour
         GameObject objects = RoomsGenerator.GetRoomCategory(room, RoomCategory.Objects);
         Vector3 objectPosition;
 
-        int totalObjectsNumber = UnityEngine.Random.Range(ObjectsGenerationData.ObjectsMinimumNumberPerRoom, ObjectsGenerationData.ObjectsMaximumNumberPerRoom + 1);
+        int totalObjectsNumber = UnityEngine.Random.Range(ObjectsGenerationData.ObjectsMinimumNumberPerRoom,
+            ObjectsGenerationData.ObjectsMaximumNumberPerRoom + 1);
 
         int missedAttempts = 0;
 
         while (totalObjectsNumber > 0)
         {
-            GameObject ground = grounds.transform.GetChild(UnityEngine.Random.Range(0, grounds.transform.childCount)).gameObject;
-            GameObject objectPrefab = ObjectsGenerationData.Objects[UnityEngine.Random.Range(0, ObjectsGenerationData.Objects.Count)];
+            GameObject ground = grounds.transform.GetChild(UnityEngine.Random.Range(0, grounds.transform.childCount))
+                .gameObject;
+            GameObject objectPrefab =
+                ObjectsGenerationData.Objects[UnityEngine.Random.Range(0, ObjectsGenerationData.Objects.Count)];
             BoxCollider objectCollider = GetObjectBoundingBox(objectPrefab);
             Vector3 objectDimensions = objectCollider.size;
             Vector3 objectCenterPoint = objectCollider.center;
 
             float yRandomOrientation = UnityEngine.Random.Range(0f, 360f);
             Quaternion randomOrientation = new Quaternion();
-            randomOrientation.eulerAngles = objectPrefab.transform.rotation.eulerAngles + new Vector3(0, yRandomOrientation, 0);
+            randomOrientation.eulerAngles =
+                objectPrefab.transform.rotation.eulerAngles + new Vector3(0, yRandomOrientation, 0);
             GameObject temp = new GameObject();
             temp.transform.rotation = randomOrientation;
 
@@ -87,10 +96,12 @@ public class ObjectsGenerator : MonoBehaviour
             }
             else
             {
-                GameObject meshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(ground);
+                GameObject brushesFirstMeshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(ground);
 
-                groundPosition = meshCollider.GetComponent<MeshCollider>().bounds.center;
-                groundScale = meshCollider.GetComponent<MeshCollider>().bounds.size;
+                brushesFirstMeshCollider.TryGetComponent(out MeshCollider meshCollider);
+                Bounds bounds = meshCollider.bounds;
+                groundPosition = bounds.center;
+                groundScale = bounds.size;
             }
 
             int missedAttemptsForFirstObject = 0;
@@ -100,12 +111,15 @@ public class ObjectsGenerator : MonoBehaviour
             {
                 if (objectsByGround[ground].Count > 0)
                 {
-                    List<Vector3> possiblePositions = ObjectsPossiblePositions(room, objectsByGround[ground], ground, objectCenterPoint, objectDimensions, temp.transform);
+                    List<Vector3> possiblePositions = ObjectsPossiblePositions(room, objectsByGround[ground], ground,
+                        objectCenterPoint, objectDimensions, temp.transform);
 
                     if (possiblePositions.Count > 0)
                     {
                         positionSet = true;
-                        GameObject obj = Instantiate(objectPrefab, possiblePositions[UnityEngine.Random.Range(0, possiblePositions.Count)], randomOrientation, objects.transform);
+                        GameObject obj = Instantiate(objectPrefab,
+                            possiblePositions[UnityEngine.Random.Range(0, possiblePositions.Count)], randomOrientation,
+                            objects.transform);
                         objectsByGround[ground].Add(obj);
                     }
                     else if (grounds.transform.childCount > 1)
@@ -126,14 +140,17 @@ public class ObjectsGenerator : MonoBehaviour
             {
                 while (!positionSet)
                 {
-                    float xComponent = UnityEngine.Random.Range(-groundScale.x * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f,
+                    float xComponent = UnityEngine.Random.Range(
+                        -groundScale.x * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f,
                         groundScale.x * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f);
-                    float zComponent = UnityEngine.Random.Range(-groundScale.z * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f,
+                    float zComponent = UnityEngine.Random.Range(
+                        -groundScale.z * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f,
                         groundScale.z * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f);
                     float yComponent = objectDimensions.y / 2f;
 
                     objectPosition = groundPosition + ground.transform.right.normalized * xComponent +
-                        ground.transform.forward.normalized * zComponent + ground.transform.up.normalized * yComponent;
+                                     ground.transform.forward.normalized * zComponent +
+                                     ground.transform.up.normalized * yComponent;
 
                     positionSet = true;
 
@@ -143,7 +160,8 @@ public class ObjectsGenerator : MonoBehaviour
                     }
                     else if (!WallsCollisionVerification(room, objectPosition, objectDimensions, temp.transform))
                     {
-                        GameObject obj = Instantiate(objectPrefab, objectPosition - objectCenterPoint, randomOrientation, objects.transform);
+                        GameObject obj = Instantiate(objectPrefab, objectPosition - objectCenterPoint,
+                            randomOrientation, objects.transform);
                         objectsByGround[ground] = new List<GameObject> { obj };
                     }
                     else
@@ -190,12 +208,13 @@ public class ObjectsGenerator : MonoBehaviour
 
         Transform objectsTransform = RoomsGenerator.GetRoomCategory(room, RoomCategory.Objects).transform;
 
-        foreach(ObjectToPlace obj in objectsLayout.ObjectsToPlace)
+        foreach (ObjectToPlace obj in objectsLayout.ObjectsToPlace)
         {
             Quaternion quat = new Quaternion();
             quat.eulerAngles = new Vector3(obj.Angles[0], obj.Angles[1], obj.Angles[2]);
 
-            Vector3 pos = new Vector3(obj.PositionRelativeToRoomOrigin[0], obj.PositionRelativeToRoomOrigin[1], obj.PositionRelativeToRoomOrigin[2])
+            Vector3 pos = new Vector3(obj.PositionRelativeToRoomOrigin[0], obj.PositionRelativeToRoomOrigin[1],
+                    obj.PositionRelativeToRoomOrigin[2])
                 - GetObjectBoundingBox(objectsAndId[obj.Id]).center + room.transform.position;
 
             Instantiate(objectsAndId[obj.Id], pos, quat, objectsTransform);
@@ -216,7 +235,8 @@ public class ObjectsGenerator : MonoBehaviour
     /// <param name="objectDimensions"></param>
     /// <param name="objectGroundForwardsAngle"></param>
     /// <returns></returns>
-    private List<Vector3> ObjectsPossiblePositions(GameObject room, List<GameObject> placedObjects, GameObject ground, Vector3 objectCenterPoint, Vector3 objectDimensions, Transform objectTransform)
+    private List<Vector3> ObjectsPossiblePositions(GameObject room, List<GameObject> placedObjects, GameObject ground,
+        Vector3 objectCenterPoint, Vector3 objectDimensions, Transform objectTransform)
     {
         Vector3 groundPosition;
         Vector3 groundDimensions;
@@ -233,25 +253,33 @@ public class ObjectsGenerator : MonoBehaviour
         {
             scaleMultiplier = 1;
 
-            GameObject meshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(ground);
+            GameObject brushesFirstMeshCollidermeshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(ground);
 
-            groundPosition = meshCollider.GetComponent<MeshCollider>().bounds.center;
-            groundDimensions = meshCollider.GetComponent<MeshCollider>().bounds.size;
+            brushesFirstMeshCollidermeshCollider.TryGetComponent(out MeshCollider meshCollider);
+            Bounds bounds = meshCollider.bounds;
+            groundPosition = bounds.center;
+            groundDimensions = bounds.size;
         }
 
         List<Vector3> possiblePositionOffsets = new List<Vector3>();
 
-        for (float i = -groundDimensions.x * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f;
-            i < groundDimensions.x * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f; i += 0.05f) 
+        for (float i = -groundDimensions.x * scaleMultiplier / 2f +
+                       Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f;
+             i < groundDimensions.x * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f;
+             i += 0.05f)
         {
-            for (float j = -groundDimensions.z * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f;
-                j < groundDimensions.z * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f; j += 0.05f) 
+            for (float j = -groundDimensions.z * scaleMultiplier / 2f +
+                           Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f;
+                 j < groundDimensions.z * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f;
+                 j += 0.05f)
             {
-                Vector3 objectPosition = groundPosition + i * ground.transform.right.normalized + j * ground.transform.forward.normalized +
-                    (objectDimensions.y / 2f) * ground.transform.up.normalized;
+                Vector3 objectPosition = groundPosition + i * ground.transform.right.normalized +
+                                         j * ground.transform.forward.normalized +
+                                         (objectDimensions.y / 2f) * ground.transform.up.normalized;
 
-                if (Physics.Raycast(objectPosition, Vector3.down, float.MaxValue) && !ObjectsOverlayVerification(placedObjects, objectDimensions, objectPosition, ground) &&
-                    !WallsCollisionVerification(room, objectPosition, objectDimensions, objectTransform)) 
+                if (Physics.Raycast(objectPosition, Vector3.down, float.MaxValue) &&
+                    !ObjectsOverlayVerification(placedObjects, objectDimensions, objectPosition, ground) &&
+                    !WallsCollisionVerification(room, objectPosition, objectDimensions, objectTransform))
                     possiblePositionOffsets.Add(objectPosition - objectCenterPoint);
             }
         }
@@ -267,21 +295,28 @@ public class ObjectsGenerator : MonoBehaviour
     /// <param name="objectPosition"></param>
     /// <param name="ground"></param>
     /// <returns></returns>
-    private bool ObjectsOverlayVerification(List<GameObject> placedObjects, Vector3 objectDimensions, Vector3 objectPosition, GameObject ground)
+    private bool ObjectsOverlayVerification(List<GameObject> placedObjects, Vector3 objectDimensions,
+        Vector3 objectPosition, GameObject ground)
     {
-        foreach(GameObject placedObject in placedObjects)
+        foreach (GameObject placedObject in placedObjects)
         {
             BoxCollider bc = GetObjectBoundingBox(placedObject);
             Vector3 placedObjectDimensions = bc.size;
             Vector3 placedObjectPosition = bc.center + placedObject.transform.position;
 
-            float widthDistance = Vector3.Project(objectPosition - placedObjectPosition, ground.transform.right.normalized).magnitude;
-            float lengthDistance = Vector3.Project(objectPosition - placedObjectPosition, ground.transform.forward.normalized).magnitude;
+            float widthDistance = Vector3
+                .Project(objectPosition - placedObjectPosition, ground.transform.right.normalized).magnitude;
+            float lengthDistance = Vector3
+                .Project(objectPosition - placedObjectPosition, ground.transform.forward.normalized).magnitude;
 
-            float minimumWidthDistance = Vector3.Project(placedObjectDimensions, ground.transform.right.normalized).magnitude / 2f +
-                Vector3.Project(objectDimensions, ground.transform.right.normalized).magnitude / 2f + ObjectsGenerationData.MinimumDistanceBetweenObjects;
-            float minimumLengthDistance = Vector3.Project(placedObjectDimensions, ground.transform.forward.normalized).magnitude / 2f +
-                Vector3.Project(objectDimensions, ground.transform.forward.normalized).magnitude / 2f + ObjectsGenerationData.MinimumDistanceBetweenObjects;
+            float minimumWidthDistance =
+                Vector3.Project(placedObjectDimensions, ground.transform.right.normalized).magnitude / 2f +
+                Vector3.Project(objectDimensions, ground.transform.right.normalized).magnitude / 2f +
+                ObjectsGenerationData.MinimumDistanceBetweenObjects;
+            float minimumLengthDistance =
+                Vector3.Project(placedObjectDimensions, ground.transform.forward.normalized).magnitude / 2f +
+                Vector3.Project(objectDimensions, ground.transform.forward.normalized).magnitude / 2f +
+                ObjectsGenerationData.MinimumDistanceBetweenObjects;
 
             if (widthDistance < minimumWidthDistance)
             {
@@ -300,48 +335,58 @@ public class ObjectsGenerator : MonoBehaviour
     /// <param name="objectPosition"></param>
     /// <param name="objectDimensions"></param>
     /// <returns></returns>
-    private bool WallsCollisionVerification(GameObject room, Vector3 objectPosition, Vector3 objectDimensions, Transform objectTransform)
+    private bool WallsCollisionVerification(GameObject room, Vector3 objectPosition, Vector3 objectDimensions,
+        Transform objectTransform)
     {
         List<Vector3> cornersPositions = new List<Vector3>();
         List<GameObject> walls = RoomsGenerator.GetRoomCategoryObjects(room, RoomCategory.Walls);
 
-        for(int x=-1; x <= 1; x += 2)
+        for (int x = -1; x <= 1; x += 2)
         {
             for (int z = -1; z <= 1; z += 2)
             {
                 for (int y = -1; y <= 1; y += 2)
                 {
-                    Vector3 cornerPosition = objectPosition + (x * objectDimensions.x / 2f) * objectTransform.right.normalized + (y * objectDimensions.y / 2f) *
-                        objectTransform.up.normalized + (z * objectDimensions.z / 2f) * objectTransform.forward.normalized;
+                    Vector3 cornerPosition = objectPosition +
+                                             (x * objectDimensions.x / 2f) * objectTransform.right.normalized +
+                                             (y * objectDimensions.y / 2f) *
+                                             objectTransform.up.normalized + (z * objectDimensions.z / 2f) *
+                                             objectTransform.forward.normalized;
                     cornersPositions.Add(cornerPosition);
                 }
             }
         }
-        
-        foreach(GameObject wall in walls)
+
+        foreach (GameObject wall in walls)
         {
             GameObject choosenWall = wall;
             float wallWidth;
             float wallThickness;
-            if (wall.GetComponent<CSGModel>())
+            wall.TryGetComponent(out CSGModel csgModel);
+            if (csgModel)
                 choosenWall = wall.transform.GetChild(0).gameObject;
 
-            (wallThickness, wallWidth) = choosenWall.transform.localScale.x < choosenWall.transform.localScale.z ? (choosenWall.transform.localScale.x,
-                choosenWall.transform.localScale.z) : (choosenWall.transform.localScale.z, choosenWall.transform.localScale.x);
+            (wallThickness, wallWidth) = choosenWall.transform.localScale.x < choosenWall.transform.localScale.z
+                ? (choosenWall.transform.localScale.x,
+                    choosenWall.transform.localScale.z)
+                : (choosenWall.transform.localScale.z, choosenWall.transform.localScale.x);
 
-            if(Vector3.Project(objectPosition - choosenWall.transform.position, choosenWall.transform.right.normalized).magnitude < wallWidth / 2f)
+            if (Vector3.Project(objectPosition - choosenWall.transform.position, choosenWall.transform.right.normalized)
+                    .magnitude < wallWidth / 2f)
             {
                 foreach (Vector3 cornerPosition in cornersPositions)
                 {
-                    float distanceFromWall = Vector3.Project(cornerPosition - choosenWall.transform.position, -choosenWall.transform.forward.normalized).magnitude *
-                        Mathf.Sign(Vector3.Dot((cornerPosition - choosenWall.transform.position).normalized, -choosenWall.transform.forward.normalized)) - wallThickness / 2f;
+                    float distanceFromWall = Vector3.Project(cornerPosition - choosenWall.transform.position,
+                            -choosenWall.transform.forward.normalized).magnitude *
+                        Mathf.Sign(Vector3.Dot((cornerPosition - choosenWall.transform.position).normalized,
+                            -choosenWall.transform.forward.normalized)) - wallThickness / 2f;
 
                     if (distanceFromWall < 0f)
                         return true;
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -352,10 +397,13 @@ public class ObjectsGenerator : MonoBehaviour
     /// <returns></returns>
     private BoxCollider GetObjectBoundingBox(GameObject objectPrefab)
     {
-        for(int i = 0; i < objectPrefab.transform.childCount; i++)
+        for (int i = 0; i < objectPrefab.transform.childCount; i++)
         {
             if (objectPrefab.transform.GetChild(i).gameObject.name == "BoundingBox")
-                return objectPrefab.transform.GetChild(i).gameObject.GetComponent<BoxCollider>();
+            {
+                objectPrefab.transform.GetChild(i).gameObject.TryGetComponent(out BoxCollider prefabBoxCollider);
+                return prefabBoxCollider;
+            }
         }
 
         return null;
@@ -371,7 +419,7 @@ public class ObjectsGenerator : MonoBehaviour
     {
         List<GameObject> objects = RoomsGenerator.GetRoomCategoryObjects(room, RoomCategory.Objects);
 
-        foreach(GameObject obj in objects)
+        foreach (GameObject obj in objects)
         {
             BoxCollider objBoundingBox = GetObjectBoundingBox(obj);
             Vector3 bbCenter = objBoundingBox.center;
@@ -381,9 +429,11 @@ public class ObjectsGenerator : MonoBehaviour
 
             if (Vector3.Project(objectCenterToCamera, obj.transform.right.normalized).magnitude < bbDimensions.x / 2f)
             {
-                if (Vector3.Project(objectCenterToCamera, obj.transform.forward.normalized).magnitude < bbDimensions.z / 2f)
+                if (Vector3.Project(objectCenterToCamera, obj.transform.forward.normalized).magnitude <
+                    bbDimensions.z / 2f)
                 {
-                    if (Vector3.Project(objectCenterToCamera, obj.transform.up.normalized).magnitude < bbDimensions.y / 2f)
+                    if (Vector3.Project(objectCenterToCamera, obj.transform.up.normalized).magnitude <
+                        bbDimensions.y / 2f)
                         return true;
                 }
             }
@@ -415,8 +465,8 @@ public class ObjectsGenerator : MonoBehaviour
         bool activate = action == ObjectsBoundingBoxesAction.Enable ? true : false;
 
         List<GameObject> objects = RoomsGenerator.GetRoomCategoryObjects(room, RoomCategory.Objects);
-        
-        foreach(GameObject obj in objects)
+
+        foreach (GameObject obj in objects)
         {
             BoxCollider boundingBox = GetObjectBoundingBox(obj);
             boundingBox.enabled = activate;
