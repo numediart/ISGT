@@ -44,10 +44,6 @@ public class DatabaseGenerator : MonoBehaviour
         StartCoroutine(DatabaseGeneration());
     }
 
-    #region Seeds Management Methods
-
-    #endregion
-
     #region Database Generation Methods
 
     /// <summary>
@@ -104,7 +100,7 @@ public class DatabaseGenerator : MonoBehaviour
 
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting);
 
-        StartCoroutine(GetOpeningsData(room, roomIndex, screenshotIndex));
+        GetOpeningsData(room, roomIndex, screenshotIndex);
     }
 
     #endregion
@@ -277,7 +273,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
     /// <returns></returns>
-    private IEnumerator GetOpeningsData(GameObject room, int roomIndex, int screenshotIndex)
+    private void GetOpeningsData(GameObject room, int roomIndex, int screenshotIndex)
     {
         GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room,
             ObjectsBoundingBoxesAction.Disable);
@@ -301,8 +297,7 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.Dimensions.Add("Width",
                         RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size));
                     float windowThickness =
-                        RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size) ==
-                        wallObject.GetComponent<BoxCollider>().size.x
+                        Mathf.Approximately(RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size), wallObject.GetComponent<BoxCollider>().size.x)
                             ? wallObject.GetComponent<BoxCollider>().size.z
                             : wallObject.GetComponent<BoxCollider>().size.x;
                     openingData.Dimensions.Add("Thickness", windowThickness);
@@ -318,11 +313,10 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpenessDegree;
                     openingData.Type = wallObject.GetComponent<Opening>().Type.ToString();
 
-                    wallObject.GetComponent<Opening>().InitializeVisibilityRatio();
-                    yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenInitializationAndDataGetting);
+                    
                     openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatioBetter();
-                    yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenVisibilityRatioAndBoundingBox);
                     openingData.BoundingBox = GetOpeningBoundingBox2D(wallObject);
+                    openingData.VisibilityBoundingBox = wallObject.GetComponent<Opening>().GetVisibilityBoundingBox();
 
                     if (openingData.VisibilityRatio > 0f && openingData.BoundingBox != null)
                         screenshotData.OpeningsData.Add(openingData);

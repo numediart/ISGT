@@ -27,27 +27,27 @@ public class Opening : MonoBehaviour
 
     private void Start()
     {
-        _visibilityRatioSpheresParentObject = GetVisibilityRatioSpheresParentObject();
+        // _visibilityRatioSpheresParentObject = GetVisibilityRatioSpheresParentObject();
         _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
         _height = gameObject.GetComponent<BoxCollider>().size.y;
+        //
+        // for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
+        // {
+        //     for (float y = -_height / 2f + _height / 20f; y <= _height / 2f; y += _height / 10f)
+        //     {
+        //         Vector3 positionOffset = transform.right * x + transform.up * y;
+        //         GameObject ratioSphere = Instantiate(RoomsGenerationData.OpeningRatioSpherePrefab, transform.position + positionOffset, transform.rotation, _visibilityRatioSpheresParentObject.transform);
+        //         ratioSphere.transform.localScale = new Vector3(_width / 10f, _height / 10f, _width / 10f + 0.1f);
+        //     }
+        // }
+        //
+        // _visibilityRatioSpheresParentObject.SetActive(false);
 
-        for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
-        {
-            for (float y = -_height / 2f + _height / 20f; y <= _height / 2f; y += _height / 10f)
-            {
-                Vector3 positionOffset = transform.right * x + transform.up * y;
-                GameObject ratioSphere = Instantiate(RoomsGenerationData.OpeningRatioSpherePrefab, transform.position + positionOffset, transform.rotation, _visibilityRatioSpheresParentObject.transform);
-                ratioSphere.transform.localScale = new Vector3(_width / 10f, _height / 10f, _width / 10f + 0.1f);
-            }
-        }
-
-        _visibilityRatioSpheresParentObject.SetActive(false);
-
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).gameObject.tag.Equals("Untagged") && transform.GetChild(i).gameObject.GetComponent<Renderer>())
-                _openingPartsRenderers.Add(transform.GetChild(i).gameObject.GetComponent<Renderer>());
-        }
+        // for (int i = 0; i < transform.childCount; i++)
+        // {
+        //     if (transform.GetChild(i).gameObject.tag.Equals("Untagged") && transform.GetChild(i).gameObject.GetComponent<Renderer>())
+        //         _openingPartsRenderers.Add(transform.GetChild(i).gameObject.GetComponent<Renderer>());
+        // }
     }
 
     #region Opening Visibility Management Methods
@@ -58,14 +58,20 @@ public class Opening : MonoBehaviour
     /// <returns></returns>
     public bool IsVisible()
     {
-        foreach (Renderer openingPartRenderer in _openingPartsRenderers)
+        Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
+
+        foreach (Renderer renderer in childRenderers)
         {
-            if (openingPartRenderer.isVisible)
+            if (renderer.isVisible)
+            {
                 return true;
+            }
         }
 
         return false;
     }
+
+
 
     /// <summary>
     /// Initializes the visibility ratio and makes the visibility ratio spheres as visible as possible.
@@ -196,6 +202,34 @@ public class Opening : MonoBehaviour
             }
         }
         return visibilityRatio;
+    }
+
+    public BoundingBox2D GetVisibilityBoundingBox()
+    {
+        int minX = Screen.width + 1;
+        int maxX = -1;
+        int minY = Screen.height + 1;
+        int maxY = -1;
+        
+        for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
+        {
+            for (float y = -_height / 2f + _height / 20f; y <= _height / 2f; y += _height / 10f)
+            {
+                Vector3 positionOffset = transform.right * x + transform.up * y;
+                Vector3 aimPoint = transform.position + positionOffset;
+                if (IsAimPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
+                {
+                    Vector3 screenPoint = Camera.main.WorldToScreenPoint(aimPoint);
+                    minX = (int)Mathf.Min(minX, screenPoint.x);
+                    maxX = (int)Mathf.Max(maxX, screenPoint.x);
+                    minY = (int)Mathf.Min(minY, screenPoint.y);
+                    maxY = (int)Mathf.Max(maxY, screenPoint.y);
+                   
+                }
+            }
+        }
+        
+        return new BoundingBox2D(new Vector2Int(minX, minY), maxX - minX, maxY - minY);
     }
     
     private bool IsAimPointVisible(Vector3 aimPoint)
