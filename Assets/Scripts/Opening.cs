@@ -20,12 +20,7 @@ public class Opening : MonoBehaviour
     private float _width;
     private float _height;
     #endregion
-
-    private void Start()
-    {
-        _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
-        _height = gameObject.GetComponent<BoxCollider>().size.y;
-    }
+    
 
     #region Opening Visibility Management Methods
 
@@ -52,14 +47,18 @@ public class Opening : MonoBehaviour
 
     public float GetVisibilityRatioBetter()
     {
+        _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
+        _height = gameObject.GetComponent<BoxCollider>().size.y;
         float visibilityRatio = 0f;
         // Get 100 aim points in the opening
         for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
         {
             for (float y = -_height / 2f + _height / 20f; y <= _height / 2f; y += _height / 10f)
             {
+                
                 Vector3 positionOffset = transform.right * x + transform.up * y;
                 Vector3 aimPoint = transform.position + positionOffset;
+                Debug.Log("Aim point: " + aimPoint + " is visible: " + IsPointVisible(aimPoint) + " is on screen: " + IsPointOnScreen(aimPoint));
                 if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
                     visibilityRatio += 0.01f;
                 
@@ -70,6 +69,8 @@ public class Opening : MonoBehaviour
 
     public BoundingBox2D GetVisibilityBoundingBox()
     {
+        _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
+        _height = gameObject.GetComponent<BoxCollider>().size.y;
         int minX = Screen.width + 1;
         int maxX = -1;
         int minY = Screen.height + 1;
