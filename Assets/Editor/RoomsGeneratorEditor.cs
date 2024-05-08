@@ -20,5 +20,7 @@ public class RoomsGeneratorEditor : Editor
 
         if (GUILayout.Button("Clear Scene"))
             script.ClearScene();
+        if(GUILayout.Button("Take Screenshot"))
+            script.TakeScreenshot();
     }
 }

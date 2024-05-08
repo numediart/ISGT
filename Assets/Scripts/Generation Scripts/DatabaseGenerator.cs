@@ -23,13 +23,12 @@ public class DatabaseGenerator : MonoBehaviour
 
     private float _timeBetweenScreenshots;
     private string _openingsDataFolderPath;
-    [SerializeField] private List<int> _usedSeeds = new List<int>();
 
     private Random _random;
 
     #endregion
 
-    IEnumerator Start()
+ public  IEnumerator Start()
     {
         string path = Directory.GetCurrentDirectory();
         if (!Directory.Exists(path + "/OpeningsData"))
@@ -53,8 +52,12 @@ public class DatabaseGenerator : MonoBehaviour
     private IEnumerator DatabaseGeneration()
     {
         //GeneratorsContainer.RoomsGenerator.GenerateRooms();
-        foreach (KeyValuePair<int, Room> room in GeneratorsContainer.RoomsGenerator.RoomsDictionary)
+        Debug.Log(RoomsGenerator.RoomsDictionary.Count);
+        foreach (KeyValuePair<int, Room> room in RoomsGenerator.RoomsDictionary)
         {
+            
+            Debug.Log("Room Key -> " + room.Key);
+            Debug.Log("Room Value -> " + room.Value.RoomObject.name);
             _random = new Random(room.Value.DatabaseSeed);
             _timeBetweenScreenshots = DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot +
                                       DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting +
@@ -89,7 +92,11 @@ public class DatabaseGenerator : MonoBehaviour
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot);
 
         // You need to comment the line below if you want to use the camera stereo mode and take a screenshot with each eye.
-        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}.png");
+        if( !Directory.Exists("Photographs"))
+        {
+            Directory.CreateDirectory("Photographs");
+        }
+        ScreenCapture.CaptureScreenshot($"Photographs/Room_{roomIndex + 1}-P{screenshotIndex + 1}.png",4);
 
         // You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the camera stereo mode.
 /*        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-LL.png", ScreenCapture.StereoScreenCaptureMode.LeftEye);
@@ -184,17 +191,16 @@ public class DatabaseGenerator : MonoBehaviour
                                     hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromWall)
                                 {
                                     positionSet = false;
-                                    nextCameraPosition = nextCameraPosition - go.transform.forward.normalized *
-                                        DatabaseGenerationData.CameraMinimumDistanceFromWall;
+                                    nextCameraPosition -= go.transform.forward.normalized *
+                                                          DatabaseGenerationData.CameraMinimumDistanceFromWall;
                                     break;
                                 }
                                 else if (hit.collider.gameObject.layer == ObjectsGenerationData.ObjectsLayerIndex &&
                                          hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromObjects)
                                 {
                                     positionSet = false;
-                                    nextCameraPosition = nextCameraPosition +
-                                                         (Camera.main.transform.position - hit.point).normalized *
-                                                         DatabaseGenerationData.CameraMinimumDistanceFromObjects;
+                                    nextCameraPosition += (Camera.main.transform.position - hit.point).normalized *
+                                                          DatabaseGenerationData.CameraMinimumDistanceFromObjects;
                                     break;
                                 }
                             }
@@ -204,7 +210,7 @@ public class DatabaseGenerator : MonoBehaviour
                             break;
                     }
 
-                    Destroy(go);
+                    DestroyImmediate(go);
 
                     if (!positionSet)
                         continue;
@@ -488,7 +494,7 @@ public class DatabaseGenerator : MonoBehaviour
     private void StoreData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
     {
         StringBuilder sb = new StringBuilder();
-        Room room = GeneratorsContainer.RoomsGenerator.RoomsDictionary[roomIndex];
+        Room room = RoomsGenerator.RoomsDictionary[roomIndex];
         sb.Append(JsonConvert.SerializeObject(
             new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed), Formatting.Indented));
         sb.Append(JsonConvert.SerializeObject(screenshotData, Formatting.Indented));

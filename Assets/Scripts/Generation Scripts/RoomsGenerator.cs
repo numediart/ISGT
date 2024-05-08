@@ -10,9 +10,9 @@ public class RoomsGenerator : MonoBehaviour
 {
     #region Public Fields
 
-    public Dictionary<int, Room> RoomsDictionary = new Dictionary<int, Room>();
+    public static Dictionary<int, Room> RoomsDictionary = new Dictionary<int, Room>();
     public RoomsGenerationScriptableObject RoomsGenerationData;
-
+    public DatabaseGenerator DatabaseGenerator;
     #endregion
 
     #region Private Fields
@@ -42,6 +42,7 @@ public class RoomsGenerator : MonoBehaviour
             Room room = ScriptableObject.CreateInstance<Room>();
             room.InitRoom(i);
             RoomsDictionary.Add(i, room);
+            Debug.Log(RoomsDictionary.Count);
             Debug.Log("Room " + i + " created");
         }
     }
@@ -62,15 +63,13 @@ public class RoomsGenerator : MonoBehaviour
     {
         if (RoomsDictionary.Count == 0)
         {
-            Debug.Log("No rooms to destroy");
             return;
         }
 
         foreach (KeyValuePair<int, Room> room in RoomsDictionary)
         {
-            if (room.Value.RoomObject != null)
+            if (room.Value.RoomObject.Equals(null))
             {
-                Debug.Log("Destroying room " + room.Value.RoomObject.name);
                 DestroyImmediate(room.Value.RoomObject);
             }
         }
@@ -80,15 +79,10 @@ public class RoomsGenerator : MonoBehaviour
     }
 
     #endregion
-
-    #region Empty Rooms Generation Methods
-
-    /// <summary>
-    /// Instantiates randomly a quantity choosen by the user of room shells among the prefabricated room shells.
-    /// </summary>
-
-    #endregion
-
+    public void TakeScreenshot()
+    {
+        StartCoroutine(DatabaseGenerator.Start());
+    }
     #region Materials Management Methods
 
     /// <summary>
