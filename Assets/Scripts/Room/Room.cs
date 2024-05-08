@@ -45,7 +45,7 @@ using Random = System.Random;
         }
 
         /// <summary>
-        /// Constructor of the Room class.
+        /// init method of the Room class.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="roomGenerationData"></param>
@@ -72,8 +72,7 @@ using Random = System.Random;
             _position = new Vector3(_roomIdx * roomGenerationData.DistanceBetweenRoomsCenters, 0, 0);// set position of the room based on its id
             _rotation = Quaternion.identity;// set rotation of the room (no rotation)
             _roomObject = Instantiate(roomGenerationData.EmptyRooms[_roomRandom.Next(0,roomGenerationData.EmptyRooms.Count)], _position, _rotation);// instantiate the room object
-            Debug.Log("Room created" + _roomObject.gameObject.name);
-            _roomObject.name = "Room" + _roomIdx;// set the name of the room object
+            _roomObject.name = "Room_" + _roomIdx;// set the name of the room object
         }
         
         /// <summary>
@@ -81,18 +80,14 @@ using Random = System.Random;
         /// </summary>
         private void CreateOpenings()
         { 
-            Debug.Log("Creating openings");
             _openingsGenerator.OpeningsGeneration(_roomObject, _openingRandom);
-            Debug.Log("Openings created");
         }
         /// <summary>
         /// This method fills the room with objects.
         /// </summary>
         private void FillRoomWithObjects()
         {
-            Debug.Log("Filling room with objects");
             _objectsGenerator.ObjectsGeneration(_roomObject, _objectRandom);
-            Debug.Log("Room filled with objects");
         }
 
         /// <summary>

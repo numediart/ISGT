@@ -70,28 +70,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 76b393531ec9b433db13e52410af4cc8, type: 2}
   - {fileID: 2100000, guid: 3ccedc1a71ee44da39881243951f9872, type: 2}
   - {fileID: 2100000, guid: ff411f9bd9c5842209b14356edac006d, type: 2}
-  CielingMaterials:
-  - {fileID: 2100000, guid: 3fb5191f157d74ba3815e2eb24825edd, type: 2}
-  - {fileID: 2100000, guid: f2d098c3461a7486692604897b2dcd89, type: 2}
-  - {fileID: 2100000, guid: e7b0234d7fdc0481bb39c7445ff68102, type: 2}
-  - {fileID: 2100000, guid: 2ca2ebfb506e645329dfd176d27b6584, type: 2}
-  - {fileID: 2100000, guid: d3af8c9439e64466a92f590dae3d661b, type: 2}
-  - {fileID: 2100000, guid: 7348a86e5187246e1be72592bda4736b, type: 2}
-  - {fileID: 2100000, guid: 5d9dc5943a7a84d2ea66aa75a0840c90, type: 2}
-  - {fileID: 2100000, guid: e2415240b57df4e568986ecda625739b, type: 2}
-  - {fileID: 2100000, guid: ccccc24dd146a479b8e1483f4bae1add, type: 2}
-  - {fileID: 2100000, guid: e9dc4c24ded6547fdbc2c701f4f960d9, type: 2}
-  - {fileID: 2100000, guid: 11ccc6b64e3b247d9bafd065d0c8b90e, type: 2}
-  - {fileID: 2100000, guid: b5416c27b662840f792dd52201eed260, type: 2}
-  - {fileID: 2100000, guid: 3762a67baf98e47c4848ae784a536022, type: 2}
-  - {fileID: 2100000, guid: 2057b90684cdc400d801613a9bc7bbd6, type: 2}
-  - {fileID: 2100000, guid: 4c2a4543688ce45c4aa6821125cbb113, type: 2}
-  - {fileID: 2100000, guid: 7ec618ffbe40b42189319ea2d38e7b9e, type: 2}
-  - {fileID: 2100000, guid: 3aa6b4690cf454d1ca7b7a13c2fea935, type: 2}
-  - {fileID: 2100000, guid: cdcc26a2bdaf9495b897dd3ac01dc4ff, type: 2}
-  - {fileID: 2100000, guid: b500181810df542b1b050e78959f33ad, type: 2}
-  - {fileID: 2100000, guid: 35640b90879f34e3bafb728692bd4e17, type: 2}
-  - {fileID: 2100000, guid: eb442c1c97d7a440fb5179ff965ad659, type: 2}
+  CeilingMaterials: []
   WallMaterials:
   - {fileID: 2100000, guid: b2ab1e04e7f20ff4f902d439f61caff6, type: 2}
   - {fileID: 2100000, guid: b3a21e1f064df08438b881be1567a9c8, type: 2}
@@ -164,7 +143,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: e1720919dd9da9f41ab6bb23a1164677, type: 2}
   DoorMaterials:
   - {fileID: 2100000, guid: 73367a24c6af00c4fa45e70e9faf65dd, type: 2}
-  NumberOfEmptyRoomsOnScene: 1
+  NumberOfEmptyRoomsOnScene: 10
   DistanceBetweenRoomsCenters: 100
   MinimumDistanceBetweenBorders: 0.3
   WindowPerWallMinimumNumber: 0

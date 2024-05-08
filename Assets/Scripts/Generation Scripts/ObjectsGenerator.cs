@@ -1,4 +1,3 @@
-
 using RealtimeCSG.Components;
 using System.Collections.Generic;
 using System.IO;
@@ -10,10 +9,8 @@ public class ObjectsGenerator : MonoBehaviour
 {
     public ObjectsGenerationScriptableObject ObjectsGenerationData;
     public ObjectsGenerationType GenerationType;
+    private Random _random;
 
-    [SerializeField] private List<int> _usedSeeds = new List<int>();
-    private Random _random; 
-    
     #region Objects Generation Method
 
     /// <summary>
@@ -22,7 +19,7 @@ public class ObjectsGenerator : MonoBehaviour
     /// <param name="room"></param>
     /// <param name="objectRandom"></param>
     public void ObjectsGeneration(GameObject room, Random objectRandom)
-    {   
+    {
         _random = objectRandom;
         if (GenerationType == ObjectsGenerationType.RandomGeneration)
             ObjectsRandomGeneration(room);
@@ -36,7 +33,6 @@ public class ObjectsGenerator : MonoBehaviour
     /// <param name="room"></param>
     public void ObjectsRandomGeneration(GameObject room)
     {
-
         Dictionary<GameObject, List<GameObject>> objectsByGround = new Dictionary<GameObject, List<GameObject>>();
         GameObject grounds = RoomsGenerator.GetRoomCategory(room, RoomCategory.Grounds);
         GameObject objects = RoomsGenerator.GetRoomCategory(room, RoomCategory.Objects);
@@ -49,7 +45,6 @@ public class ObjectsGenerator : MonoBehaviour
 
         while (totalObjectsNumber > 0)
         {
-            Debug.Log("Missed attempts: " + missedAttempts);
             GameObject ground = grounds.transform.GetChild(_random.Next(0, grounds.transform.childCount)).gameObject;
             GameObject objectPrefab =
                 ObjectsGenerationData.Objects[_random.Next(0, ObjectsGenerationData.Objects.Count)];
@@ -57,7 +52,7 @@ public class ObjectsGenerator : MonoBehaviour
             Vector3 objectDimensions = objectCollider.size;
             Vector3 objectCenterPoint = objectCollider.center;
 
-            float yRandomOrientation = (float) _random.NextDouble()*360f;
+            float yRandomOrientation = (float)_random.NextDouble() * 360f;
             Quaternion randomOrientation = new Quaternion();
             randomOrientation.eulerAngles =
                 objectPrefab.transform.rotation.eulerAngles + new Vector3(0, yRandomOrientation, 0);
@@ -71,21 +66,17 @@ public class ObjectsGenerator : MonoBehaviour
 
             if (ground.transform.childCount == 0)
             {
-                Debug.Log("Ground has no children");
                 groundPosition = ground.transform.position;
                 groundScale = ground.transform.localScale;
             }
             else
             {
-                Debug.Log("Ground has children And is: " + ground.name + " with " + ground.transform.childCount + " children.");
                 GameObject brushesFirstMeshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(ground);
-                if (!brushesFirstMeshCollider.Equals(null))
-                {
-                    brushesFirstMeshCollider.TryGetComponent(out MeshCollider meshCollider);
-                    Bounds bounds = meshCollider.bounds;
-                    groundPosition = bounds.center;
-                    groundScale = bounds.size;
-                }
+
+                brushesFirstMeshCollider.TryGetComponent(out MeshCollider meshCollider);
+                Bounds bounds = meshCollider.bounds;
+                groundPosition = bounds.center;
+                groundScale = bounds.size;
             }
 
             int missedAttemptsForFirstObject = 0;
@@ -125,11 +116,15 @@ public class ObjectsGenerator : MonoBehaviour
                 while (!positionSet)
                 {
                     float xComponent = _random.Next((int)(
-                        -groundScale.x * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f),
-                        (int)(groundScale.x * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f));
+                            -groundScale.x * scaleMultiplier / 2f +
+                            Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f),
+                        (int)(groundScale.x * scaleMultiplier / 2f -
+                              Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f));
                     float zComponent = _random.Next((int)(
-                        -groundScale.z * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f),
-                        (int)(groundScale.z * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f));
+                            -groundScale.z * scaleMultiplier / 2f +
+                            Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f),
+                        (int)(groundScale.z * scaleMultiplier / 2f -
+                              Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f));
                     float yComponent = objectDimensions.y / 2f;
 
                     objectPosition = groundPosition + ground.transform.right.normalized * xComponent +
@@ -176,6 +171,7 @@ public class ObjectsGenerator : MonoBehaviour
 
             totalObjectsNumber--;
         }
+        Debug.Log("Missed attempts: " + missedAttempts);
     }
 
     /// <summary>

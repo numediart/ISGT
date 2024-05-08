@@ -232,7 +232,6 @@ public class RoomsGenerator : MonoBehaviour
         for (int i = 0; i < model.transform.childCount; ++i)
         {
             GameObject generatedMeshes;
-            Debug.Log("Model : " + model.transform.GetChild(i).name);
             if (model.transform.GetChild(i).name == "[generated-meshes]")
             {
                 generatedMeshes = model.transform.GetChild(i).gameObject;
