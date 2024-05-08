@@ -4,7 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Text;
+using Data_Classes;
 using Utils;
+using Random = System.Random;
 
 public class DatabaseGenerator : MonoBehaviour
 {
@@ -22,34 +25,26 @@ public class DatabaseGenerator : MonoBehaviour
     private string _openingsDataFolderPath;
     [SerializeField] private List<int> _usedSeeds = new List<int>();
 
+    private Random _random;
+
     #endregion
 
     IEnumerator Start()
     {
         string path = Directory.GetCurrentDirectory();
+        if (!Directory.Exists(path + "/OpeningsData"))
+        {
+            Directory.CreateDirectory(path + "/OpeningsData");
+        }
+
         _openingsDataFolderPath = path + "/OpeningsData";
-        // GeneratorsContainer.RoomsGenerator.GenerateRooms();
+
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBeforeScreenshotsTakingBeginning);
 
         StartCoroutine(DatabaseGeneration());
     }
 
     #region Seeds Management Methods
-
-    public void InitiateSeed(SeedsProvider seedsProvider)
-    {
-        while (true)
-        {
-            int newSeed = seedsProvider.CreateSubSeed();
-
-            if (!_usedSeeds.Contains(newSeed))
-            {
-                UnityEngine.Random.InitState(newSeed);
-                _usedSeeds.Add(newSeed);
-                break;
-            }
-        }
-    }
 
     #endregion
 
@@ -62,15 +57,19 @@ public class DatabaseGenerator : MonoBehaviour
     private IEnumerator DatabaseGeneration()
     {
         //GeneratorsContainer.RoomsGenerator.GenerateRooms();
-        foreach(GameObject room in GeneratorsContainer.RoomsGenerator.RoomsCreated)
+        foreach (KeyValuePair<int, Room> room in GeneratorsContainer.RoomsGenerator.RoomsDictionary)
         {
-            _timeBetweenScreenshots = DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot + DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting +
-                RoomsGenerator.GetNumberOfOpenings(room) * (DatabaseGenerationData.TimeBetweenInitializationAndDataGetting + DatabaseGenerationData.TimeBetweenVisibilityRatioAndBoundingBox)
-                + DatabaseGenerationData.TimeMargin;
+            _random = new Random(room.Value.DatabaseSeed);
+            _timeBetweenScreenshots = DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot +
+                                      DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting +
+                                      RoomsGenerator.GetNumberOfOpenings(room.Value.RoomObject) *
+                                      (DatabaseGenerationData.TimeBetweenInitializationAndDataGetting +
+                                       DatabaseGenerationData.TimeBetweenVisibilityRatioAndBoundingBox)
+                                      + DatabaseGenerationData.TimeMargin;
 
             for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
             {
-                StartCoroutine(TakeScreenshots(room, GeneratorsContainer.RoomsGenerator.RoomsCreated.IndexOf(room), j));
+                StartCoroutine(TakeScreenshots(room.Value.RoomObject, room.Key, j));
                 yield return new WaitForSeconds(_timeBetweenScreenshots);
             }
         }
@@ -126,7 +125,8 @@ public class DatabaseGenerator : MonoBehaviour
 
         try
         {
-            GameObject choosenGround = grounds.transform.GetChild(UnityEngine.Random.Range(0, grounds.transform.childCount)).gameObject;
+            GameObject choosenGround =
+                grounds.transform.GetChild(_random.Next(0, grounds.transform.childCount)).gameObject;
 
             float scaleMultiplier = (choosenGround.transform.childCount > 0) ? 1f : 10f;
 
@@ -146,14 +146,18 @@ public class DatabaseGenerator : MonoBehaviour
                 choosenGroundScale = meshCollider.GetComponent<MeshCollider>().bounds.size;
             }
 
-            float xComponent = UnityEngine.Random.Range(-choosenGroundScale.x * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
-                choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
-            float zComponent = UnityEngine.Random.Range(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
-                choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
-            float yComponent = UnityEngine.Random.Range(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling, ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling);
+            float xComponent = _random.Next(
+                (int)(-choosenGroundScale.x * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
+               (int)(choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+            float zComponent = _random.Next(
+                (int)(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
+               (int) (choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+            float yComponent = _random.Next((int)(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling),
+                (int)(ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling));
 
             nextCameraPosition = choosenGroundPosition + choosenGround.transform.right.normalized * xComponent +
-                choosenGround.transform.forward.normalized * zComponent + choosenGround.transform.up.normalized * yComponent;
+                                 choosenGround.transform.forward.normalized * zComponent +
+                                 choosenGround.transform.up.normalized * yComponent;
 
             bool positionSet = false;
 
@@ -168,7 +172,7 @@ public class DatabaseGenerator : MonoBehaviour
                 {
                     GameObject go = new GameObject();
 
-                    for (float xAngle = -90f; xAngle < 90f; xAngle += 45f) 
+                    for (float xAngle = -90f; xAngle < 90f; xAngle += 45f)
                     {
                         go.transform.rotation = Quaternion.identity;
                         go.transform.Rotate(go.transform.right, xAngle);
@@ -177,18 +181,24 @@ public class DatabaseGenerator : MonoBehaviour
                         {
                             go.transform.Rotate(go.transform.up, yAngle);
 
-                            if (Physics.Raycast(nextCameraPosition, go.transform.forward.normalized, out hit, float.MaxValue))
+                            if (Physics.Raycast(nextCameraPosition, go.transform.forward.normalized, out hit,
+                                    float.MaxValue))
                             {
-                                if (hit.collider.gameObject.layer == 0 && hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromWall)
+                                if (hit.collider.gameObject.layer == 0 &&
+                                    hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromWall)
                                 {
                                     positionSet = false;
-                                    nextCameraPosition = nextCameraPosition - go.transform.forward.normalized * DatabaseGenerationData.CameraMinimumDistanceFromWall;
+                                    nextCameraPosition = nextCameraPosition - go.transform.forward.normalized *
+                                        DatabaseGenerationData.CameraMinimumDistanceFromWall;
                                     break;
                                 }
-                                else if (hit.collider.gameObject.layer == ObjectsGenerationData.ObjectsLayerIndex && hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromObjects)
+                                else if (hit.collider.gameObject.layer == ObjectsGenerationData.ObjectsLayerIndex &&
+                                         hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromObjects)
                                 {
                                     positionSet = false;
-                                    nextCameraPosition = nextCameraPosition + (Camera.main.transform.position - hit.point).normalized * DatabaseGenerationData.CameraMinimumDistanceFromObjects;
+                                    nextCameraPosition = nextCameraPosition +
+                                                         (Camera.main.transform.position - hit.point).normalized *
+                                                         DatabaseGenerationData.CameraMinimumDistanceFromObjects;
                                     break;
                                 }
                             }
@@ -203,24 +213,31 @@ public class DatabaseGenerator : MonoBehaviour
                     if (!positionSet)
                         continue;
                     else
-                        positionSet = (!GeneratorsContainer.ObjectsGenerator.IsCameraInsideAnObject(room, nextCameraPosition) &&
-                            !RoomsGenerator.IsCameraInsideAWall(room, nextCameraPosition)) ? true : false;
+                        positionSet =
+                            (!GeneratorsContainer.ObjectsGenerator.IsCameraInsideAnObject(room, nextCameraPosition) &&
+                             !RoomsGenerator.IsCameraInsideAWall(room, nextCameraPosition))
+                                ? true
+                                : false;
 
                     if (positionSet)
                         break;
                 }
 
-                xComponent = UnityEngine.Random.Range(-choosenGroundScale.x * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
-                    choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
-                zComponent = UnityEngine.Random.Range(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
-                    choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
-                yComponent = UnityEngine.Random.Range(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling, ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling);
+                xComponent = _random.Next(
+                    (int)(-choosenGroundScale.x * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
+                    (int)(choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+                zComponent = _random.Next(
+                    (int)(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
+                    (int)(choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+                yComponent = _random.Next((int)DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling,
+                   (int)(ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling));
 
                 nextCameraPosition = choosenGroundPosition + choosenGround.transform.right.normalized * xComponent +
-                    choosenGround.transform.forward.normalized * zComponent + choosenGround.transform.up.normalized * yComponent;
+                                     choosenGround.transform.forward.normalized * zComponent +
+                                     choosenGround.transform.up.normalized * yComponent;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Debug.LogError("Error - Grounds child object not found or empty :\n" + ex);
             nextCameraPosition = Vector3.negativeInfinity;
@@ -235,9 +252,12 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private Quaternion RandomRotation()
     {
-        float xRotation = UnityEngine.Random.Range(-DatabaseGenerationData.MaximumCameraXRotation, DatabaseGenerationData.MaximumCameraXRotation);
-        float yRotation = UnityEngine.Random.Range(-DatabaseGenerationData.MaximumCameraYRotation, DatabaseGenerationData.MaximumCameraYRotation);
-        float zRotation = UnityEngine.Random.Range(-DatabaseGenerationData.MaximumCameraZRotation, DatabaseGenerationData.MaximumCameraZRotation);
+        float xRotation = _random.Next((int)-DatabaseGenerationData.MaximumCameraXRotation,
+            (int)DatabaseGenerationData.MaximumCameraXRotation);
+        float yRotation = _random.Next((int)-DatabaseGenerationData.MaximumCameraYRotation,
+            (int)DatabaseGenerationData.MaximumCameraYRotation);
+        float zRotation = _random.Next((int)-DatabaseGenerationData.MaximumCameraZRotation,
+            (int)DatabaseGenerationData.MaximumCameraZRotation);
 
         Vector3 rotation3D = new Vector3(xRotation, yRotation, zRotation);
 
@@ -259,7 +279,8 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private IEnumerator GetOpeningsData(GameObject room, int roomIndex, int screenshotIndex)
     {
-        GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room, ObjectsBoundingBoxesAction.Disable);
+        GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room,
+            ObjectsBoundingBoxesAction.Disable);
 
         List<GameObject> walls = RoomsGenerator.GetRoomCategoryObjects(room, RoomCategory.Walls);
 
@@ -277,16 +298,22 @@ public class DatabaseGenerator : MonoBehaviour
                     OpeningData openingData = new OpeningData();
 
                     openingData.Dimensions.Add("Height", wallObject.GetComponent<BoxCollider>().size.y);
-                    openingData.Dimensions.Add("Width", RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size));
-                    float windowThickness = RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size) == wallObject.GetComponent<BoxCollider>().size.x ? 
-                        wallObject.GetComponent<BoxCollider>().size.z : wallObject.GetComponent<BoxCollider>().size.x;
+                    openingData.Dimensions.Add("Width",
+                        RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size));
+                    float windowThickness =
+                        RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size) ==
+                        wallObject.GetComponent<BoxCollider>().size.x
+                            ? wallObject.GetComponent<BoxCollider>().size.z
+                            : wallObject.GetComponent<BoxCollider>().size.x;
                     openingData.Dimensions.Add("Thickness", windowThickness);
 
-                    openingData.DistanceToCamera = (wallObject.transform.position - Camera.main.transform.position).magnitude;
+                    openingData.DistanceToCamera =
+                        (wallObject.transform.position - Camera.main.transform.position).magnitude;
 
                     // Find the rotation quaternion from the camera to the opening. If you multiply the camera rotation by this quaternion, it will "look" at the opening.
-                    openingData.RotationQuaternionFromCamera = (Quaternion.Inverse(Camera.main.transform.rotation) * wallObject.transform.rotation);
-                   
+                    openingData.RotationQuaternionFromCamera = (Quaternion.Inverse(Camera.main.transform.rotation) *
+                                                                wallObject.transform.rotation);
+
 
                     openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpenessDegree;
                     openingData.Type = wallObject.GetComponent<Opening>().Type.ToString();
@@ -303,9 +330,10 @@ public class DatabaseGenerator : MonoBehaviour
             }
         }
 
-        StoreOpeningsData(screenshotData, roomIndex, screenshotIndex);
+        StoreData(screenshotData, roomIndex, screenshotIndex);
 
-        GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room, ObjectsBoundingBoxesAction.Enable);
+        GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room,
+            ObjectsBoundingBoxesAction.Enable);
     }
 
     /// <summary>
@@ -319,17 +347,17 @@ public class DatabaseGenerator : MonoBehaviour
         Vector3 cameraPosition = Camera.main.transform.position;
         Vector3 cameraForwardVector = Camera.main.transform.forward;
         Vector3 cameraToObject = anyObject.transform.position - cameraPosition;
-        
+
         float verticalFieldOfView = Camera.main.fieldOfView;
         float horizontalFieldOfView = Camera.VerticalToHorizontalFieldOfView(verticalFieldOfView, Camera.main.aspect);
 
         Vector3 XZCameraToObject = Vector3.Project(cameraToObject, Camera.main.transform.right.normalized) +
-            Vector3.Project(cameraToObject, cameraForwardVector.normalized);
+                                   Vector3.Project(cameraToObject, cameraForwardVector.normalized);
         if (Mathf.Abs(Vector3.Angle(cameraForwardVector, XZCameraToObject)) > horizontalFieldOfView / 2f)
             return false;
 
         Vector3 ZYCameraToObject = Vector3.Project(cameraToObject, cameraForwardVector.normalized) +
-            Vector3.Project(cameraToObject, Camera.main.transform.up.normalized);
+                                   Vector3.Project(cameraToObject, Camera.main.transform.up.normalized);
         if (Mathf.Abs(Vector3.Angle(cameraForwardVector, ZYCameraToObject)) > verticalFieldOfView / 2f)
             return false;
 
@@ -353,55 +381,79 @@ public class DatabaseGenerator : MonoBehaviour
         float height = colliderSize.y;
 
         Vector3 onScreenBottomLeftCorner = Camera.main.WorldToScreenPoint(
-            openingPosition - opening.transform.right.normalized * width / 2f - opening.transform.up.normalized * height / 2f);
+            openingPosition - opening.transform.right.normalized * width / 2f -
+            opening.transform.up.normalized * height / 2f);
         if (onScreenBottomLeftCorner.z < 0)
         {
-            Vector3 distVector = Vector3.Project((Camera.main.transform.position + Camera.main.transform.forward * Camera.main.nearClipPlane
-                - (openingPosition - opening.transform.right.normalized * width / 2f - opening.transform.up.normalized * height / 2f)), Camera.main.transform.forward);
+            Vector3 distVector = Vector3.Project((Camera.main.transform.position +
+                                                  Camera.main.transform.forward * Camera.main.nearClipPlane
+                                                  - (openingPosition - opening.transform.right.normalized * width / 2f -
+                                                     opening.transform.up.normalized * height / 2f)),
+                Camera.main.transform.forward);
 
             onScreenBottomLeftCorner = Camera.main.WorldToScreenPoint(
-                openingPosition - opening.transform.right.normalized * width / 2f - opening.transform.up.normalized * height / 2f + distVector);
+                openingPosition - opening.transform.right.normalized * width / 2f -
+                opening.transform.up.normalized * height / 2f + distVector);
         }
 
         Vector3 onScreenBottomRightCorner = Camera.main.WorldToScreenPoint(
-            openingPosition + opening.transform.right.normalized * width / 2f - opening.transform.up.normalized * height / 2f);
+            openingPosition + opening.transform.right.normalized * width / 2f -
+            opening.transform.up.normalized * height / 2f);
         if (onScreenBottomRightCorner.z < 0)
         {
-            Vector3 distVector = Vector3.Project((Camera.main.transform.position + Camera.main.transform.forward * Camera.main.nearClipPlane
-                - (openingPosition + opening.transform.right.normalized * width / 2f - opening.transform.up.normalized * height / 2f)), Camera.main.transform.forward);
+            Vector3 distVector = Vector3.Project((Camera.main.transform.position +
+                                                  Camera.main.transform.forward * Camera.main.nearClipPlane
+                                                  - (openingPosition + opening.transform.right.normalized * width / 2f -
+                                                     opening.transform.up.normalized * height / 2f)),
+                Camera.main.transform.forward);
 
             onScreenBottomRightCorner = Camera.main.WorldToScreenPoint(
-               openingPosition + opening.transform.right.normalized * width / 2f - opening.transform.up.normalized * height / 2f + distVector);
+                openingPosition + opening.transform.right.normalized * width / 2f -
+                opening.transform.up.normalized * height / 2f + distVector);
         }
 
         Vector3 onScreenTopRightCorner = Camera.main.WorldToScreenPoint(
-            openingPosition + opening.transform.right.normalized * width / 2f + opening.transform.up.normalized * height / 2f);
+            openingPosition + opening.transform.right.normalized * width / 2f +
+            opening.transform.up.normalized * height / 2f);
         if (onScreenTopRightCorner.z < 0)
         {
-            Vector3 distVector = Vector3.Project((Camera.main.transform.position + Camera.main.transform.forward * Camera.main.nearClipPlane
-                - (openingPosition + opening.transform.right.normalized * width / 2f + opening.transform.up.normalized * height / 2f)), Camera.main.transform.forward);
+            Vector3 distVector = Vector3.Project((Camera.main.transform.position +
+                                                  Camera.main.transform.forward * Camera.main.nearClipPlane
+                                                  - (openingPosition + opening.transform.right.normalized * width / 2f +
+                                                     opening.transform.up.normalized * height / 2f)),
+                Camera.main.transform.forward);
 
             onScreenTopRightCorner = Camera.main.WorldToScreenPoint(
-                openingPosition + opening.transform.right.normalized * width / 2f + opening.transform.up.normalized * height / 2f + distVector);
+                openingPosition + opening.transform.right.normalized * width / 2f +
+                opening.transform.up.normalized * height / 2f + distVector);
         }
 
         Vector3 onScreenTopLeftCorner = Camera.main.WorldToScreenPoint(
-            openingPosition - opening.transform.right.normalized * width / 2f + opening.transform.up.normalized * height / 2f);
+            openingPosition - opening.transform.right.normalized * width / 2f +
+            opening.transform.up.normalized * height / 2f);
         if (onScreenTopLeftCorner.z < 0)
         {
-            Vector3 distVector = Vector3.Project((Camera.main.transform.position + Camera.main.transform.forward * Camera.main.nearClipPlane
-                - (openingPosition - opening.transform.right.normalized * width / 2f + opening.transform.up.normalized * height / 2f)), Camera.main.transform.forward);
+            Vector3 distVector = Vector3.Project((Camera.main.transform.position +
+                                                  Camera.main.transform.forward * Camera.main.nearClipPlane
+                                                  - (openingPosition - opening.transform.right.normalized * width / 2f +
+                                                     opening.transform.up.normalized * height / 2f)),
+                Camera.main.transform.forward);
 
             onScreenTopLeftCorner = Camera.main.WorldToScreenPoint(
-                openingPosition - opening.transform.right.normalized * width / 2f + opening.transform.up.normalized * height / 2f + distVector);
+                openingPosition - opening.transform.right.normalized * width / 2f +
+                opening.transform.up.normalized * height / 2f + distVector);
         }
 
         Vector2Int boundingBoxOrigin = Vector2Int.zero;
 
-        int minXComponent = (int)Mathf.Min(onScreenBottomLeftCorner.x, onScreenTopLeftCorner.x, onScreenBottomRightCorner.x, onScreenTopRightCorner.x);
-        int minYComponent = (int)Mathf.Min(onScreenBottomLeftCorner.y, onScreenTopLeftCorner.y, onScreenBottomRightCorner.y, onScreenTopRightCorner.y);
-        int maxXComponent = (int)Mathf.Max(onScreenBottomLeftCorner.x, onScreenTopLeftCorner.x, onScreenBottomRightCorner.x, onScreenTopRightCorner.x);
-        int maxYComponent = (int)Mathf.Max(onScreenBottomLeftCorner.y, onScreenTopLeftCorner.y, onScreenBottomRightCorner.y, onScreenTopRightCorner.y);
+        int minXComponent = (int)Mathf.Min(onScreenBottomLeftCorner.x, onScreenTopLeftCorner.x,
+            onScreenBottomRightCorner.x, onScreenTopRightCorner.x);
+        int minYComponent = (int)Mathf.Min(onScreenBottomLeftCorner.y, onScreenTopLeftCorner.y,
+            onScreenBottomRightCorner.y, onScreenTopRightCorner.y);
+        int maxXComponent = (int)Mathf.Max(onScreenBottomLeftCorner.x, onScreenTopLeftCorner.x,
+            onScreenBottomRightCorner.x, onScreenTopRightCorner.x);
+        int maxYComponent = (int)Mathf.Max(onScreenBottomLeftCorner.y, onScreenTopLeftCorner.y,
+            onScreenBottomRightCorner.y, onScreenTopRightCorner.y);
 
         if (minXComponent > screenWidth || minYComponent > screenHeight || maxXComponent < 0 || maxYComponent < 0)
             return null;
@@ -423,11 +475,34 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="screenshotIndex"></param>
     private void StoreOpeningsData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
     {
+        StringBuilder sb = new StringBuilder();
+
         string JSONresult = JsonConvert.SerializeObject(screenshotData, Formatting.Indented);
 
         string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
 
         File.WriteAllText(path, JSONresult);
+    }
+
+    /// <summary>
+    ///  Stores the openings data corresponding to the screenshot identified with roomIndex and screenshotIndex in a JSON file in a specific folder. And Store the seed used to generate the room where the opening is placed, the seed used to generate the door object, the seed used to generate the window object and the seed used to generate the database.
+    /// 
+    /// </summary>
+    /// <param name="screenshotData"></param>
+    /// <param name="roomIndex"></param>
+    /// <param name="screenshotIndex"></param>
+    private void StoreData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
+    {
+        StringBuilder sb = new StringBuilder();
+        Room room = GeneratorsContainer.RoomsGenerator.RoomsDictionary[roomIndex];
+        sb.Append(JsonConvert.SerializeObject(
+            new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed), Formatting.Indented));
+        sb.Append(JsonConvert.SerializeObject(screenshotData, Formatting.Indented));
+        Debug.Log(_openingsDataFolderPath);
+        string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
+
+
+        File.WriteAllText(path, sb.ToString());
     }
 
     #endregion

@@ -1,28 +1,27 @@
 using System;
-using UnityEngine;
 
 namespace Utils
 {
     public class SeedsProvider
     {
-     
         private int _mainSeed;
-        public int MainSeed => _mainSeed;
+        private Random _random;
+
+
         public SeedsProvider()
-        {// This class is used to manage the seeds for visg
-            _mainSeed = (int) DateTime.Now.Ticks;
+        {
+            _mainSeed = (int)DateTime.Now.Ticks;
+            _random = new Random(_mainSeed);
         }
+
         public int GetSeed()
         {
             return _mainSeed;
         }
-        
+
         public int CreateSubSeed()
         {
-            int subSeed = DateTime.Now.Ticks.GetHashCode();
-            return subSeed;
+            return _random.Next();
         }
-        
-        
     }
 }

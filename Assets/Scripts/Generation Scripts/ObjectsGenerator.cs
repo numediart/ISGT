@@ -1,11 +1,10 @@
-using System;
+
 using RealtimeCSG.Components;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
-using Utils;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 public class ObjectsGenerator : MonoBehaviour
 {
@@ -13,36 +12,18 @@ public class ObjectsGenerator : MonoBehaviour
     public ObjectsGenerationType GenerationType;
 
     [SerializeField] private List<int> _usedSeeds = new List<int>();
-    private SeedsProvider _seedsProvider;
-
-    #region Seeds Management Methods
-
-    private void InitiateSeed()
-    {
-        while (true)
-        {
-            _seedsProvider = new SeedsProvider();
-            int newSeed = _seedsProvider.MainSeed;
-
-            if (!_usedSeeds.Contains(newSeed))
-            {
-                UnityEngine.Random.InitState(newSeed);
-                _usedSeeds.Add(newSeed);
-                break;
-            }
-        }
-    }
-
-    #endregion
-
+    private Random _random; 
+    
     #region Objects Generation Method
 
     /// <summary>
     /// The generic method for the objects generation in a room.
     /// </summary>
     /// <param name="room"></param>
-    public void ObjectsGeneration(GameObject room)
-    {
+    /// <param name="objectRandom"></param>
+    public void ObjectsGeneration(GameObject room, Random objectRandom)
+    {   
+        _random = objectRandom;
         if (GenerationType == ObjectsGenerationType.RandomGeneration)
             ObjectsRandomGeneration(room);
         else if (GenerationType == ObjectsGenerationType.RealisticGenerationWithAIModel)
@@ -55,29 +36,28 @@ public class ObjectsGenerator : MonoBehaviour
     /// <param name="room"></param>
     public void ObjectsRandomGeneration(GameObject room)
     {
-        InitiateSeed();
 
         Dictionary<GameObject, List<GameObject>> objectsByGround = new Dictionary<GameObject, List<GameObject>>();
         GameObject grounds = RoomsGenerator.GetRoomCategory(room, RoomCategory.Grounds);
         GameObject objects = RoomsGenerator.GetRoomCategory(room, RoomCategory.Objects);
         Vector3 objectPosition;
 
-        int totalObjectsNumber = UnityEngine.Random.Range(ObjectsGenerationData.ObjectsMinimumNumberPerRoom,
+        int totalObjectsNumber = _random.Next(ObjectsGenerationData.ObjectsMinimumNumberPerRoom,
             ObjectsGenerationData.ObjectsMaximumNumberPerRoom + 1);
 
         int missedAttempts = 0;
 
         while (totalObjectsNumber > 0)
         {
-            GameObject ground = grounds.transform.GetChild(UnityEngine.Random.Range(0, grounds.transform.childCount))
-                .gameObject;
+            Debug.Log("Missed attempts: " + missedAttempts);
+            GameObject ground = grounds.transform.GetChild(_random.Next(0, grounds.transform.childCount)).gameObject;
             GameObject objectPrefab =
-                ObjectsGenerationData.Objects[UnityEngine.Random.Range(0, ObjectsGenerationData.Objects.Count)];
+                ObjectsGenerationData.Objects[_random.Next(0, ObjectsGenerationData.Objects.Count)];
             BoxCollider objectCollider = GetObjectBoundingBox(objectPrefab);
             Vector3 objectDimensions = objectCollider.size;
             Vector3 objectCenterPoint = objectCollider.center;
 
-            float yRandomOrientation = UnityEngine.Random.Range(0f, 360f);
+            float yRandomOrientation = (float) _random.NextDouble()*360f;
             Quaternion randomOrientation = new Quaternion();
             randomOrientation.eulerAngles =
                 objectPrefab.transform.rotation.eulerAngles + new Vector3(0, yRandomOrientation, 0);
@@ -91,17 +71,21 @@ public class ObjectsGenerator : MonoBehaviour
 
             if (ground.transform.childCount == 0)
             {
+                Debug.Log("Ground has no children");
                 groundPosition = ground.transform.position;
                 groundScale = ground.transform.localScale;
             }
             else
             {
+                Debug.Log("Ground has children And is: " + ground.name + " with " + ground.transform.childCount + " children.");
                 GameObject brushesFirstMeshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(ground);
-
-                brushesFirstMeshCollider.TryGetComponent(out MeshCollider meshCollider);
-                Bounds bounds = meshCollider.bounds;
-                groundPosition = bounds.center;
-                groundScale = bounds.size;
+                if (!brushesFirstMeshCollider.Equals(null))
+                {
+                    brushesFirstMeshCollider.TryGetComponent(out MeshCollider meshCollider);
+                    Bounds bounds = meshCollider.bounds;
+                    groundPosition = bounds.center;
+                    groundScale = bounds.size;
+                }
             }
 
             int missedAttemptsForFirstObject = 0;
@@ -118,7 +102,7 @@ public class ObjectsGenerator : MonoBehaviour
                     {
                         positionSet = true;
                         GameObject obj = Instantiate(objectPrefab,
-                            possiblePositions[UnityEngine.Random.Range(0, possiblePositions.Count)], randomOrientation,
+                            possiblePositions[_random.Next(0, possiblePositions.Count)], randomOrientation,
                             objects.transform);
                         objectsByGround[ground].Add(obj);
                     }
@@ -140,12 +124,12 @@ public class ObjectsGenerator : MonoBehaviour
             {
                 while (!positionSet)
                 {
-                    float xComponent = UnityEngine.Random.Range(
-                        -groundScale.x * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f,
-                        groundScale.x * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f);
-                    float zComponent = UnityEngine.Random.Range(
-                        -groundScale.z * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f,
-                        groundScale.z * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f);
+                    float xComponent = _random.Next((int)(
+                        -groundScale.x * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f),
+                        (int)(groundScale.x * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f));
+                    float zComponent = _random.Next((int)(
+                        -groundScale.z * scaleMultiplier / 2f + Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f),
+                        (int)(groundScale.z * scaleMultiplier / 2f - Mathf.Min(objectDimensions.x, objectDimensions.z) / 2f));
                     float yComponent = objectDimensions.y / 2f;
 
                     objectPosition = groundPosition + ground.transform.right.normalized * xComponent +

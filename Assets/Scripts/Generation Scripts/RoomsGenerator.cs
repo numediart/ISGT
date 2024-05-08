@@ -5,46 +5,20 @@ using System;
 using System.Linq;
 using Utils;
 
+
 public class RoomsGenerator : MonoBehaviour
 {
     #region Public Fields
 
-    public List<GameObject> RoomsCreated = new List<GameObject>();
+    public Dictionary<int, Room> RoomsDictionary = new Dictionary<int, Room>();
     public RoomsGenerationScriptableObject RoomsGenerationData;
-    public GeneratorsContainer GeneratorsContainer;
 
     #endregion
 
     #region Private Fields
 
-    [SerializeField] private List<int> _usedSeeds = new List<int>();
-    private SeedsProvider _seedsProvider;
-
     #endregion
 
-    #region Seeds Management Methods
-
-   /* private void Start()
-    {
-        GenerateRooms();
-    }*/
-
-    private void InitiateSeed()
-    {
-        while (true)
-        {
-            int newSeed = _seedsProvider.MainSeed;
-
-            if (!_usedSeeds.Contains(newSeed))
-            {
-                UnityEngine.Random.InitState(newSeed);
-                _usedSeeds.Add(newSeed);
-                break;
-            }
-        }
-    }
-
-    #endregion
 
     #region Methods Called By Buttons
 
@@ -54,17 +28,22 @@ public class RoomsGenerator : MonoBehaviour
     /// </summary>
     public void GenerateRooms()
     {
+        ClearScene();
 /*        Debug.Log($"Distance between the two eyes : {Camera.main.stereoSeparation * 2f}");*/
-        _seedsProvider = new SeedsProvider();
-        InitiateSeed();
-        GeneratorsContainer.DatabaseGenerator.InitiateSeed(_seedsProvider);
 
-        EmptyRoomsGeneration();
 
-        GeneratorsContainer.OpeningsGenerator.OpeningsGeneration(RoomsCreated);
+        RoomsGenerationData.MaterialsDictionary.Add("Grounds", RoomsGenerationData.GroundMaterials);
+        RoomsGenerationData.MaterialsDictionary.Add("Ceilings", RoomsGenerationData.CeilingMaterials);
+        RoomsGenerationData.MaterialsDictionary.Add("Walls", RoomsGenerationData.WallMaterials);
 
-         foreach (GameObject room in RoomsCreated)
-              GeneratorsContainer.ObjectsGenerator.ObjectsGeneration(room);
+
+        for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
+        {
+            Room room = ScriptableObject.CreateInstance<Room>();
+            room.InitRoom(i);
+            RoomsDictionary.Add(i, room);
+            Debug.Log("Room " + i + " created");
+        }
     }
 
     /// <summary>
@@ -72,8 +51,8 @@ public class RoomsGenerator : MonoBehaviour
     /// </summary>
     public void ApplyMaterialsForAllRooms()
     {
-        foreach (GameObject room in RoomsCreated)
-            ApplyMaterials(room);
+        foreach (Room room in RoomsDictionary.Values)
+            ApplyMaterials(room.RoomObject);
     }
 
     /// <summary>
@@ -81,13 +60,22 @@ public class RoomsGenerator : MonoBehaviour
     /// </summary>
     public void ClearScene()
     {
-        if (RoomsCreated.Count > 0)
+        if (RoomsDictionary.Count == 0)
         {
-            foreach (GameObject room in RoomsCreated)
-                Destroy(room);
+            Debug.Log("No rooms to destroy");
+            return;
         }
 
-        RoomsCreated.Clear();
+        foreach (KeyValuePair<int, Room> room in RoomsDictionary)
+        {
+            if (room.Value.RoomObject != null)
+            {
+                Debug.Log("Destroying room " + room.Value.RoomObject.name);
+                DestroyImmediate(room.Value.RoomObject);
+            }
+        }
+
+        RoomsDictionary.Clear();
         RoomsGenerationData.MaterialsDictionary.Clear();
     }
 
@@ -98,22 +86,6 @@ public class RoomsGenerator : MonoBehaviour
     /// <summary>
     /// Instantiates randomly a quantity choosen by the user of room shells among the prefabricated room shells.
     /// </summary>
-    private void EmptyRoomsGeneration()
-    {
-        ClearScene();
-        RoomsGenerationData.MaterialsDictionary.Add("Grounds", RoomsGenerationData.GroundMaterials);
-        RoomsGenerationData.MaterialsDictionary.Add("Ceilings", RoomsGenerationData.CeilingMaterials);
-        RoomsGenerationData.MaterialsDictionary.Add("Walls", RoomsGenerationData.WallMaterials);
-
-        for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
-        {
-            int rnd = UnityEngine.Random.Range(0, RoomsGenerationData.EmptyRooms.Count);
-
-            GameObject room = Instantiate(RoomsGenerationData.EmptyRooms[rnd],
-                new Vector3(i * RoomsGenerationData.DistanceBetweenRoomsCenters, 0, 0), Quaternion.identity);
-            RoomsCreated.Add(room);
-        }
-    }
 
     #endregion
 
@@ -260,16 +232,17 @@ public class RoomsGenerator : MonoBehaviour
         for (int i = 0; i < model.transform.childCount; ++i)
         {
             GameObject generatedMeshes;
-
+            Debug.Log("Model : " + model.transform.GetChild(i).name);
             if (model.transform.GetChild(i).name == "[generated-meshes]")
             {
                 generatedMeshes = model.transform.GetChild(i).gameObject;
 
                 for (int j = 0; j < generatedMeshes.transform.childCount; j++)
-                {
-                    generatedMeshes.transform.GetChild(j).gameObject
-                        .TryGetComponent(out MeshCollider meshCollider);
-                    if (meshCollider.Equals(null))
+                {   
+                   
+                    generatedMeshes.transform.GetChild(j).gameObject.TryGetComponent(out MeshCollider meshCollider);
+              
+                    if (meshCollider)
                     {
                         brushesMeshCollider = generatedMeshes.transform.GetChild(j).gameObject;
                         break;
