@@ -14,15 +14,16 @@ public class OpeningsGenerator : MonoBehaviour
 
     public RoomsGenerationScriptableObject RoomsGenerationData;
     public GeneratorsContainer GeneratorsContainer;
-
+    public int NumberOfOpenings { get; private set; }
     #endregion
 
     #region Private Fields
 
     private GameObject _wallModel;
     private Random _random;
+    int _doorsRandomNumber;
+    int _windowsRandomNumber;
     #endregion
-
 
     private void Awake()
     {
@@ -42,7 +43,9 @@ public class OpeningsGenerator : MonoBehaviour
     {
             _random = openingRandomn;
             List<GameObject> walls = RoomsGenerator.GetRoomCategoryObjects(room, RoomCategory.Walls);
-
+            _doorsRandomNumber = _random.Next(RoomsGenerationData.DoorPerRoomMinimumNumber, RoomsGenerationData.DoorPerRoomMaximumNumber + 1);
+            _windowsRandomNumber = _random.Next(RoomsGenerationData.WindowPerRoomMinimumNumber, RoomsGenerationData.WindowPerRoomMaximumNumber + 1);
+            NumberOfOpenings = _doorsRandomNumber + _windowsRandomNumber;
             List<GameObject> wallsWithDoors = DoorsGeneration(walls);
 
             WindowsGeneration(wallsWithDoors);
@@ -107,15 +110,14 @@ public class OpeningsGenerator : MonoBehaviour
     private List<GameObject> DoorsGeneration(List<GameObject> walls)
     {
         List<GameObject> localWallsList = walls;
-        int doorsRandomNumber = _random.Next(RoomsGenerationData.DoorPerRoomMinimumNumber, RoomsGenerationData.DoorPerRoomMaximumNumber);
-
+        int remainingDoors = _doorsRandomNumber;
         Dictionary<int, int> doorPerWall = new Dictionary<int, int>();
         for (int i = 0; i < localWallsList.Count; i++)
         {
             doorPerWall.Add(i, 0);
         }
 
-        while (doorsRandomNumber > 0)
+        while (remainingDoors > 0)
         {
             int wallRandomIndex = _random.Next(0, localWallsList.Count);
 
@@ -178,7 +180,7 @@ public class OpeningsGenerator : MonoBehaviour
                 SetOpeningRandomOpeness(door);
 
                 doorPerWall[wallRandomIndex]++;
-                doorsRandomNumber--;
+                remainingDoors--;
             }
         }
 
@@ -194,13 +196,22 @@ public class OpeningsGenerator : MonoBehaviour
     /// <param name="walls"></param>
     private void WindowsGeneration(List<GameObject> walls)
     {
+        int remainingWindows = _windowsRandomNumber;
         foreach (GameObject wall in walls)
         {
             float wallWidth = (wall.transform.childCount == 0) ? GeneratorsContainer.RoomsGenerator.GetWallWidth(wall) :
                 GeneratorsContainer.RoomsGenerator.GetWallWidth(wall.transform.GetChild(0).gameObject);// get the width of the wall 
             float wallHeight = (wall.transform.childCount == 0) ? wall.transform.localScale.y : wall.transform.GetChild(0).gameObject.transform.localScale.y;
-
-            int holesNumber = _random.Next(RoomsGenerationData.WindowPerWallMinimumNumber, RoomsGenerationData.WindowPerWallMaximumNumber + 1);
+            int holesNumber;
+            if (remainingWindows >0)
+            {
+                 holesNumber = _random.Next(RoomsGenerationData.WindowPerWallMinimumNumber,
+                    RoomsGenerationData.WindowPerWallMaximumNumber + 1);
+            }
+            else
+            {
+                break;
+            }
 
             GameObject wallSelected = wall;
 
@@ -257,6 +268,8 @@ public class OpeningsGenerator : MonoBehaviour
                    windowComponent.Type = OpeningType.Window;
                     SetOpeningRandomOpeness(window);
                 }
+
+                remainingWindows--;
             }
         }
     }

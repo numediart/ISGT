@@ -6,6 +6,7 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using Data_Classes;
+using UnityEditor;
 using Utils;
 using Random = System.Random;
 
@@ -27,9 +28,10 @@ public class DatabaseGenerator : MonoBehaviour
     private Random _random;
 
     #endregion
-
- public  IEnumerator Start()
+    
+    private void Start()
     {
+        Camera.main.Render();
         string path = Directory.GetCurrentDirectory();
         if (!Directory.Exists(path + "/OpeningsData"))
         {
@@ -37,9 +39,6 @@ public class DatabaseGenerator : MonoBehaviour
         }
 
         _openingsDataFolderPath = path + "/OpeningsData";
-
-        yield return new WaitForSeconds(DatabaseGenerationData.TimeBeforeScreenshotsTakingBeginning);
-
         StartCoroutine(DatabaseGeneration());
     }
 
@@ -55,21 +54,19 @@ public class DatabaseGenerator : MonoBehaviour
         Debug.Log(RoomsGenerator.RoomsDictionary.Count);
         foreach (KeyValuePair<int, Room> room in RoomsGenerator.RoomsDictionary)
         {
-            
-            Debug.Log("Room Key -> " + room.Key);
-            Debug.Log("Room Value -> " + room.Value.RoomObject.name);
             _random = new Random(room.Value.DatabaseSeed);
             _timeBetweenScreenshots = DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot +
                                       DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting +
-                                      RoomsGenerator.GetNumberOfOpenings(room.Value.RoomObject) *
+                                      room.Value.OpeningsGenerator.NumberOfOpenings *
                                       (DatabaseGenerationData.TimeBetweenInitializationAndDataGetting +
                                        DatabaseGenerationData.TimeBetweenVisibilityRatioAndBoundingBox)
                                       + DatabaseGenerationData.TimeMargin;
 
             for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
             {
-                StartCoroutine(TakeScreenshots(room.Value.RoomObject, room.Key, j));
-                yield return new WaitForSeconds(_timeBetweenScreenshots);
+                
+                StartCoroutine(TakeScreenshots(GameObject.Find("Room_"+room.Key), room.Value.Id, room.Key, j));
+                yield return new WaitForSeconds(0.1f);
             }
         }
 
@@ -81,22 +78,26 @@ public class DatabaseGenerator : MonoBehaviour
     /// Takes a screenshot and calls the openings data getting method.
     /// </summary>
     /// <param name="room"></param>
+    /// <param name="roomID"></param>
     /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
     /// <returns></returns>
-    private IEnumerator TakeScreenshots(GameObject room, int roomIndex, int screenshotIndex)
+    private IEnumerator TakeScreenshots(GameObject room, string roomID, int roomIndex, int screenshotIndex)
     {
-        Camera.main.transform.position = RandomCameraPosition(room);
-        Camera.main.transform.rotation = RandomRotation();
-
+        Debug.Log(room.name);
+        Camera camera = Camera.main;
+        camera.transform.position = RandomCameraPosition(room);
+        camera.transform.rotation = RandomRotation();
+        //Camera.main.Render();
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot);
 
         // You need to comment the line below if you want to use the camera stereo mode and take a screenshot with each eye.
-        if( !Directory.Exists("Photographs"))
+        if (!Directory.Exists("Photographs"))
         {
             Directory.CreateDirectory("Photographs");
         }
-        ScreenCapture.CaptureScreenshot($"Photographs/Room_{roomIndex + 1}-P{screenshotIndex + 1}.png",4);
+
+        ScreenCapture.CaptureScreenshot($"Photographs/Room_{roomID}-P{screenshotIndex + 1}.png", 4);
 
         // You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the camera stereo mode.
 /*        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-LL.png", ScreenCapture.StereoScreenCaptureMode.LeftEye);
@@ -107,7 +108,7 @@ public class DatabaseGenerator : MonoBehaviour
 
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting);
 
-        GetOpeningsData(room, roomIndex, screenshotIndex);
+            GetOpeningsData(room, roomIndex, screenshotIndex);
     }
 
     #endregion
@@ -150,11 +151,15 @@ public class DatabaseGenerator : MonoBehaviour
             }
 
             float xComponent = _random.Next(
-                (int)(-choosenGroundScale.x * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
-               (int)(choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+                (int)(-choosenGroundScale.x * scaleMultiplier / 2f +
+                      DatabaseGenerationData.CameraMinimumDistanceFromWall),
+                (int)(choosenGroundScale.x * scaleMultiplier / 2f -
+                      DatabaseGenerationData.CameraMinimumDistanceFromWall));
             float zComponent = _random.Next(
-                (int)(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
-               (int) (choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+                (int)(-choosenGroundScale.z * scaleMultiplier / 2f +
+                      DatabaseGenerationData.CameraMinimumDistanceFromWall),
+                (int)(choosenGroundScale.z * scaleMultiplier / 2f -
+                      DatabaseGenerationData.CameraMinimumDistanceFromWall));
             float yComponent = _random.Next((int)(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling),
                 (int)(ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling));
 
@@ -226,13 +231,17 @@ public class DatabaseGenerator : MonoBehaviour
                 }
 
                 xComponent = _random.Next(
-                    (int)(-choosenGroundScale.x * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
-                    (int)(choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+                    (int)(-choosenGroundScale.x * scaleMultiplier / 2f +
+                          DatabaseGenerationData.CameraMinimumDistanceFromWall),
+                    (int)(choosenGroundScale.x * scaleMultiplier / 2f -
+                          DatabaseGenerationData.CameraMinimumDistanceFromWall));
                 zComponent = _random.Next(
-                    (int)(-choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall),
-                    (int)(choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall));
+                    (int)(-choosenGroundScale.z * scaleMultiplier / 2f +
+                          DatabaseGenerationData.CameraMinimumDistanceFromWall),
+                    (int)(choosenGroundScale.z * scaleMultiplier / 2f -
+                          DatabaseGenerationData.CameraMinimumDistanceFromWall));
                 yComponent = _random.Next((int)DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling,
-                   (int)(ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling));
+                    (int)(ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling));
 
                 nextCameraPosition = choosenGroundPosition + choosenGround.transform.right.normalized * xComponent +
                                      choosenGround.transform.forward.normalized * zComponent +
@@ -303,7 +312,8 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.Dimensions.Add("Width",
                         RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size));
                     float windowThickness =
-                        Mathf.Approximately(RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size), wallObject.GetComponent<BoxCollider>().size.x)
+                        Mathf.Approximately(RoomsGenerator.GetOpeningWidth(wallObject.GetComponent<BoxCollider>().size),
+                            wallObject.GetComponent<BoxCollider>().size.x)
                             ? wallObject.GetComponent<BoxCollider>().size.z
                             : wallObject.GetComponent<BoxCollider>().size.x;
                     openingData.Dimensions.Add("Thickness", windowThickness);
@@ -319,7 +329,7 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpenessDegree;
                     openingData.Type = wallObject.GetComponent<Opening>().Type.ToString();
 
-                    
+
                     openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatioBetter();
                     openingData.BoundingBox = GetOpeningBoundingBox2D(wallObject);
                     openingData.VisibilityBoundingBox = wallObject.GetComponent<Opening>().GetVisibilityBoundingBox();
@@ -498,7 +508,6 @@ public class DatabaseGenerator : MonoBehaviour
         sb.Append(JsonConvert.SerializeObject(
             new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed), Formatting.Indented));
         sb.Append(JsonConvert.SerializeObject(screenshotData, Formatting.Indented));
-        Debug.Log(_openingsDataFolderPath);
         string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
 
 

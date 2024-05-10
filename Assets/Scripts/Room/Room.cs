@@ -33,6 +33,9 @@ using Random = System.Random;
         public int DatabaseSeed => _databaseSeed;
         public string Id => _id;//unique id of the room (use for screenshot data)
         public GameObject RoomObject => _roomObject;
+        public OpeningsGenerator OpeningsGenerator => _openingsGenerator;
+        public ObjectsGenerator ObjectsGenerator => _objectsGenerator;
+        
 
         private void Awake()
         {

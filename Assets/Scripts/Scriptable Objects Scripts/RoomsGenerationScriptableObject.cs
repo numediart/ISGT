@@ -31,4 +31,6 @@ public class RoomsGenerationScriptableObject : ScriptableObject
     public int DoorPerRoomMinimumNumber;
     public int DoorPerRoomMaximumNumber;
     public int DoorPerWallMaximumNumber;
+    public int WindowPerRoomMinimumNumber;
+    public int WindowPerRoomMaximumNumber;
 }

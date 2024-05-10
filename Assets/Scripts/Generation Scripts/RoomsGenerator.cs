@@ -3,25 +3,35 @@ using InternalRealtimeCSG;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using Utils;
+using UnityEditor;
 
-
+[ExecuteInEditMode]
 public class RoomsGenerator : MonoBehaviour
 {
     #region Public Fields
 
-    public static Dictionary<int, Room> RoomsDictionary = new Dictionary<int, Room>();
+    [SerializeField] public static Dictionary<int, Room> RoomsDictionary=new Dictionary<int, Room>();
+    [SerializeField] public List<Room> roomList = new List<Room>();
     public RoomsGenerationScriptableObject RoomsGenerationData;
     public DatabaseGenerator DatabaseGenerator;
     #endregion
 
     #region Private Fields
 
+    private void Awake()
+    {
+        foreach (Room room in roomList)
+        {
+            RoomsDictionary.TryAdd(roomList.IndexOf(room), room);
+        }
+  
+    }
+
     #endregion
 
 
     #region Methods Called By Buttons
-
+    
     /// <summary>
     /// This method calls all the methods building the final rooms without painting on surfaces. 
     /// (Creation of the room shells, then the openings in the walls and finally the objects).
@@ -29,8 +39,6 @@ public class RoomsGenerator : MonoBehaviour
     public void GenerateRooms()
     {
         ClearScene();
-/*        Debug.Log($"Distance between the two eyes : {Camera.main.stereoSeparation * 2f}");*/
-
 
         RoomsGenerationData.MaterialsDictionary.Add("Grounds", RoomsGenerationData.GroundMaterials);
         RoomsGenerationData.MaterialsDictionary.Add("Ceilings", RoomsGenerationData.CeilingMaterials);
@@ -42,6 +50,7 @@ public class RoomsGenerator : MonoBehaviour
             Room room = ScriptableObject.CreateInstance<Room>();
             room.InitRoom(i);
             RoomsDictionary.Add(i, room);
+            roomList.Add(room);
             Debug.Log(RoomsDictionary.Count);
             Debug.Log("Room " + i + " created");
         }
@@ -68,21 +77,19 @@ public class RoomsGenerator : MonoBehaviour
 
         foreach (KeyValuePair<int, Room> room in RoomsDictionary)
         {
-            if (room.Value.RoomObject.Equals(null))
+            if (!room.Value.RoomObject.gameObject.Equals(null))
             {
                 DestroyImmediate(room.Value.RoomObject);
             }
         }
-
+        roomList.Clear();
         RoomsDictionary.Clear();
         RoomsGenerationData.MaterialsDictionary.Clear();
     }
 
     #endregion
-    public void TakeScreenshot()
-    {
-        StartCoroutine(DatabaseGenerator.Start());
-    }
+    [MenuItem("Screenshot/Take screenshot")]
+
     #region Materials Management Methods
 
     /// <summary>
