@@ -17,7 +17,12 @@ public class RoomsGenerator : MonoBehaviour
     #endregion
 
     #region Private Fields
-
+    public bool _manualSeeds;
+    [HideInInspector] [SerializeField] private int _roomSeed;
+    [HideInInspector] [SerializeField] private int _openingSeed;
+    [HideInInspector] [SerializeField] private int _objectSeed;
+    [HideInInspector] [SerializeField] private int _databaseSeed;
+    #endregion
     private void Awake()
     {
         foreach (Room room in roomList)
@@ -26,9 +31,6 @@ public class RoomsGenerator : MonoBehaviour
         }
   
     }
-
-    #endregion
-
 
     #region Methods Called By Buttons
     
@@ -48,6 +50,8 @@ public class RoomsGenerator : MonoBehaviour
         for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
         {
             Room room = ScriptableObject.CreateInstance<Room>();
+            room.ManualSeeds = _manualSeeds;
+            if (_manualSeeds) {room.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);}
             room.InitRoom(i);
             RoomsDictionary.Add(i, room);
             roomList.Add(room);

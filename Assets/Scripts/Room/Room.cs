@@ -16,6 +16,7 @@ using Random = System.Random;
         private Vector3 _position;
         private Quaternion _rotation;
 
+        private bool _manualSeeds;
         private Random _roomRandom;
         private Random _openingRandom;
         private Random _objectRandom;
@@ -27,6 +28,10 @@ using Random = System.Random;
         private SeedsProvider _seedsProvider;
         private int _roomIdx;
         
+        public bool ManualSeeds
+        {
+            set => _manualSeeds = value;
+        }
         public int RoomSeed => _roomSeed;
         public int OpeningSeed => _openingSeed;
         public int ObjectSeed => _objectSeed;
@@ -55,15 +60,23 @@ using Random = System.Random;
         public void InitRoom(int roomIdx)
         {
             _roomIdx = roomIdx;
-            InitSeeds();
+            if (!_manualSeeds) { InitSeeds(); }
             InitEmptyRoom();
             CreateOpenings();
             FillRoomWithObjects();
         }
 
-        
-          
-        
+        public void SetSeeds(int roomSeed, int openingSeed, int objectSeed, int databaseSeed)
+        {
+            _roomSeed = roomSeed;
+            _openingSeed = openingSeed;
+            _objectSeed = objectSeed;
+            _databaseSeed = databaseSeed;
+            _roomRandom = new Random(_roomSeed);
+            _openingRandom = new Random(_openingSeed);
+            _objectRandom = new Random(_objectSeed);
+            _databaseRandom = new Random(_databaseSeed);
+        }
 
         /// <summary>
         /// This method initializes an empty room.
