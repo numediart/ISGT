@@ -147,7 +147,7 @@ MonoBehaviour:
   DistanceBetweenRoomsCenters: 100
   MinimumDistanceBetweenBorders: 0.3
   WindowPerWallMinimumNumber: 0
-  WindowPerWallMaximumNumber: 4
+  WindowPerWallMaximumNumber: 2
   DoorPerRoomMinimumNumber: 1
   DoorPerRoomMaximumNumber: 2
   DoorPerWallMaximumNumber: 1
