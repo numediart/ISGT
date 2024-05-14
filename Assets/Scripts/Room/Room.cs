@@ -6,7 +6,7 @@ using Random = System.Random;
     /// <summary>
     /// Class that represents a room in the VISG project.
     /// </summary>
-    public class Room : ScriptableObject
+    public class Room : MonoBehaviour
     {
         OpeningsGenerator _openingsGenerator;
         ObjectsGenerator _objectsGenerator;
@@ -21,11 +21,14 @@ using Random = System.Random;
         private Random _openingRandom;
         private Random _objectRandom;
         private Random _databaseRandom;
-        private int _roomSeed;
-        private int _openingSeed;
-        private int _objectSeed;
-        private int _databaseSeed;
+
+        [SerializeField] private int _roomSeed;
+        [SerializeField] private int _openingSeed;
+        [SerializeField] private int _objectSeed;
+        [SerializeField] private int _databaseSeed;
+        
         private SeedsProvider _seedsProvider;
+        
         private int _roomIdx;
         
         public bool ManualSeeds
@@ -40,34 +43,60 @@ using Random = System.Random;
         public GameObject RoomObject => _roomObject;
         public OpeningsGenerator OpeningsGenerator => _openingsGenerator;
         public ObjectsGenerator ObjectsGenerator => _objectsGenerator;
-        
+
 
         private void Awake()
         {
             GameObject generatorsContainer = GameObject.Find("GeneratorsContainer");
-            roomGenerationData=  generatorsContainer.GetComponent<GeneratorsContainer>().RoomsGenerator.RoomsGenerationData;
-            _openingsGenerator= generatorsContainer.GetComponent<GeneratorsContainer>().OpeningsGenerator;
             _objectsGenerator= generatorsContainer.GetComponent<GeneratorsContainer>().ObjectsGenerator;
-            _seedsProvider = new SeedsProvider();
-            _id = Guid.NewGuid().ToString();
+            _objectRandom = new Random(_objectSeed);
         }
 
+        public Room Copy(Room other)
+        {
+            other._roomSeed = _roomSeed;
+            other._openingSeed = _openingSeed;
+            other._objectSeed = _objectSeed;
+            other._databaseSeed = _databaseSeed;
+            other._roomRandom = new Random(_roomSeed);
+            other._openingRandom = new Random(_openingSeed);
+            other._objectRandom = new Random(_objectSeed);
+            other._databaseRandom = new Random(_databaseSeed);
+            
+            other._id = _id;
+            other._roomObject = _roomObject;
+            other._position = _position;
+            
+            other._rotation = _rotation;
+            other._roomIdx = _roomIdx;
+            other._seedsProvider = _seedsProvider;
+            other._openingsGenerator = _openingsGenerator;
+            other._objectsGenerator = _objectsGenerator;
+            other.roomGenerationData = roomGenerationData;
+            return other;
+        } 
         /// <summary>
         /// init method of the Room class.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="roomGenerationData"></param>
+        /// <param name="roomIdx"></param>
+
         public void InitRoom(int roomIdx)
         {
+            GameObject generatorsContainer = GameObject.Find("GeneratorsContainer");
+            roomGenerationData=  generatorsContainer.GetComponent<GeneratorsContainer>().RoomsGenerator.RoomsGenerationData;
+            _openingsGenerator= generatorsContainer.GetComponent<GeneratorsContainer>().OpeningsGenerator;
+            _seedsProvider = new SeedsProvider();
+            _id = Guid.NewGuid().ToString();
             _roomIdx = roomIdx;
             if (!_manualSeeds) { InitSeeds(); }
             InitEmptyRoom();
             CreateOpenings();
-            FillRoomWithObjects();
+            // FillRoomWithObjects();// fill the room with objects (runtime)
         }
 
         public void SetSeeds(int roomSeed, int openingSeed, int objectSeed, int databaseSeed)
         {
+            _manualSeeds = true;
             _roomSeed = roomSeed;
             _openingSeed = openingSeed;
             _objectSeed = objectSeed;
@@ -81,7 +110,6 @@ using Random = System.Random;
         /// <summary>
         /// This method initializes an empty room.
         /// </summary>
-        /// <param name="roomGenerationData"></param>
         private void InitEmptyRoom()
         {
             
@@ -101,9 +129,9 @@ using Random = System.Random;
         /// <summary>
         /// This method fills the room with objects.
         /// </summary>
-        private void FillRoomWithObjects()
+        public void FillRoomWithObjects()
         {
-            _objectsGenerator.ObjectsGeneration(_roomObject, _objectRandom);
+            _objectsGenerator.ObjectsGeneration(gameObject, _objectRandom);
         }
 
         /// <summary>
