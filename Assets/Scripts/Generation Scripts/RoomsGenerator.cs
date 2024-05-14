@@ -11,7 +11,7 @@ public class RoomsGenerator : MonoBehaviour
     #region Public Fields
 
     [SerializeField] public static Dictionary<int, Room> RoomsDictionary=new Dictionary<int, Room>();
-    [SerializeField] public List<Room> roomList = new List<Room>();
+    [SerializeField] public List<GameObject> roomList = new List<GameObject>();
     public RoomsGenerationScriptableObject RoomsGenerationData;
     public DatabaseGenerator DatabaseGenerator;
     #endregion
@@ -25,9 +25,13 @@ public class RoomsGenerator : MonoBehaviour
     #endregion
     private void Awake()
     {
-        foreach (Room room in roomList)
+        foreach (GameObject roomObject in roomList)
         {
-            RoomsDictionary.TryAdd(roomList.IndexOf(room), room);
+            Room room = roomObject.GetComponent<Room>();
+            Debug.Log("Room Id " + room.Id + " created");
+            room.FillRoomWithObjects();
+            RoomsDictionary.TryAdd(roomList.IndexOf(roomObject), room);
+            
         }
   
     }
@@ -49,14 +53,17 @@ public class RoomsGenerator : MonoBehaviour
 
         for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
         {
-            Room room = ScriptableObject.CreateInstance<Room>();
-            room.ManualSeeds = _manualSeeds;
-            if (_manualSeeds) {room.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);}
-            room.InitRoom(i);
+            GameObject go = new GameObject();
+            Room ro = go.AddComponent<Room>();
+            if (_manualSeeds) {ro.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);}
+            ro.InitRoom(i);
+            ro.RoomObject.AddComponent<Room>();
+            ro.ManualSeeds = _manualSeeds;
+            Room room = ro.Copy(ro.RoomObject.GetComponent<Room>());
+            room = ro.RoomObject.GetComponent<Room>();
             RoomsDictionary.Add(i, room);
-            roomList.Add(room);
-            Debug.Log(RoomsDictionary.Count);
-            Debug.Log("Room " + i + " created");
+            roomList.Add(room.gameObject);
+            DestroyImmediate(go);
         }
     }
 
@@ -81,7 +88,7 @@ public class RoomsGenerator : MonoBehaviour
 
         foreach (KeyValuePair<int, Room> room in RoomsDictionary)
         {
-            if (!room.Value.RoomObject.gameObject.Equals(null))
+            if (room.Value.RoomObject)
             {
                 DestroyImmediate(room.Value.RoomObject);
             }
