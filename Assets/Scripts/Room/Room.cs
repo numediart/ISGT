@@ -39,6 +39,8 @@ using Random = System.Random;
         public int OpeningSeed => _openingSeed;
         public int ObjectSeed => _objectSeed;
         public int DatabaseSeed => _databaseSeed;
+        
+        public Random DatabaseRandom => _databaseRandom;
         public string Id => _id;//unique id of the room (use for screenshot data)
         public GameObject RoomObject => _roomObject;
         public OpeningsGenerator OpeningsGenerator => _openingsGenerator;
@@ -49,7 +51,12 @@ using Random = System.Random;
         {
             GameObject generatorsContainer = GameObject.Find("GeneratorsContainer");
             _objectsGenerator= generatorsContainer.GetComponent<GeneratorsContainer>().ObjectsGenerator;
+            _openingsGenerator= generatorsContainer.GetComponent<GeneratorsContainer>().OpeningsGenerator;
+            roomGenerationData=  generatorsContainer.GetComponent<GeneratorsContainer>().RoomsGenerator.RoomsGenerationData;
             _objectRandom = new Random(_objectSeed);
+            _databaseRandom = new Random(_databaseSeed);
+            _roomRandom = new Random(_roomSeed);
+            _openingRandom = new Random(_openingSeed);
         }
 
         public Room Copy(Room other)
@@ -72,6 +79,7 @@ using Random = System.Random;
             other._seedsProvider = _seedsProvider;
             other._openingsGenerator = _openingsGenerator;
             other._objectsGenerator = _objectsGenerator;
+            other._databaseSeed = _databaseSeed;
             other.roomGenerationData = roomGenerationData;
             return other;
         } 

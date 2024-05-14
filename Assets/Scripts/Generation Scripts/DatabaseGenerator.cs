@@ -51,10 +51,9 @@ public class DatabaseGenerator : MonoBehaviour
     private IEnumerator DatabaseGeneration()
     {
         //GeneratorsContainer.RoomsGenerator.GenerateRooms();
-        Debug.Log(RoomsGenerator.RoomsDictionary.Count);
         foreach (KeyValuePair<int, Room> room in RoomsGenerator.RoomsDictionary)
         {
-            _random = new Random(room.Value.DatabaseSeed);
+            _random = room.Value.DatabaseRandom;
             _timeBetweenScreenshots = DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot +
                                       DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting +
                                       room.Value.OpeningsGenerator.NumberOfOpenings *
