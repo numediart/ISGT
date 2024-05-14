@@ -143,7 +143,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: e1720919dd9da9f41ab6bb23a1164677, type: 2}
   DoorMaterials:
   - {fileID: 2100000, guid: 73367a24c6af00c4fa45e70e9faf65dd, type: 2}
-  NumberOfEmptyRoomsOnScene: 1
+  NumberOfEmptyRoomsOnScene: 2
   DistanceBetweenRoomsCenters: 100
   MinimumDistanceBetweenBorders: 0.3
   WindowPerWallMinimumNumber: 0

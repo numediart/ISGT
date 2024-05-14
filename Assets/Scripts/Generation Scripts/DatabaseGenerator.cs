@@ -513,16 +513,25 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="screenshotIndex"></param>
     private void StoreData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
     {
-        StringBuilder sb = new StringBuilder();
         Room room = RoomsGenerator.RoomsDictionary[roomIndex];
-        sb.Append(JsonConvert.SerializeObject(
-            new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed), Formatting.Indented));
-        sb.Append(JsonConvert.SerializeObject(screenshotData, Formatting.Indented));
+        CombinedData combinedData = new CombinedData
+        {
+            SeedsData = new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed),
+            ScreenshotData = screenshotData
+        };
+    
+        string json = JsonConvert.SerializeObject(combinedData, Formatting.Indented);
+    
         string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
-
-
-        File.WriteAllText(path, sb.ToString());
+        File.WriteAllText(path, json);
     }
+
+    public class CombinedData
+    {
+        public SeedsData SeedsData { get; set; }
+        public ScreenshotData ScreenshotData { get; set; }
+    }
+
 
     #endregion
 }
