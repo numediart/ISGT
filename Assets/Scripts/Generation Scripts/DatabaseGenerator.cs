@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Data_Classes;
 using UnityEditor;
@@ -17,15 +18,17 @@ public class DatabaseGenerator : MonoBehaviour
     public ObjectsGenerationScriptableObject ObjectsGenerationData;
     public DatabaseGenerationScriptableObject DatabaseGenerationData;
     public GeneratorsContainer GeneratorsContainer;
-
+    public bool manualScreenShots;
     #endregion
 
     #region Private Fields
 
     private float _timeBetweenScreenshots;
     private string _openingsDataFolderPath;
-
     private Random _random;
+    [SerializeField] [HideInInspector] private List<Vector3> _cameraPositions;
+    [SerializeField] [HideInInspector] private List<Vector3> _cameraRotations;
+    private int _cameraIndex = 0;
 
     #endregion
     
@@ -50,27 +53,34 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private IEnumerator DatabaseGeneration()
     {
-        //GeneratorsContainer.RoomsGenerator.GenerateRooms();
-        foreach (KeyValuePair<int, Room> room in RoomsGenerator.RoomsDictionary)
+        if (manualScreenShots)
         {
-            _random = room.Value.DatabaseRandom;
-            _timeBetweenScreenshots = DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot +
-                                      DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting +
-                                      room.Value.OpeningsGenerator.NumberOfOpenings *
-                                      (DatabaseGenerationData.TimeBetweenInitializationAndDataGetting +
-                                       DatabaseGenerationData.TimeBetweenVisibilityRatioAndBoundingBox)
-                                      + DatabaseGenerationData.TimeMargin;
-
-            for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
+            //Iterate over cam positions and rotations
+            for (int i = 0; i < _cameraPositions.Count; i++)
             {
-                
-                StartCoroutine(TakeScreenshots(GameObject.Find("Room_"+room.Key), room.Value.Id, room.Key, j));
+                Debug.Log("Taking screenshot " + i);
+                KeyValuePair<int, Room> room = RoomsGenerator.RoomsDictionary.ElementAt(0);
+                StartCoroutine(TakeScreenshots(GameObject.Find("Room_" + room.Key), room.Value.Id, room.Key, i));
                 yield return new WaitForSeconds(0.1f);
             }
         }
+        else
+        {
+            //GeneratorsContainer.RoomsGenerator.GenerateRooms();
+            foreach (KeyValuePair<int, Room> room in RoomsGenerator.RoomsDictionary)
+            {
+                _random = room.Value.DatabaseRandom;
+                for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
+                {
+                
+                    StartCoroutine(TakeScreenshots(GameObject.Find("Room_"+room.Key), room.Value.Id, room.Key, j));
+                    yield return new WaitForSeconds(0.1f);
+                }
+            }
 
-        Camera.main.transform.position = new Vector3(0, 100, 0);
-        Camera.main.transform.rotation = Quaternion.identity;
+            Camera.main.transform.position = new Vector3(0, 100, 0);
+            Camera.main.transform.rotation = Quaternion.identity;
+        }
     }
 
     /// <summary>
@@ -83,10 +93,11 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private IEnumerator TakeScreenshots(GameObject room, string roomID, int roomIndex, int screenshotIndex)
     {
-        Debug.Log(room.name);
         Camera camera = Camera.main;
-        camera.transform.position = RandomCameraPosition(room);
-        camera.transform.rotation = RandomRotation();
+        
+        camera.transform.position = manualScreenShots ? _cameraPositions[_cameraIndex] : RandomCameraPosition(room);
+        camera.transform.rotation = manualScreenShots ? Quaternion.Euler(_cameraRotations[_cameraIndex]) : RandomRotation();
+        _cameraIndex++;
         //Camera.main.Render();
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot);
 

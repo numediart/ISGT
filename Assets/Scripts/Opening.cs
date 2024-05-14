@@ -58,7 +58,6 @@ public class Opening : MonoBehaviour
                 
                 Vector3 positionOffset = transform.right * x + transform.up * y;
                 Vector3 aimPoint = transform.position + positionOffset;
-                Debug.Log("Aim point: " + aimPoint + " is visible: " + IsPointVisible(aimPoint) + " is on screen: " + IsPointOnScreen(aimPoint));
                 if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
                     visibilityRatio += 0.01f;
                 
