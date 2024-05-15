@@ -88,7 +88,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// Takes a screenshot and calls the openings data getting method.
     /// </summary>
     /// <param name="room"></param>
-    /// <param name="roomID"></param>
+    /// <param name="roomID"></param>  
     /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
     /// <returns></returns>
@@ -109,8 +109,17 @@ public class DatabaseGenerator : MonoBehaviour
             Directory.CreateDirectory("Photographs");
         }
 
-        ScreenCapture.CaptureScreenshot($"Photographs/Room_{roomID}-P{screenshotIndex + 1}.png", 4);
+        if (!Directory.Exists("Photographs/Room-" + roomID))
+        {
+            Debug.Log("Creating directory Room-" + roomID + " for photographs.");
+            Directory.CreateDirectory("Photographs/Room-" + roomID);
+            Debug.Log("Directory created.");
+        }
 
+       Debug.Log("Taking screenshot " + screenshotIndex);
+            ScreenCapture.CaptureScreenshot(
+                $"Photographs/Room-{roomID}/{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}.png", 4);
+      
         // You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the camera stereo mode.
 /*        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-LL.png", ScreenCapture.StereoScreenCaptureMode.LeftEye);
 
