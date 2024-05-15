@@ -10,6 +10,7 @@ public class DatabaseGenerationScriptableObject : ScriptableObject
     [HideInInspector] public float TimeBetweenScreenshotAndDataGetting = 0.001f;
     [HideInInspector] public float TimeBetweenInitializationAndDataGetting = 0.002f;
     [HideInInspector] public float TimeBetweenVisibilityRatioAndBoundingBox = 0.002f;
+    [HideInInspector] public float TimeBetweenScreenshotsInManualMode = 0.25f;
     [HideInInspector] public float TimeMargin = 0.2f;
 
     [Header("Camera placement requirements")]

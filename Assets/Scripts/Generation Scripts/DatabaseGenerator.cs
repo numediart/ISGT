@@ -62,7 +62,7 @@ public class DatabaseGenerator : MonoBehaviour
                 Debug.Log("Taking screenshot " + i);
                 KeyValuePair<int, Room> room = RoomsGenerator.RoomsDictionary.ElementAt(0);
                 StartCoroutine(TakeScreenshots(GameObject.Find("Room_" + room.Key), room.Value.Id, room.Key, i));
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotsInManualMode);
             }
         }
         else
@@ -119,7 +119,6 @@ public class DatabaseGenerator : MonoBehaviour
         ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-RL.png", ScreenCapture.StereoScreenCaptureMode.RightEye);*/
 
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting);
-
         GetOpeningsData(room, roomIndex, screenshotIndex);
     }
 
