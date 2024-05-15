@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Data_Classes;
 using UnityEditor;
@@ -31,7 +32,7 @@ public class DatabaseGenerator : MonoBehaviour
     private int _cameraIndex = 0;
 
     #endregion
-    
+
     private void Start()
     {
         Camera.main.Render();
@@ -74,7 +75,7 @@ public class DatabaseGenerator : MonoBehaviour
                 {
                 
                     StartCoroutine(TakeScreenshots(GameObject.Find("Room_"+room.Key), room.Value.Id, room.Key, j));
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.25f);
                 }
             }
 
@@ -94,12 +95,13 @@ public class DatabaseGenerator : MonoBehaviour
     private IEnumerator TakeScreenshots(GameObject room, string roomID, int roomIndex, int screenshotIndex)
     {
         Camera camera = Camera.main;
-        
+        Transform currentCameraTransform = camera.transform;
         camera.transform.position = manualScreenShots ? _cameraPositions[_cameraIndex] : RandomCameraPosition(room);
         camera.transform.rotation = manualScreenShots ? Quaternion.Euler(_cameraRotations[_cameraIndex]) : RandomRotation();
         _cameraIndex++;
         //Camera.main.Render();
-        yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenCameraPlacementAndScreenshot);
+        Debug.Log("Camera position: " + camera.transform.position);
+        yield return new WaitWhile(() => !currentCameraTransform.position.Equals(camera.transform.position));
 
         // You need to comment the line below if you want to use the camera stereo mode and take a screenshot with each eye.
         if (!Directory.Exists("Photographs"))
@@ -118,7 +120,7 @@ public class DatabaseGenerator : MonoBehaviour
 
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting);
 
-            GetOpeningsData(room, roomIndex, screenshotIndex);
+        GetOpeningsData(room, roomIndex, screenshotIndex);
     }
 
     #endregion
@@ -130,141 +132,95 @@ public class DatabaseGenerator : MonoBehaviour
     /// </summary>
     /// <param name="room"></param>
     /// <returns></returns>
-    private Vector3 RandomCameraPosition(GameObject room)
+   private Vector3 RandomCameraPosition(GameObject room)
+{
+    GameObject grounds = RoomsGenerator.GetRoomCategory(room, RoomCategory.Grounds);
+    GameObject walls = RoomsGenerator.GetRoomCategory(room, RoomCategory.Walls);
+    float ceilingHeight = walls.transform.GetChild(0).transform.localScale.y;
+    Vector3 nextCameraPosition;
+
+    try
     {
-        GameObject grounds = RoomsGenerator.GetRoomCategory(room, RoomCategory.Grounds);
-        GameObject walls = RoomsGenerator.GetRoomCategory(room, RoomCategory.Walls);
-        float ceilingHeight = walls.transform.GetChild(0).transform.localScale.y;
-        Vector3 nextCameraPosition;
+        GameObject choosenGround = grounds.transform.GetChild(_random.Next(0, grounds.transform.childCount)).gameObject;
 
-        try
+        float scaleMultiplier = (choosenGround.transform.childCount > 0) ? 1f : 10f;
+
+        Transform groundTransform = choosenGround.transform;
+        MeshCollider meshCollider = null;
+
+        if (choosenGround.transform.childCount > 0)
         {
-            GameObject choosenGround =
-                grounds.transform.GetChild(_random.Next(0, grounds.transform.childCount)).gameObject;
+            meshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(choosenGround).GetComponent<MeshCollider>();
+        }
 
-            float scaleMultiplier = (choosenGround.transform.childCount > 0) ? 1f : 10f;
+        Vector3 choosenGroundPosition = meshCollider != null ? meshCollider.bounds.center : groundTransform.position;
+        Vector3 choosenGroundScale = meshCollider != null ? meshCollider.bounds.size : groundTransform.localScale;
 
-            Vector3 choosenGroundPosition = Vector3.negativeInfinity;
-            Vector3 choosenGroundScale = Vector3.negativeInfinity;
+        bool positionSet = false;
 
-            if (choosenGround.transform.childCount == 0)
+        do
+        {
+            positionSet = true;
+
+            // Generate a random position within the ground area
+            float xComponent = NextDouble(_random,
+                -choosenGroundScale.x * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
+                choosenGroundScale.x * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
+            float zComponent = NextDouble(_random,
+                -choosenGroundScale.z * scaleMultiplier / 2f + DatabaseGenerationData.CameraMinimumDistanceFromWall,
+                choosenGroundScale.z * scaleMultiplier / 2f - DatabaseGenerationData.CameraMinimumDistanceFromWall);
+            float yComponent = NextDouble(_random,DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling,
+                ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling);
+
+            nextCameraPosition = choosenGroundPosition + groundTransform.right * xComponent + groundTransform.forward * zComponent + groundTransform.up * yComponent;
+
+            Collider[] colliders = Physics.OverlapSphere(nextCameraPosition, DatabaseGenerationData.CameraMinimumDistanceFromWall);
+            foreach (Collider collider in colliders)
             {
-                choosenGroundPosition = choosenGround.transform.position;
-                choosenGroundScale = choosenGround.transform.localScale;
-            }
-            else
-            {
-                GameObject meshCollider = RoomsGenerator.GetBrushesFirstMeshCollider(choosenGround);
-
-                choosenGroundPosition = meshCollider.GetComponent<MeshCollider>().bounds.center;
-                choosenGroundScale = meshCollider.GetComponent<MeshCollider>().bounds.size;
-            }
-
-            float xComponent = _random.Next(
-                (int)(-choosenGroundScale.x * scaleMultiplier / 2f +
-                      DatabaseGenerationData.CameraMinimumDistanceFromWall),
-                (int)(choosenGroundScale.x * scaleMultiplier / 2f -
-                      DatabaseGenerationData.CameraMinimumDistanceFromWall));
-            float zComponent = _random.Next(
-                (int)(-choosenGroundScale.z * scaleMultiplier / 2f +
-                      DatabaseGenerationData.CameraMinimumDistanceFromWall),
-                (int)(choosenGroundScale.z * scaleMultiplier / 2f -
-                      DatabaseGenerationData.CameraMinimumDistanceFromWall));
-            float yComponent = _random.Next((int)(DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling),
-                (int)(ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling));
-
-            nextCameraPosition = choosenGroundPosition + choosenGround.transform.right.normalized * xComponent +
-                                 choosenGround.transform.forward.normalized * zComponent +
-                                 choosenGround.transform.up.normalized * yComponent;
-
-            bool positionSet = false;
-
-            while (!positionSet)
-            {
-                RaycastHit hit;
-                positionSet = true;
-
-                if (!Physics.Raycast(nextCameraPosition, Vector3.down, out hit, float.MaxValue))
-                    positionSet = false;
-                else
+                if (collider.gameObject.layer == 0)
                 {
-                    GameObject go = new GameObject();
-
-                    for (float xAngle = -90f; xAngle < 90f; xAngle += 45f)
-                    {
-                        go.transform.rotation = Quaternion.identity;
-                        go.transform.Rotate(go.transform.right, xAngle);
-
-                        for (float yAngle = 0; yAngle < 360f; yAngle += 10f)
-                        {
-                            go.transform.Rotate(go.transform.up, yAngle);
-
-                            if (Physics.Raycast(nextCameraPosition, go.transform.forward.normalized, out hit,
-                                    float.MaxValue))
-                            {
-                                if (hit.collider.gameObject.layer == 0 &&
-                                    hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromWall)
-                                {
-                                    positionSet = false;
-                                    nextCameraPosition -= go.transform.forward.normalized *
-                                                          DatabaseGenerationData.CameraMinimumDistanceFromWall;
-                                    break;
-                                }
-                                else if (hit.collider.gameObject.layer == ObjectsGenerationData.ObjectsLayerIndex &&
-                                         hit.distance < DatabaseGenerationData.CameraMinimumDistanceFromObjects)
-                                {
-                                    positionSet = false;
-                                    nextCameraPosition += (Camera.main.transform.position - hit.point).normalized *
-                                                          DatabaseGenerationData.CameraMinimumDistanceFromObjects;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (!positionSet)
-                            break;
-                    }
-
-                    DestroyImmediate(go);
-
-                    if (!positionSet)
-                        continue;
-                    else
-                        positionSet =
-                            (!GeneratorsContainer.ObjectsGenerator.IsCameraInsideAnObject(room, nextCameraPosition) &&
-                             !RoomsGenerator.IsCameraInsideAWall(room, nextCameraPosition))
-                                ? true
-                                : false;
-
-                    if (positionSet)
-                        break;
+                    positionSet = false;
+                    break;
                 }
-
-                xComponent = _random.Next(
-                    (int)(-choosenGroundScale.x * scaleMultiplier / 2f +
-                          DatabaseGenerationData.CameraMinimumDistanceFromWall),
-                    (int)(choosenGroundScale.x * scaleMultiplier / 2f -
-                          DatabaseGenerationData.CameraMinimumDistanceFromWall));
-                zComponent = _random.Next(
-                    (int)(-choosenGroundScale.z * scaleMultiplier / 2f +
-                          DatabaseGenerationData.CameraMinimumDistanceFromWall),
-                    (int)(choosenGroundScale.z * scaleMultiplier / 2f -
-                          DatabaseGenerationData.CameraMinimumDistanceFromWall));
-                yComponent = _random.Next((int)DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling,
-                    (int)(ceilingHeight - DatabaseGenerationData.CameraMinimumDistanceFromGroundAndCeiling));
-
-                nextCameraPosition = choosenGroundPosition + choosenGround.transform.right.normalized * xComponent +
-                                     choosenGround.transform.forward.normalized * zComponent +
-                                     choosenGround.transform.up.normalized * yComponent;
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("Error - Grounds child object not found or empty :\n" + ex);
-            nextCameraPosition = Vector3.negativeInfinity;
-        }
 
-        return nextCameraPosition;
+            if (!positionSet)
+            {
+                continue;
+            }
+
+            colliders = Physics.OverlapSphere(nextCameraPosition, DatabaseGenerationData.CameraMinimumDistanceFromObjects);
+            foreach (Collider collider in colliders)
+            {
+                if (collider.gameObject.layer == ObjectsGenerationData.ObjectsLayerIndex)
+                {
+                    positionSet = false;
+                    nextCameraPosition += (Camera.main.transform.position - collider.ClosestPoint(nextCameraPosition)).normalized * DatabaseGenerationData.CameraMinimumDistanceFromObjects;
+                    break;
+                }
+            }
+
+            if (positionSet)
+            {
+                positionSet = !GeneratorsContainer.ObjectsGenerator.IsCameraInsideAnObject(room, nextCameraPosition) &&
+                              !RoomsGenerator.IsCameraInsideAWall(room, nextCameraPosition);
+            }
+        } while (!positionSet);
+
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError("Error - Grounds child object not found or empty :\n" + ex);
+        nextCameraPosition = Vector3.negativeInfinity;
+    }
+
+    return nextCameraPosition;
+}
+
+
+    public float NextDouble(Random random, float minValue, float maxValue)
+    {
+        return (float)(random.NextDouble() * (maxValue - minValue) + minValue);
     }
 
     /// <summary>

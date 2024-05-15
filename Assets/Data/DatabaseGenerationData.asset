@@ -20,7 +20,7 @@ MonoBehaviour:
   TimeBetweenVisibilityRatioAndBoundingBox: 0.02
   TimeMargin: 0.2
   CameraMinimumDistanceFromWall: 1
-  CameraMinimumDistanceFromGroundAndCieling: 0.3
+  CameraMinimumDistanceFromGroundAndCeiling: 0
   CameraMinimumDistanceFromObjects: 0.5
   MaximumCameraXRotation: 45
   MaximumCameraYRotation: 180

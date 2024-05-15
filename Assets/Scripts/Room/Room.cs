@@ -11,7 +11,7 @@ using Random = System.Random;
         OpeningsGenerator _openingsGenerator;
         ObjectsGenerator _objectsGenerator;
         private RoomsGenerationScriptableObject roomGenerationData;
-        private string _id;//unique id of the room (use for screenshot data)
+        [SerializeField] private string _id;//unique id of the room (use for screenshot data)
         private GameObject _roomObject; //
         private Vector3 _position;
         private Quaternion _rotation;
@@ -57,6 +57,7 @@ using Random = System.Random;
             _databaseRandom = new Random(_databaseSeed);
             _roomRandom = new Random(_roomSeed);
             _openingRandom = new Random(_openingSeed);
+            _roomObject = gameObject;
         }
 
         public Room Copy(Room other)
@@ -139,7 +140,7 @@ using Random = System.Random;
         /// </summary>
         public void FillRoomWithObjects()
         {
-            _objectsGenerator.ObjectsGeneration(gameObject, _objectRandom);
+            _objectsGenerator.ObjectsGeneration(_roomObject, _objectRandom);
         }
 
         /// <summary>

@@ -357,11 +357,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb746feb84cc1c743b81df808abf9fa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomList:
-  - {fileID: 0}
+  roomList: []
   RoomsGenerationData: {fileID: 11400000, guid: 4c1f468e5f7bbfa40afb0c89f2d9e265, type: 2}
   DatabaseGenerator: {fileID: 833751232}
-  _manualSeeds: 1
+  _manualSeeds: 0
   _roomSeed: -415320272
   _openingSeed: 676370186
   _objectSeed: 1899863720
