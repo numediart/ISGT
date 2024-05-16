@@ -294,10 +294,8 @@ public class DatabaseGenerator : MonoBehaviour
 
                     openingData.DistanceToCamera =
                         (wallObject.transform.position - Camera.main.transform.position).magnitude;
-
-                    // Find the rotation quaternion from the camera to the opening. If you multiply the camera rotation by this quaternion, it will "look" at the opening.
-                    openingData.RotationQuaternionFromCamera = (Quaternion.Inverse(Camera.main.transform.rotation) *
-                                                                wallObject.transform.rotation);
+                    
+                    openingData.RotationQuaternionFromCamera = Quaternion.LookRotation(wallObject.transform.position - Camera.main.transform.position);
 
 
                     openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpenessDegree;
