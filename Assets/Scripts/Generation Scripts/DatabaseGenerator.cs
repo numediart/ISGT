@@ -453,23 +453,6 @@ public class DatabaseGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Stores the openings data corresponding to the screenshot identified with roomIndex and screenshotIndex in a JSON file in a specific folder.
-    /// </summary>
-    /// <param name="screenshotData"></param>
-    /// <param name="roomIndex"></param>
-    /// <param name="screenshotIndex"></param>
-    private void StoreOpeningsData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
-    {
-        StringBuilder sb = new StringBuilder();
-
-        string JSONresult = JsonConvert.SerializeObject(screenshotData, Formatting.Indented);
-
-        string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
-
-        File.WriteAllText(path, JSONresult);
-    }
-
-    /// <summary>
     ///  Stores the openings data corresponding to the screenshot identified with roomIndex and screenshotIndex in a JSON file in a specific folder. And Store the seed used to generate the room where the opening is placed, the seed used to generate the door object, the seed used to generate the window object and the seed used to generate the database.
     /// 
     /// </summary>
@@ -484,11 +467,17 @@ public class DatabaseGenerator : MonoBehaviour
             SeedsData = new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed),
             ScreenshotData = screenshotData
         };
-    
+
         string json = JsonConvert.SerializeObject(combinedData, Formatting.Indented);
-    
-        string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
-        File.WriteAllText(path, json);
+
+        string directoryPath = Path.Combine(_openingsDataFolderPath, $"Room-{room.Id}");
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        string filePath = Path.Combine(directoryPath, $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}.json");
+        File.WriteAllText(filePath, json);
     }
 
     public class CombinedData

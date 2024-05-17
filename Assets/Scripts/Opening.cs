@@ -77,7 +77,7 @@ public class Opening : MonoBehaviour
                 Vector3 aimPoint = transform.position + positionOffset;
                 if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
                 {
-                    _visibilityRatio += 0.01f;
+                    _visibilityRatio += 1 / _numberOfPoints;
                     
                     // Determine the corners of the bounding box
                     Vector3 screenPoint = Camera.main.WorldToScreenPoint(aimPoint);
@@ -89,7 +89,6 @@ public class Opening : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Count: " + count);
         // Return the bounding box (origin is the bottom left corner)
         return new BoundingBox2D(new Vector2Int(minX, minY), maxX - minX, maxY - minY);
     }
