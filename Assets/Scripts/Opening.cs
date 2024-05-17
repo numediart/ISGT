@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-
 public class Opening : MonoBehaviour
 {
     #region Public Fields
@@ -10,7 +9,7 @@ public class Opening : MonoBehaviour
     public MeansOfOpening MeansOfOpening;
     public OpeningDirection OpeningDirection;
     public GameObject MovingPart;
-
+    
 
     #endregion
 
@@ -19,6 +18,7 @@ public class Opening : MonoBehaviour
     private float _visibilityRatio;
     private float _width;
     private float _height;
+    private static float _numberOfPoints = 100f;
     #endregion
     
 
@@ -45,27 +45,12 @@ public class Opening : MonoBehaviour
 
     #endregion
 
-    public float GetVisibilityRatioBetter()
+    public float GetVisibilityRatio()
     {
-        _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
-        _height = gameObject.GetComponent<BoxCollider>().size.y;
-        float visibilityRatio = 0f;
-        // Get 100 aim points in the opening
-        for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
-        {
-            for (float y = -_height / 2f + _height / 20f; y <= _height / 2f; y += _height / 10f)
-            {
-                
-                Vector3 positionOffset = transform.right * x + transform.up * y;
-                Vector3 aimPoint = transform.position + positionOffset;
-                if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
-                    visibilityRatio += 0.01f;
-                
-            }
-        }
-        return visibilityRatio;
+        return _visibilityRatio;
     }
-
+    
+    //This also calculates the visibility ratio in advance
     public BoundingBox2D GetVisibilityBoundingBox()
     {
         _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
@@ -74,7 +59,7 @@ public class Opening : MonoBehaviour
         int maxX = -1;
         int minY = Screen.height + 1;
         int maxY = -1;
-        
+        _visibilityRatio = 0f;
         // Get 100 aim points in the opening
         for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
         {
@@ -84,6 +69,8 @@ public class Opening : MonoBehaviour
                 Vector3 aimPoint = transform.position + positionOffset;
                 if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
                 {
+                    _visibilityRatio += 0.01f;
+                    
                     // Determine the corners of the bounding box
                     Vector3 screenPoint = Camera.main.WorldToScreenPoint(aimPoint);
                     minX = (int)Mathf.Min(minX, screenPoint.x);
@@ -94,7 +81,6 @@ public class Opening : MonoBehaviour
                 }
             }
         }
-        
         // Return the bounding box (origin is the bottom left corner)
         return new BoundingBox2D(new Vector2Int(minX, minY), maxX - minX, maxY - minY);
     }

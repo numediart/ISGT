@@ -300,11 +300,14 @@ public class DatabaseGenerator : MonoBehaviour
 
                     openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpenessDegree;
                     openingData.Type = wallObject.GetComponent<Opening>().Type.ToString();
-
-
-                    openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatioBetter();
+                    
+                    
                     openingData.BoundingBox = GetOpeningBoundingBox2D(wallObject);
+                    
+                    //Make sure to calculate the bounding box first before the visibility ratio
                     openingData.VisibilityBoundingBox = wallObject.GetComponent<Opening>().GetVisibilityBoundingBox();
+                    openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatio();
+                    
 
                     if (openingData.VisibilityRatio > 0f && openingData.BoundingBox != null)
                         screenshotData.OpeningsData.Add(openingData);
