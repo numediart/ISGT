@@ -115,10 +115,10 @@ public class DatabaseGenerator : MonoBehaviour
             Directory.CreateDirectory("Photographs/Room-" + roomID);
             Debug.Log("Directory created.");
         }
-
-       Debug.Log("Taking screenshot " + screenshotIndex);
-            ScreenCapture.CaptureScreenshot(
-                $"Photographs/Room-{roomID}/{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}.png", 4);
+        
+        string filename = $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}";
+        ScreenCapture.CaptureScreenshot(
+            $"Photographs//Room-{roomID}/" + filename + ".png", 4);
       
         // You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the camera stereo mode.
 /*        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-LL.png", ScreenCapture.StereoScreenCaptureMode.LeftEye);
@@ -128,7 +128,7 @@ public class DatabaseGenerator : MonoBehaviour
         ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-RL.png", ScreenCapture.StereoScreenCaptureMode.RightEye);*/
 
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting);
-        GetOpeningsData(room, roomIndex, screenshotIndex);
+        GetOpeningsData(room, roomIndex, screenshotIndex, filename);
     }
 
     #endregion
@@ -262,7 +262,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
     /// <returns></returns>
-    private void GetOpeningsData(GameObject room, int roomIndex, int screenshotIndex)
+    private void GetOpeningsData(GameObject room, int roomIndex, int screenshotIndex, string filename)
     {
         GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room,
             ObjectsBoundingBoxesAction.Disable);
@@ -315,7 +315,7 @@ public class DatabaseGenerator : MonoBehaviour
             }
         }
 
-        StoreData(screenshotData, roomIndex, screenshotIndex);
+        StoreData(screenshotData, roomIndex, screenshotIndex, filename);
 
         GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room,
             ObjectsBoundingBoxesAction.Enable);
@@ -459,7 +459,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="screenshotData"></param>
     /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
-    private void StoreData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
+    private void StoreData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex, string filename)
     {
         Room room = RoomsGenerator.RoomsDictionary[roomIndex];
         CombinedData combinedData = new CombinedData
@@ -476,7 +476,7 @@ public class DatabaseGenerator : MonoBehaviour
             Directory.CreateDirectory(directoryPath);
         }
 
-        string filePath = Path.Combine(directoryPath, $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}.json");
+        string filePath = Path.Combine(directoryPath, filename + ".json");
         File.WriteAllText(filePath, json);
     }
 
