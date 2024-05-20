@@ -118,10 +118,10 @@ public class DatabaseGenerator : MonoBehaviour
             Directory.CreateDirectory("Photographs/Room-" + roomID);
             Debug.Log("Directory created.");
         }
-
-       Debug.Log("Taking screenshot " + screenshotIndex);
-            ScreenCapture.CaptureScreenshot(
-                $"Photographs/Room-{roomID}/{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}.png", 4);
+        
+        string filename = $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}";
+        ScreenCapture.CaptureScreenshot(
+            $"Photographs//Room-{roomID}/" + filename + ".png", 4);
       
         // You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the camera stereo mode.
 /*        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-LL.png", ScreenCapture.StereoScreenCaptureMode.LeftEye);
@@ -131,7 +131,7 @@ public class DatabaseGenerator : MonoBehaviour
         ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-RL.png", ScreenCapture.StereoScreenCaptureMode.RightEye);*/
 
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting);
-        GetOpeningsData(room, roomIndex, screenshotIndex);
+        GetOpeningsData(room, roomIndex, screenshotIndex, filename);
     }
 
     #endregion
@@ -266,7 +266,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
     /// <returns></returns>
-    private void GetOpeningsData(GameObject room, int roomIndex, int screenshotIndex)
+    private void GetOpeningsData(GameObject room, int roomIndex, int screenshotIndex, string filename)
     {
         GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room,
             ObjectsBoundingBoxesAction.Disable);
@@ -298,19 +298,20 @@ public class DatabaseGenerator : MonoBehaviour
 
                     openingData.DistanceToCamera =
                         (wallObject.transform.position - Camera.main.transform.position).magnitude;
-
-                    // Find the rotation quaternion from the camera to the opening. If you multiply the camera rotation by this quaternion, it will "look" at the opening.
-                    openingData.RotationQuaternionFromCamera = (Quaternion.Inverse(Camera.main.transform.rotation) *
-                                                                wallObject.transform.rotation);
+                    
+                    openingData.RotationQuaternionFromCamera = Quaternion.LookRotation(wallObject.transform.position - Camera.main.transform.position);
 
 
                     openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpenessDegree;
                     openingData.Type = wallObject.GetComponent<Opening>().Type.ToString();
-
-
-                    openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatioBetter();
+                    
+                    
                     openingData.BoundingBox = GetOpeningBoundingBox2D(wallObject);
+                    
+                    //Make sure to calculate the bounding box first before the visibility ratio
                     openingData.VisibilityBoundingBox = wallObject.GetComponent<Opening>().GetVisibilityBoundingBox();
+                    openingData.VisibilityRatio = wallObject.GetComponent<Opening>().GetVisibilityRatio();
+                    
 
                     if (openingData.VisibilityRatio > 0f && openingData.BoundingBox != null)
                         screenshotData.OpeningsData.Add(openingData);
@@ -318,7 +319,7 @@ public class DatabaseGenerator : MonoBehaviour
             }
         }
 
-        StoreData(screenshotData, roomIndex, screenshotIndex);
+        StoreData(screenshotData, roomIndex, screenshotIndex, filename);
 
         GeneratorsContainer.ObjectsGenerator.EnableAndDisableObjectsBoundingBoxes(room,
             ObjectsBoundingBoxesAction.Enable);
@@ -456,30 +457,13 @@ public class DatabaseGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Stores the openings data corresponding to the screenshot identified with roomIndex and screenshotIndex in a JSON file in a specific folder.
-    /// </summary>
-    /// <param name="screenshotData"></param>
-    /// <param name="roomIndex"></param>
-    /// <param name="screenshotIndex"></param>
-    private void StoreOpeningsData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
-    {
-        StringBuilder sb = new StringBuilder();
-
-        string JSONresult = JsonConvert.SerializeObject(screenshotData, Formatting.Indented);
-
-        string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
-
-        File.WriteAllText(path, JSONresult);
-    }
-
-    /// <summary>
     ///  Stores the openings data corresponding to the screenshot identified with roomIndex and screenshotIndex in a JSON file in a specific folder. And Store the seed used to generate the room where the opening is placed, the seed used to generate the door object, the seed used to generate the window object and the seed used to generate the database.
     /// 
     /// </summary>
     /// <param name="screenshotData"></param>
     /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
-    private void StoreData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex)
+    private void StoreData(ScreenshotData screenshotData, int roomIndex, int screenshotIndex, string filename)
     {
         Room room = RoomsGenerator.RoomsDictionary[roomIndex];
         CombinedData combinedData = new CombinedData
@@ -487,11 +471,17 @@ public class DatabaseGenerator : MonoBehaviour
             SeedsData = new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed),
             ScreenshotData = screenshotData
         };
-    
+
         string json = JsonConvert.SerializeObject(combinedData, Formatting.Indented);
-    
-        string path = $"{_openingsDataFolderPath}/Room{roomIndex + 1}-P{screenshotIndex + 1}.json";
-        File.WriteAllText(path, json);
+
+        string directoryPath = Path.Combine(_openingsDataFolderPath, $"Room-{room.Id}");
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        string filePath = Path.Combine(directoryPath, filename + ".json");
+        File.WriteAllText(filePath, json);
     }
 
     public class CombinedData
