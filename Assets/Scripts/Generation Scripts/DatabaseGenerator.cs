@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Data_Classes;
 using UnityEditor;
@@ -30,7 +29,7 @@ public class DatabaseGenerator : MonoBehaviour
     [SerializeField] [HideInInspector] private List<Vector3> _cameraPositions;
     [SerializeField] [HideInInspector] private List<Vector3> _cameraRotations;
     private int _cameraIndex = 0;
-
+    private TimeTools _timeTools;
     #endregion
 
     private void Start()
@@ -43,6 +42,7 @@ public class DatabaseGenerator : MonoBehaviour
         }
 
         _openingsDataFolderPath = path + "/OpeningsData";
+        _timeTools = new TimeTools();
         StartCoroutine(DatabaseGeneration());
     }
 
@@ -54,12 +54,12 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private IEnumerator DatabaseGeneration()
     {
+        _timeTools.Start();
         if (manualScreenShots)
         {
             //Iterate over cam positions and rotations
             for (int i = 0; i < _cameraPositions.Count; i++)
             {
-                Debug.Log("Taking screenshot " + i);
                 KeyValuePair<int, Room> room = RoomsGenerator.RoomsDictionary.ElementAt(0);
                 StartCoroutine(TakeScreenshots(GameObject.Find("Room_" + room.Key), room.Value.Id, room.Key, i));
                 yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotsInManualMode);
@@ -81,7 +81,10 @@ public class DatabaseGenerator : MonoBehaviour
 
             Camera.main.transform.position = new Vector3(0, 100, 0);
             Camera.main.transform.rotation = Quaternion.identity;
+            
         }
+        _timeTools.Stop();
+        _timeTools.PrintElapsedTime();
     }
 
     /// <summary>
@@ -163,7 +166,10 @@ public class DatabaseGenerator : MonoBehaviour
 
         Vector3 choosenGroundPosition = meshCollider != null ? meshCollider.bounds.center : groundTransform.position;
         Vector3 choosenGroundScale = meshCollider != null ? meshCollider.bounds.size : groundTransform.localScale;
-
+    
+        Debug.Log("Ground position: " + choosenGroundPosition);
+        Debug.Log("Ground scale: " + choosenGroundScale);
+        
         bool positionSet = false;
 
         do
@@ -207,7 +213,6 @@ public class DatabaseGenerator : MonoBehaviour
                     break;
                 }
             }
-
             if (positionSet)
             {
                 positionSet = !GeneratorsContainer.ObjectsGenerator.IsCameraInsideAnObject(room, nextCameraPosition) &&
@@ -224,7 +229,6 @@ public class DatabaseGenerator : MonoBehaviour
 
     return nextCameraPosition;
 }
-
 
     public float NextDouble(Random random, float minValue, float maxValue)
     {

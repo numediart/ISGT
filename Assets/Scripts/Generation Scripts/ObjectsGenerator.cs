@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
+using Utils;
 using Random = System.Random;
 
 public class ObjectsGenerator : MonoBehaviour
@@ -10,7 +11,7 @@ public class ObjectsGenerator : MonoBehaviour
     public ObjectsGenerationScriptableObject ObjectsGenerationData;
     public ObjectsGenerationType GenerationType;
     private Random _random;
-
+    private TimeTools _timeTools;
     #region Objects Generation Method
 
     /// <summary>
@@ -21,18 +22,20 @@ public class ObjectsGenerator : MonoBehaviour
     public void ObjectsGeneration(GameObject room, Random objectRandom)
     {
         _random = objectRandom;
+        _timeTools = new TimeTools();
         if (GenerationType == ObjectsGenerationType.RandomGeneration)
             ObjectsRandomGeneration(room);
         else if (GenerationType == ObjectsGenerationType.RealisticGenerationWithAIModel)
             RealisticObjectsLayoutGeneration(room);
     }
-
+    
     /// <summary>
     /// Generates random objects (among a list of prefabricated objects) at random positions in a given room.
     /// </summary>
     /// <param name="room"></param>
     public void ObjectsRandomGeneration(GameObject room)
     {
+        _timeTools.Start();
         Dictionary<GameObject, List<GameObject>> objectsByGround = new Dictionary<GameObject, List<GameObject>>();
         GameObject grounds = RoomsGenerator.GetRoomCategory(room, RoomCategory.Grounds);
         GameObject objects = RoomsGenerator.GetRoomCategory(room, RoomCategory.Objects);
@@ -172,6 +175,8 @@ public class ObjectsGenerator : MonoBehaviour
             totalObjectsNumber--;
         }
         Debug.Log("Missed attempts: " + missedAttempts);
+        _timeTools.Stop();
+        _timeTools.PrintElapsedTime();
     }
 
     /// <summary>
