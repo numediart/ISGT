@@ -19,8 +19,6 @@ MonoBehaviour:
   EmptyRooms:
   - {fileID: 7984908759589331215, guid: 5b7e45fdabd40f142b8696418ebafaac, type: 3}
   - {fileID: 3273007793936816405, guid: df9c6289efb753f4aa1392a3382a6ba0, type: 3}
-  - {fileID: 1182459632325434942, guid: b9e09d26465dc5c43978380b7c6abf58, type: 3}
-  - {fileID: 8506585668214425504, guid: de1f2a72d7d185040933d211730a071b, type: 3}
   - {fileID: 4149673000169334617, guid: d7d861cf29fe0354b887a4faf8720ea5, type: 3}
   Windows:
   - {fileID: 5042857556094219399, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
