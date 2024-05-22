@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Pro_gen;
+using UnityEditor;
 using UnityEngine;
 using Random = System.Random;
 
@@ -56,6 +57,7 @@ public class RoomGrid : MonoBehaviour
 
         //RandomReplaceActiveWallWithDoor();
         RandomReplaceActiveWallWithDoorConstraint();
+        RandomReplaceActiveWithWindowConstraint();
     }
 
     private void GenerateRoom(RoomCell currentCell)
@@ -216,9 +218,6 @@ public class RoomGrid : MonoBehaviour
     {
         foreach (var wallSection in _wallSections)
         {
-            Debug.Log(wallSection.Key);
-            int wallDoorIndex = _gridRandom.Next(0, _proGenParams.WallDoorPrefabs.Count);
-            var wallDoor = _proGenParams.WallDoorPrefabs[wallDoorIndex];
             //check if the door is space with the parameters minDistanceBetweenDoors and maxDistanceBetweenDoors
             int minDistanceBetweenDoors = 2;
             int maxDistanceBetweenDoors = 10;
@@ -226,6 +225,8 @@ public class RoomGrid : MonoBehaviour
             var previousCell = wallSection.Value[0];
             for (int j = _wallDoorPerSection[wallSection.Key]; j < _proGenParams.DoorPerWallNumber; j++)
             {
+                int wallDoorIndex = _gridRandom.Next(0, _proGenParams.WallDoorPrefabs.Count);
+                var wallDoor = _proGenParams.WallDoorPrefabs[wallDoorIndex];
                 var cell = wallSection.Value[_gridRandom.Next(0, wallSection.Value.Count)];
                 if (cell == previousCell)
                 {
@@ -256,61 +257,90 @@ public class RoomGrid : MonoBehaviour
             }
         }
     }
-
-    private void RandomReplaceActiveWallWithDoor()
+    
+    private void RandomReplaceActiveWithWindowConstraint()
     {
-        Debug.Log(_activeWalls.Count);
-
-        // Get a random door prefab from the list
-        int wallDoorIndex = _gridRandom.Next(0, _proGenParams.WallDoorPrefabs.Count);
-        var wallDoor = _proGenParams.WallDoorPrefabs[wallDoorIndex];
-
-        // Try to find a wall to replace
-        bool foundWallToReplace = false;
-        int wallIndex = -1;
-        int maxAttempts = _activeWalls.Count * 2; // To prevent infinite loop
-        int attempts = 0;
-
-        while (!foundWallToReplace && attempts < maxAttempts)
+        foreach (var wallSection in _wallSections)
         {
-            wallIndex = _gridRandom.Next(0, _activeWalls.Count);
-
-            // Check if there are any active walls for this cell
-            if (_activeWalls[wallIndex].ActiveWalls.Keys.Count > 0)
+            int windowNumber = 0;
+            RoomCell previousCell = null;
+            for (int j = 0; j < _proGenParams.WindowPerWallNumber; j++)
             {
-                // Get a random wall direction
-                var wallDirection = _activeWalls[wallIndex].ActiveWalls.Keys
-                    .ElementAt(_gridRandom.Next(0, _activeWalls[wallIndex].ActiveWalls.Keys.Count));
-
-                // Check if the wall is already a door
-                if (!_activeWalls[wallIndex].IsWallADoor(wallDirection))
+                int wallWindowIndex = _gridRandom.Next(0, _proGenParams.WallWindowsPrefabs.Count);
+                var wallWindow = _proGenParams.WallWindowsPrefabs[wallWindowIndex];
+                var cell = wallSection.Value[_gridRandom.Next(0, wallSection.Value.Count)];
+                //
+                if (windowNumber == 0 )
                 {
-                    // Replace the wall with the door
-                    _activeWalls[wallIndex].ReplaceWall(wallDirection, wallDoor);
-                    foundWallToReplace = true;
-                    Debug.Log($"Wall replaced with door in direction: {wallDirection}");
+                    
+                    cell.ReplaceWall(wallSection.Key, wallWindow);
+                    windowNumber++;
                 }
+                else
+                {
+                    if(previousCell==null)
+                    {
+                        j--;
+                        continue;
+                    }
+                    if (Vector2.Distance(cell.GetCellPosition(), previousCell.GetCellPosition()) > 1 && !cell.GetComponentInChildren<WallDoor>())
+                    {
+                        cell.ReplaceWall(wallSection.Key, wallWindow);
+                        windowNumber++;
+                    }
+                    else
+                    {
+                        j--;
+                    }
+                }
+                previousCell = cell;
             }
-
-            attempts++;
         }
 
-        if (!foundWallToReplace)
-        {
-            Debug.Log("No suitable wall found to replace with a door.");
-        }
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        for (int i = 0; i < _proGenParams.width * 2.5f; i++)
+        float width = _proGenParams.width * 2.5f;
+        float height = _proGenParams.height * 2.5f;
+        float spacing = 0.5f;
+        float lineThickness = 2.0f; // Change this value to adjust line thickness
+
+        Handles.color = Color.red;
+
+        // Draw vertical lines
+        for (float x = 0; x <= width; x += spacing)
         {
-            for (int j = 0; j < _proGenParams.height * 2.5f; j++)
+            if (x == 0 || x == width || x == spacing || x == width-spacing)
             {
-                Gizmos.DrawLine(new Vector3(i, 0, j), new Vector3(i, 0, j + 2.5f));
-                Gizmos.DrawLine(new Vector3(i, 0, j), new Vector3(i + 2.5f, 0, j));
+                Handles.color = Color.green; // Exterior vertical lines
             }
+            else
+            {
+                Handles.color = Color.red; // Interior vertical lines
+            }
+            DrawThickLine(new Vector3(x, 0, 0), new Vector3(x, 0, height), lineThickness);
+        }
+
+        // Draw horizontal lines
+        for (float z = 0; z <= height; z += spacing)
+        {
+            if (z == 0 || z == height || z == spacing || z == height - spacing)
+            {
+                Handles.color = Color.green; // Exterior horizontal lines
+            }
+            else
+            {
+                Handles.color = Color.red; // Interior horizontal lines
+            }
+            DrawThickLine(new Vector3(0, 0, z), new Vector3(width, 0, z), lineThickness);
         }
     }
+
+    private void DrawThickLine(Vector3 start, Vector3 end, float thickness)
+    {
+        Handles.DrawAAPolyLine(thickness, new Vector3[] { start, end });
+    }
+
+
 }

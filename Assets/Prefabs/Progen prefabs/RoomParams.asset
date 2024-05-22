@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d7831ed0cd641ae988c97ba80eb163c, type: 3}
   m_Name: RoomParams
   m_EditorClassIdentifier: 
-  width: 80
-  height: 80
+  width: 10
+  height: 10
   widthOffset: 2.5
   heightOffset: 2.5
   roomSeed: 10
@@ -22,9 +22,30 @@ MonoBehaviour:
   - {fileID: 3888267268840002150, guid: 15c2fc7a8a2ade74e928ebf168aa71b8, type: 3}
   - {fileID: 8510969918691873449, guid: d817e3b7d1a960642980df3aff2a4d6d, type: 3}
   - {fileID: 3626918864394753490, guid: 8e0734fe551c4df43a10ca3177bf2226, type: 3}
-  WallWindowsPrefabs: []
+  WallWindowsPrefabs:
+  - {fileID: 1231617701743994424, guid: 6a9578407b2e9224f9c0745e32a75d57, type: 3}
+  - {fileID: 6498522927264745253, guid: 324bc0e8335e8ae4aabe6e8e5f5978f0, type: 3}
+  - {fileID: 1853949228869984638, guid: 697cd412b2eb9b3429afadad4ba66290, type: 3}
+  - {fileID: 6895801134750796930, guid: 42344684a6de8d8439fc1a303750dd6e, type: 3}
+  - {fileID: 1556811957869602126, guid: 22e2d18f3d6e10346997f1ba7e58d5f3, type: 3}
+  - {fileID: 7301182514321998403, guid: f45d9c94151a6b94a88e7ee0a3c11c80, type: 3}
+  - {fileID: 8920972827054602384, guid: 88175e9ef56d1f845b7066733f3c5454, type: 3}
+  - {fileID: 8734063004754674325, guid: a0dc5b95542fca343a51702218ab88cb, type: 3}
+  - {fileID: 4595297023364634473, guid: d761d43a4db655d42b303da8ab6f25d0, type: 3}
+  - {fileID: 7109358676944429271, guid: 2d26e0ffefcb0234e8f633f853a3d47d, type: 3}
+  - {fileID: 5712265097026630085, guid: 4d0df3c375f2be7418ec1d4d2d66b0b4, type: 3}
+  - {fileID: 1894405254893500707, guid: 658976647781f0c4bbec12d14011d309, type: 3}
+  - {fileID: 3626101676200999578, guid: 1fcbe8b14428aa24e92dbd4453a6b870, type: 3}
+  - {fileID: 5034625228026079634, guid: 0c62240c098d4cc418c21b3f3ceb70fd, type: 3}
+  - {fileID: 9053130612692108158, guid: 77898756d76ba404ab2d34c572c44e9d, type: 3}
+  - {fileID: 922167624149716007, guid: 641568556ab38e545a108f642bfe9d28, type: 3}
+  - {fileID: 5992415695548249738, guid: 898df96343163c8409965d479865d46d, type: 3}
+  - {fileID: 1747131305242762967, guid: 5d4dcea2c307e9741bbc65891b37bb19, type: 3}
+  - {fileID: 4028592150604741022, guid: 13d39652754354b4c8982df8b1131b6a, type: 3}
+  - {fileID: 4099548639214339158, guid: 65de72c55770c2d4da7ff839e439b01a, type: 3}
+  - {fileID: 7376350172751564547, guid: df21e588aa724d14daf0eed0a200c876, type: 3}
   WindowNumberRatio: 0
-  DoorNumberRatio: 0
+  DoorNumberRatio: 20
   ObjectNumberRatio: 0
-  WindowPerWallNumber: 0
-  DoorPerWallNumber: 0
+  WindowPerWallNumber: 2
+  DoorPerWallNumber: 1

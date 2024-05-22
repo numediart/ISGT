@@ -5,9 +5,9 @@ using UnityEngine;
 public class ProGenParams:ScriptableObject
 {
     [Header("Room Generation Parameters")]
-    [Tooltip("Width of the grid")]
+    [Tooltip("Width of the grid"), Min(3)]
     public int width;
-    [Tooltip("Height of the grid")]
+    [Tooltip("Height of the grid") , Min(3)]
     public int height;
     
     [Tooltip("Width offset is the length of one side of the wall prefab e.g 2.5f")]
