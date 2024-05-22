@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d7831ed0cd641ae988c97ba80eb163c, type: 3}
+  m_Name: RoomParams
+  m_EditorClassIdentifier: 
+  width: 80
+  height: 80
+  widthOffset: 2.5
+  heightOffset: 2.5
+  roomSeed: 10
+  RoomCellPrefab: {fileID: 1643723287553653679, guid: a702b1f7496dc3142af9b4e07d63b8f5, type: 3}
+  WallDoorPrefabs:
+  - {fileID: 3888267268840002150, guid: 15c2fc7a8a2ade74e928ebf168aa71b8, type: 3}
+  - {fileID: 8510969918691873449, guid: d817e3b7d1a960642980df3aff2a4d6d, type: 3}
+  - {fileID: 3626918864394753490, guid: 8e0734fe551c4df43a10ca3177bf2226, type: 3}
+  WallWindowsPrefabs: []
+  WindowNumberRatio: 0
+  DoorNumberRatio: 0
+  ObjectNumberRatio: 0
+  WindowPerWallNumber: 0
+  DoorPerWallNumber: 0
