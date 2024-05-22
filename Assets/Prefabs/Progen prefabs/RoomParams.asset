@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d7831ed0cd641ae988c97ba80eb163c, type: 3}
   m_Name: RoomParams
   m_EditorClassIdentifier: 
-  width: 10
-  height: 10
+  width: 4
+  height: 4
   widthOffset: 2.5
   heightOffset: 2.5
   roomSeed: 10
@@ -44,6 +44,13 @@ MonoBehaviour:
   - {fileID: 4028592150604741022, guid: 13d39652754354b4c8982df8b1131b6a, type: 3}
   - {fileID: 4099548639214339158, guid: 65de72c55770c2d4da7ff839e439b01a, type: 3}
   - {fileID: 7376350172751564547, guid: df21e588aa724d14daf0eed0a200c876, type: 3}
+  - {fileID: 540848512086869015, guid: b361c1c475a00c24db6bfe3709762679, type: 3}
+  - {fileID: 4272877171007406059, guid: 98e941fc2e6961e4ea3069c140970de6, type: 3}
+  - {fileID: 3505607429878403373, guid: c56188fad4e52b047a45bbf1c4d6eada, type: 3}
+  - {fileID: 4360374797657006605, guid: a8b15517f52ebad4aa43238e692d0caa, type: 3}
+  - {fileID: 6471779110877505282, guid: 67f9979de7930184eaff3f0ff029c6d8, type: 3}
+  - {fileID: 842839154404074810, guid: e0078fa3638a668478002d2837689593, type: 3}
+  - {fileID: 8420735297204581943, guid: d7d802e031f54a74783f23e403169e5c, type: 3}
   WindowNumberRatio: 0
   DoorNumberRatio: 20
   ObjectNumberRatio: 0
