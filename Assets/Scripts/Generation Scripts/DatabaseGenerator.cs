@@ -302,7 +302,7 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.RotationQuaternionFromCamera = Quaternion.LookRotation(wallObject.transform.position - Camera.main.transform.position);
 
 
-                    openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpenessDegree;
+                    openingData.OpenessDegree = wallObject.GetComponent<Opening>().OpennessDegree;
                     openingData.Type = wallObject.GetComponent<Opening>().Type.ToString();
                     
                     

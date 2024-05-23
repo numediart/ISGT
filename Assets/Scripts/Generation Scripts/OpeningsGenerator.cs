@@ -279,22 +279,22 @@ public class OpeningsGenerator : MonoBehaviour
     /// </summary>
     /// <param name="openingComponent"></param>
     /// <returns></returns>
-    private Vector3 GetOpeningDirectionVector(Opening openingComponent)
-    {
-        switch (openingComponent.OpeningDirection)
-        {
-            case OpeningDirection.Up:
-                return openingComponent.MovingPart.transform.up;
-            case OpeningDirection.Down:
-                return -openingComponent.MovingPart.transform.up;
-            case OpeningDirection.Right:
-                return openingComponent.MovingPart.transform.right;
-            case OpeningDirection.Left:
-                return -openingComponent.MovingPart.transform.right;
-            default:
-                return Vector3.negativeInfinity;
-        }
-    }
+    // private Vector3 GetOpeningDirectionVector(Opening openingComponent)
+    // {
+    //     switch (openingComponent.OpeningDirection)
+    //     {
+    //         case OpeningDirection.Up:
+    //             return openingComponent.MovingPart.transform.up;
+    //         case OpeningDirection.Down:
+    //             return -openingComponent.MovingPart.transform.up;
+    //         case OpeningDirection.Right:
+    //             return openingComponent.MovingPart.transform.right;
+    //         case OpeningDirection.Left:
+    //             return -openingComponent.MovingPart.transform.right;
+    //         default:
+    //             return Vector3.negativeInfinity;
+    //     }
+    // }
 
     /// <summary>
     /// Set a random openess degree to a specific opening adapted to its means of opening.
@@ -304,26 +304,26 @@ public class OpeningsGenerator : MonoBehaviour
     {
         opening.TryGetComponent(out Opening openingComponent);
         float openessDegree = (float) _random.NextDouble();
-        openingComponent.OpenessDegree = openessDegree;
+        // openingComponent.OpennessDegree = openessDegree;
 
-        Vector3 openingDirection = GetOpeningDirectionVector(openingComponent);
+        // Vector3 openingDirection = GetOpeningDirectionVector(openingComponent);
 
-        switch (openingComponent.MeansOfOpening)
-        {
-            case MeansOfOpening.Translation:
-                Vector3 openingDimensions = openingComponent.MovingPart.transform.GetChild(0).localScale;
-                float sideLength = (openingComponent.OpeningDirection == OpeningDirection.Up || openingComponent.OpeningDirection == OpeningDirection.Down) ?
-                    openingDimensions.y : RoomsGenerator.GetOpeningWidth(openingDimensions);
-                openingComponent.MovingPart.transform.position += openessDegree * (sideLength / 2f) * openingDirection.normalized;
-                if (openingComponent.OpeningDirection == OpeningDirection.Up || openingComponent.OpeningDirection == OpeningDirection.Down)
-                    openingComponent.MovingPart.transform.GetChild(0).localScale = new Vector3(openingDimensions.x, (1 - openessDegree) * sideLength, openingDimensions.z);
-                else if (openingComponent.OpeningDirection == OpeningDirection.Right || openingComponent.OpeningDirection == OpeningDirection.Left)
-                    openingComponent.MovingPart.transform.GetChild(0).localScale = new Vector3((1 - openessDegree) * sideLength, openingDimensions.y, openingDimensions.z);
-                break;
-            case MeansOfOpening.Rotation:
-                openingComponent.MovingPart.transform.Rotate(openingDirection, -openessDegree * 90f);
-                break;
-        }
+        // switch (openingComponent.MeansOfOpening)
+        // {
+        //     case MeansOfOpening.Translation:
+        //         Vector3 openingDimensions = openingComponent.MovingPart.transform.GetChild(0).localScale;
+        //         float sideLength = (openingComponent.OpeningDirection == OpeningDirection.Up || openingComponent.OpeningDirection == OpeningDirection.Down) ?
+        //             openingDimensions.y : RoomsGenerator.GetOpeningWidth(openingDimensions);
+        //         openingComponent.MovingPart.transform.position += openessDegree * (sideLength / 2f) * openingDirection.normalized;
+        //         if (openingComponent.OpeningDirection == OpeningDirection.Up || openingComponent.OpeningDirection == OpeningDirection.Down)
+        //             openingComponent.MovingPart.transform.GetChild(0).localScale = new Vector3(openingDimensions.x, (1 - openessDegree) * sideLength, openingDimensions.z);
+        //         else if (openingComponent.OpeningDirection == OpeningDirection.Right || openingComponent.OpeningDirection == OpeningDirection.Left)
+        //             openingComponent.MovingPart.transform.GetChild(0).localScale = new Vector3((1 - openessDegree) * sideLength, openingDimensions.y, openingDimensions.z);
+        //         break;
+        //     case MeansOfOpening.Rotation:
+        //         openingComponent.MovingPart.transform.Rotate(openingDirection, -openessDegree * 90f);
+        //         break;
+        // }
     }
 
     #endregion
