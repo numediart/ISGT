@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 4528058471035539511}
   - component: {fileID: 1756049449138648334}
   - component: {fileID: 212811658771434036}
+  - component: {fileID: -6991556587867011558}
   m_Layer: 0
   m_Name: Wall Door 3
   m_TagString: Untagged
@@ -1013,3 +1014,24 @@ MonoBehaviour:
   - {fileID: 1621344227884394, guid: 2979c9562e68d5347bf6a7b4b8d6e196, type: 3}
   - {fileID: 1208035809094850, guid: 4ce9a573166ac53458cc2fd05f2802fb, type: 3}
   _doorPosition: {fileID: 2305221102098450708}
+--- !u!65 &-6991556587867011558
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3626918864394753490}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.5, y: 2.5, z: 0.034242816}
+  m_Center: {x: 0, y: 0, z: -0.013330865}

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7649327052518603675}
   - component: {fileID: 2396949822255500933}
   - component: {fileID: 4609980819076080038}
+  - component: {fileID: 4640368529122619208}
   m_Layer: 0
   m_Name: Window 7 wall 1
   m_TagString: Untagged
@@ -1281,6 +1282,27 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8471386858010512775}
   m_Mesh: {fileID: 0}
+--- !u!65 &4640368529122619208
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471386858010512775}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.5, y: 2.5, z: 0.07389994}
+  m_Center: {x: 0, y: 0, z: 0.018050035}
 --- !u!1001 &7676552057248728421
 PrefabInstance:
   m_ObjectHideFlags: 0
