@@ -52,10 +52,28 @@ MonoBehaviour:
   - {fileID: 842839154404074810, guid: e0078fa3638a668478002d2837689593, type: 3}
   - {fileID: 8420735297204581943, guid: d7d802e031f54a74783f23e403169e5c, type: 3}
   WallMaterials:
-  - {fileID: 2100000, guid: 0cd833354e4dc4678a0232a4c982924a, type: 2}
   - {fileID: 2100000, guid: e59b7fa896c484b4ebc5f738c338940e, type: 2}
   - {fileID: 2100000, guid: 924194e9f9eb04d3e80c81899f30e29f, type: 2}
   - {fileID: 2100000, guid: 2bca8759730a2454a834f5f40d4df1f1, type: 2}
+  - {fileID: 2100000, guid: f0a6062a6a2eee54bb099537f1002d1f, type: 2}
+  - {fileID: 2100000, guid: 9d200b1d31e85374fbbb271a56f4b7cd, type: 2}
+  - {fileID: 2100000, guid: e05ede83b2a1e44c0956417288d089a6, type: 2}
+  FloorMaterials:
+  - {fileID: 2100000, guid: 57c5fc4cce8584d758d649a6ad4e62ac, type: 2}
+  - {fileID: 2100000, guid: 2d4bc84dbaa864f388667bc4012dd08f, type: 2}
+  - {fileID: 2100000, guid: 93789908bdc8d4531a80c98915f46d81, type: 2}
+  - {fileID: 2100000, guid: 1b4f70c80573a4785bbdfe478f2e8aed, type: 2}
+  - {fileID: 2100000, guid: 0f39f81e7b9e08548b54c2517b0ea61f, type: 2}
+  - {fileID: 2100000, guid: 711ba46bad2577a42af236b42cbac3ef, type: 2}
+  - {fileID: 2100000, guid: 00d973d2612ed418ca39e0ad82664b3e, type: 2}
+  - {fileID: 2100000, guid: e59b7fa896c484b4ebc5f738c338940e, type: 2}
+  - {fileID: 2100000, guid: bb185f20572964c8eb74e6915c549c61, type: 2}
+  - {fileID: 2100000, guid: 787b8c53bc5b045f2bea2737ec3c76ee, type: 2}
+  CeilingMaterials:
+  - {fileID: 2100000, guid: 96e21086c7f4c48ffa5614583fa65e6d, type: 2}
+  - {fileID: 2100000, guid: e59b7fa896c484b4ebc5f738c338940e, type: 2}
+  - {fileID: 2100000, guid: 9554c30067d9e4b40a657e538d755129, type: 2}
+  - {fileID: 2100000, guid: b51b4023309164fcf96ce24b84003b18, type: 2}
   WindowNumberRatio: 0
   DoorNumberRatio: 20
   ObjectNumberRatio: 0

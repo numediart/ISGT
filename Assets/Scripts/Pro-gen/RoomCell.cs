@@ -170,12 +170,22 @@ public class RoomCell : MonoBehaviour
         ActiveWalls[direction] = instantiatedWall;
     }
     
-    public void ApplyTexture(int materialIndex, RoomCellDirections directions)
+    public void ApplyWallTexture(int materialIndex, RoomCellDirections directions)
     {
         if (ActiveWalls.ContainsKey(directions))
         {
             ActiveWalls[directions].GetComponent<Renderer>().material = _proGenParams.WallMaterials[materialIndex];
         }
+    }
+    
+    public void ApplyFloorTexture(int materialIndex)
+    {
+        _floorPrefab.GetComponent<Renderer>().material = _proGenParams.FloorMaterials[materialIndex];
+    }
+    
+    public void ApplyCeilingTexture(int materialIndex)
+    {
+        _ceilingPrefabs.GetComponent<Renderer>().material = _proGenParams.CeilingMaterials[materialIndex];
     }
 
     /// <summary>

@@ -26,6 +26,8 @@ public class ProGenParams:ScriptableObject
     
     [Header("Textures")]
     public List<Material> WallMaterials;
+    public List<Material> FloorMaterials;
+    public List<Material> CeilingMaterials;
 
     [Header("Custom Room Generation Parameters")]
     public int WindowNumberRatio;

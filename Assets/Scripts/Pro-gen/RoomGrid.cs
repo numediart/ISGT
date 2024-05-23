@@ -337,8 +337,20 @@ public class RoomGrid : MonoBehaviour
                 _gridRandom.Next(0, _proGenParams.WallMaterials.Count); // get a random wall material in the list
             foreach (var cell in wallSection.Value) // loop through the cells in the wall section
             {
-                cell.ApplyTexture(wallMaterialIndex, wallSection.Key); // apply the texture to the wall
+                cell.ApplyWallTexture(wallMaterialIndex, wallSection.Key); // apply the texture to the wall
             }
+        }
+        
+        int floorMaterialIndex =
+            _gridRandom.Next(0, _proGenParams.FloorMaterials.Count); // get a random floor material in the list
+        int ceilingMaterialIndex =
+            _gridRandom.Next(0, _proGenParams.CeilingMaterials.Count); // get a random ceiling material in the list
+        
+        
+        foreach (var cell in _grid) // loop through the cells in the grid
+        {
+            cell.ApplyFloorTexture(floorMaterialIndex); // apply the texture to the floor
+            cell.ApplyCeilingTexture(ceilingMaterialIndex); // apply the texture to the ceiling
         }
     }
 
