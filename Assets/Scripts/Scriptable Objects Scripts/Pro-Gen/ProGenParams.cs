@@ -23,6 +23,9 @@ public class ProGenParams:ScriptableObject
 
     public List<GameObject> WallDoorPrefabs;
     public List<GameObject> WallWindowsPrefabs;
+    
+    [Header("Textures")]
+    public List<Material> WallMaterials;
 
     [Header("Custom Room Generation Parameters")]
     public int WindowNumberRatio;

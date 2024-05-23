@@ -66,6 +66,7 @@ public class RoomGrid : MonoBehaviour
 
         RandomReplaceActiveWallWithDoorConstraint(); // replace the active wall with door with the constraint of the distance between the doors
         RandomReplaceActiveWithWindowConstraint(); // replace the active wall with window with the constraint of the distance between the windows
+        ApplyTextures(); // apply the textures to the walls 
     }
 
     /// <summary>
@@ -324,6 +325,19 @@ public class RoomGrid : MonoBehaviour
                 }
 
                 previousCell = cell;// set the previous cell to the current cell
+            }
+        }
+    }
+    
+    private void ApplyTextures()
+    {
+        foreach (var wallSection in _wallSections) // loop through the wall sections (front, back, left, right)
+        {
+            int wallMaterialIndex =
+                _gridRandom.Next(0, _proGenParams.WallMaterials.Count); // get a random wall material in the list
+            foreach (var cell in wallSection.Value) // loop through the cells in the wall section
+            {
+                cell.ApplyTexture(wallMaterialIndex, wallSection.Key); // apply the texture to the wall
             }
         }
     }

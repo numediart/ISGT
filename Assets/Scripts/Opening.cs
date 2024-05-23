@@ -45,7 +45,6 @@ public class Opening : MonoBehaviour
                 break;
             case MeansOfOpening.Rotation:
                 float adjustedOpenness = (OpennessDegree * 2f) - 1f;
-                Debug.Log(adjustedOpenness);
                 MovingPart.transform.Rotate(openingDirection, adjustedOpenness * 120f);
                 break;
         }

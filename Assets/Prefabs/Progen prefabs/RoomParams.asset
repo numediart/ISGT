@@ -51,6 +51,11 @@ MonoBehaviour:
   - {fileID: 6471779110877505282, guid: 67f9979de7930184eaff3f0ff029c6d8, type: 3}
   - {fileID: 842839154404074810, guid: e0078fa3638a668478002d2837689593, type: 3}
   - {fileID: 8420735297204581943, guid: d7d802e031f54a74783f23e403169e5c, type: 3}
+  WallMaterials:
+  - {fileID: 2100000, guid: 0cd833354e4dc4678a0232a4c982924a, type: 2}
+  - {fileID: 2100000, guid: e59b7fa896c484b4ebc5f738c338940e, type: 2}
+  - {fileID: 2100000, guid: 924194e9f9eb04d3e80c81899f30e29f, type: 2}
+  - {fileID: 2100000, guid: 2bca8759730a2454a834f5f40d4df1f1, type: 2}
   WindowNumberRatio: 0
   DoorNumberRatio: 20
   ObjectNumberRatio: 0

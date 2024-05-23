@@ -165,6 +165,17 @@ public class RoomCell : MonoBehaviour
 
         instantiatedWall.transform.position = newPosition;
         instantiatedWall.transform.rotation = newRotation;
+        
+        // Add the new wall back to ActiveWalls
+        ActiveWalls[direction] = instantiatedWall;
+    }
+    
+    public void ApplyTexture(int materialIndex, RoomCellDirections directions)
+    {
+        if (ActiveWalls.ContainsKey(directions))
+        {
+            ActiveWalls[directions].GetComponent<Renderer>().material = _proGenParams.WallMaterials[materialIndex];
+        }
     }
 
     /// <summary>
