@@ -33,7 +33,7 @@ public class Opening : MonoBehaviour
     {
         OpennessDegree = UnityEngine.Random.value;
 
-        Vector3 openingDirection = Vector3.up;
+        Vector3 openingDirection = transform.up;
 
         switch (MeansOfOpening)
         {
@@ -44,7 +44,9 @@ public class Opening : MonoBehaviour
                 MovingPart.transform.GetChild(0).localScale = new Vector3(openingDimensions.x, (1 - OpennessDegree) * sideLength, openingDimensions.z);
                 break;
             case MeansOfOpening.Rotation:
-                MovingPart.transform.Rotate(openingDirection, -OpennessDegree * 90f);
+                float adjustedOpenness = (OpennessDegree * 2f) - 1f;
+                Debug.Log(adjustedOpenness);
+                MovingPart.transform.Rotate(openingDirection, adjustedOpenness * 120f);
                 break;
         }
     }
