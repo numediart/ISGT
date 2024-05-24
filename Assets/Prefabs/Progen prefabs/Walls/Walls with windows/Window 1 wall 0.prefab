@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5042857555694509381}
   - component: {fileID: 5042857555694509380}
   - component: {fileID: 5042857555694509403}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Pane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 5042857556094219392}
   - component: {fileID: 3269848116703601520}
   - component: {fileID: 8798217186630720762}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Window1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,10 +176,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93657f5ef77edd24c81c6dccacbf9290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OpenessDegree: 0
+  OpennessDegree: 0
   Type: 0
   MeansOfOpening: 0
-  OpeningDirection: 0
   MovingPart: {fileID: 8342082288572492190}
 --- !u!1 &5042857556122722817
 GameObject:
@@ -193,7 +192,7 @@ GameObject:
   - component: {fileID: 5042857556122722828}
   - component: {fileID: 5042857556122722819}
   - component: {fileID: 5042857556122722818}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Structure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300,7 +299,7 @@ GameObject:
   - component: {fileID: 3055730835600636940}
   - component: {fileID: 8227150300501746206}
   - component: {fileID: 540015117939416882}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Window 1 wall 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1487,7 +1486,7 @@ GameObject:
   - component: {fileID: 7592412578270761314}
   - component: {fileID: 7592412578270761315}
   - component: {fileID: 7592412578270761312}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BlackShutter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1589,7 +1588,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5780937256223817726}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MovingPart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1621,7 +1620,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1853008528446940475}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: VisibilityRatioSpheresParentObject
   m_TagString: Opening Ratio Sphere Parent Object
   m_Icon: {fileID: 0}

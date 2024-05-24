@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7107101228793523587}
   - component: {fileID: 6161836027961741252}
   - component: {fileID: 8420569948730758188}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Window 1 wall 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1213,6 +1213,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1591474425993169556}
     m_Modifications:
     - target: {fileID: 5042857555694509401, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5042857555694509401, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -1276,13 +1280,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Window1
       objectReference: {fileID: 0}
+    - target: {fileID: 5042857556094219399, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5042857556122722817, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5042857556122722829, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.004
       objectReference: {fileID: 0}
+    - target: {fileID: 7592412578270761313, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8342082288572492190, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8342082288572492190, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152757029623276140, guid: 42200d0057ff5ee4ebd7b236f33799f1, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

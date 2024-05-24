@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6191139594803976245}
   - component: {fileID: 7573999395793259925}
   - component: {fileID: 7159731329394775935}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Window 6 wall 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1154,6 +1154,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1377837423620619822}
     m_Modifications:
+    - target: {fileID: 162387295956918495, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 162387296855976249, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.007999897
@@ -1197,6 +1201,26 @@ PrefabInstance:
     - target: {fileID: 162387296855976251, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
       propertyPath: m_Name
       value: Window6 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 162387296855976251, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 162387297500787290, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1804648285414649150, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3862657777285512223, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7695488969608272611, guid: 99dc8ce67e4dea1479ced750159bb219, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

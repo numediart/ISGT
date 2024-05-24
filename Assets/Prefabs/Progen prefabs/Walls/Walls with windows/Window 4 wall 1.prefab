@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4216364579564468717}
   - component: {fileID: 787462057667370610}
   - component: {fileID: 4612420355314756777}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Window 4 wall 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1298,9 +1298,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8102433301829200919}
     m_Modifications:
+    - target: {fileID: 1852670911624072417, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2485903215252808618, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2534624614968973730, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2534624615736253840, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
       propertyPath: m_Name
       value: Window4 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2534624615736253840, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2534624615736253854, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1341,6 +1357,14 @@ PrefabInstance:
     - target: {fileID: 2534624615736253854, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2534624616886421949, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3344769396078544087, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3344769396078544087, guid: 399cdca49ff6d5543a5a2df65a9084cd, type: 3}
       propertyPath: m_IsActive

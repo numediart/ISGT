@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 349126934942879612}
   - component: {fileID: 736764011915482196}
   - component: {fileID: 9033070988072483233}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Window 5 wall 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1390,13 +1390,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3822299039294947925}
     m_Modifications:
+    - target: {fileID: 2367280202208215260, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2472202212104723501, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037827242294675880, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4037827242294675880, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5691838464582498330, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5691838465265700904, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
       propertyPath: m_Name
       value: Window5 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5691838465265700904, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5691838465265700906, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1437,6 +1457,10 @@ PrefabInstance:
     - target: {fileID: 5691838465265700906, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5691838465500292937, guid: 489ac2a3fe184134f802962c60a3dad6, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
