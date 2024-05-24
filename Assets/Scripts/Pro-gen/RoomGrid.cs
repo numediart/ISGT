@@ -12,6 +12,7 @@ using Random = System.Random;
 public class RoomGrid : MonoBehaviour
 {
     [SerializeField] private ProGenParams _proGenParams;
+    [SerializeField] private ProceduralPropPlacer _proceduralPropPlacer;
     private Random _gridRandom;
     private RoomCell[,] _grid;
 
@@ -67,6 +68,7 @@ public class RoomGrid : MonoBehaviour
         RandomReplaceActiveWallWithDoorConstraint(); // replace the active wall with door with the constraint of the distance between the doors
         RandomReplaceActiveWithWindowConstraint(); // replace the active wall with window with the constraint of the distance between the windows
         ApplyTextures(); // apply the textures to the walls 
+        _proceduralPropPlacer.PlaceProps(_gridRandom); // place the props in the room
     }
 
     /// <summary>
@@ -353,49 +355,5 @@ public class RoomGrid : MonoBehaviour
             cell.ApplyCeilingTexture(ceilingMaterialIndex); // apply the texture to the ceiling
         }
     }
-
-    private void OnDrawGizmos()
-    {
-        float width = _proGenParams.width * 2.5f;
-        float height = _proGenParams.height * 2.5f;
-        float spacing = 0.5f;
-        float lineThickness = 2.0f; // Change this value to adjust line thickness
-
-        Handles.color = Color.red;
-
-        // Draw vertical lines
-        for (float x = 0; x <= width; x += spacing)
-        {
-            if (x == 0 || x.Equals(width) || x.Equals(spacing) || x.Equals(width - spacing))
-            {
-                Handles.color = Color.green; // Exterior vertical lines
-            }
-            else
-            {
-                Handles.color = Color.red; // Interior vertical lines
-            }
-
-            DrawThickLine(new Vector3(x, 0, 0), new Vector3(x, 0, height), lineThickness);
-        }
-
-        // Draw horizontal lines
-        for (float z = 0; z <= height; z += spacing)
-        {
-            if (z == 0 || z.Equals(height) || z.Equals(spacing) || z.Equals(height - spacing))
-            {
-                Handles.color = Color.green; // Exterior horizontal lines
-            }
-            else
-            {
-                Handles.color = Color.red; // Interior horizontal lines
-            }
-
-            DrawThickLine(new Vector3(0, 0, z), new Vector3(width, 0, z), lineThickness);
-        }
-    }
-
-    private void DrawThickLine(Vector3 start, Vector3 end, float thickness)
-    {
-        Handles.DrawAAPolyLine(thickness, new Vector3[] { start, end });
-    }
+    
 }

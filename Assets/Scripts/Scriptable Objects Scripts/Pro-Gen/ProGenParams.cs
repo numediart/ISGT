@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Pro_gen;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "ScriptableObjects/ProGenParams", order = 3)]
@@ -23,6 +24,8 @@ public class ProGenParams:ScriptableObject
 
     public List<GameObject> WallDoorPrefabs;
     public List<GameObject> WallWindowsPrefabs;
+    
+    public List<Props> PropsPrefabs;
     
     [Header("Textures")]
     public List<Material> WallMaterials;

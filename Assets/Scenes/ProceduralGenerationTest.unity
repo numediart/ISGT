@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1276764088}
   - component: {fileID: 1276764087}
+  - component: {fileID: 1276764089}
   m_Layer: 0
   m_Name: RoomGenerator (ProGen)
   m_TagString: Untagged
@@ -153,6 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proGenParams: {fileID: 11400000, guid: 05f9f87b3e12cb44091a4e30c62bd028, type: 2}
+  _proceduralPropPlacer: {fileID: 1276764089}
 --- !u!4 &1276764088
 Transform:
   m_ObjectHideFlags: 0
@@ -168,6 +170,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1276764089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276764086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09a74076e6a444c3b5bd92c788eafacc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _proGenParams: {fileID: 11400000, guid: 05f9f87b3e12cb44091a4e30c62bd028, type: 2}
+  numberOfProps: 10
+  allowedCategories: 
 --- !u!1 &1622715488
 GameObject:
   m_ObjectHideFlags: 0
