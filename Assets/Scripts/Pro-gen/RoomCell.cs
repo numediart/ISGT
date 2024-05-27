@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Pro_gen;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
 public class RoomCell : MonoBehaviour
 {
     [SerializeField] private ProGenParams _proGenParams;
@@ -13,7 +15,8 @@ public class RoomCell : MonoBehaviour
     [SerializeField] private GameObject _ceilingPrefabs;
     [SerializeField] private GameObject _unvisitedBlock;
 
-    public Dictionary<RoomCellDirections, GameObject> ActiveWalls { get; private set; } // store the active walls in the room cell
+    public Dictionary<RoomCellDirections, GameObject>
+        ActiveWalls { get; private set; } // store the active walls in the room cell
 
     public Vector2 Position { get; set; } // store the position of the room cell
 
@@ -129,31 +132,31 @@ public class RoomCell : MonoBehaviour
         {
             case RoomCellDirections.Front:
                 newPosition =
-                    new Vector3(-0.05f + newPosition.x, 1.25f,
+                    new Vector3(-0.055f + newPosition.x, 1.25f,
                         1.25f + newPosition.z); // set the new position of the wall
                 newRotation = newWall.GetComponent<WallDoor>()
-                    ? Quaternion.Euler(0, 90, 0)
+                    ? Quaternion.Euler(0, 270, 0)
                     : Quaternion.Euler(0, 270,
                         0); // set the new rotation of the wall to be 90 degrees on the y axis it can be 270 degrees if the wall is a window
                 _frontWallPrefabs = instantiatedWall;
                 break;
             case RoomCellDirections.Back:
-                newPosition = new Vector3(-0.05f + newPosition.x, 1.25f, 1.25f + newPosition.z);
+                newPosition = new Vector3(-0.055f + newPosition.x, 1.25f, 1.25f + newPosition.z);
                 newRotation =
                     Quaternion.Euler(0, 90,
                         0); // set the new rotation of the wall to be 90 degrees on the y axis no special case here
                 _backWallPrefabs = instantiatedWall;
                 break;
             case RoomCellDirections.Left:
-                newPosition = new Vector3(1.25f + newPosition.x, 1.25f, 0.05f + newPosition.z);
+                newPosition = new Vector3(1.25f + newPosition.x, 1.25f, 0.05f + newPosition.z + 0.005f);
                 newRotation = newWall.GetComponent<WallDoor>()
-                    ? Quaternion.Euler(0, 0, 0)
+                    ? Quaternion.Euler(0, 180, 0)
                     : Quaternion.Euler(0, 180,
                         0); // set the new rotation of the wall to be 0 degrees on the y axis it can be 180 degrees if the wall is a window (need to flip it to have well oriented windows)
                 _leftWallPrefabs = instantiatedWall;
                 break;
             case RoomCellDirections.Right:
-                newPosition = new Vector3(1.25f + newPosition.x, 1.25f, 0.05f + newPosition.z);
+                newPosition = new Vector3(1.25f + newPosition.x, 1.25f, 0.05f + newPosition.z + 0.005f);
                 newRotation = Quaternion.Euler(0, 0, 0);
                 _rightWallPrefabs = instantiatedWall;
                 break;
@@ -161,11 +164,11 @@ public class RoomCell : MonoBehaviour
 
         instantiatedWall.transform.position = newPosition;
         instantiatedWall.transform.rotation = newRotation;
-        
+
         // Add the new wall back to ActiveWalls
         ActiveWalls[direction] = instantiatedWall;
     }
-    
+
     public void ApplyWallTexture(int materialIndex, RoomCellDirections directions)
     {
         if (ActiveWalls.ContainsKey(directions))
@@ -173,12 +176,12 @@ public class RoomCell : MonoBehaviour
             ActiveWalls[directions].GetComponent<Renderer>().material = _proGenParams.WallMaterials[materialIndex];
         }
     }
-    
+
     public void ApplyFloorTexture(int materialIndex)
     {
         _floorPrefab.GetComponent<Renderer>().material = _proGenParams.FloorMaterials[materialIndex];
     }
-    
+
     public void ApplyCeilingTexture(int materialIndex)
     {
         _ceilingPrefabs.GetComponent<Renderer>().material = _proGenParams.CeilingMaterials[materialIndex];
