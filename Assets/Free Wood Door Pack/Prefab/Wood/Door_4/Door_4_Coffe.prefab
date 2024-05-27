@@ -155,7 +155,7 @@ MonoBehaviour:
   OpennessDegree: 0
   Type: 0
   MeansOfOpening: 1
-  MovingPart: {fileID: 1371647732391088}
+  MovingPart: {fileID: 1358950855282810}
 --- !u!1 &1835908301816692
 GameObject:
   m_ObjectHideFlags: 0
