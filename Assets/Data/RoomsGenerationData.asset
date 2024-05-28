@@ -146,7 +146,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: e59b7fa896c484b4ebc5f738c338940e, type: 2}
   - {fileID: 2100000, guid: 9554c30067d9e4b40a657e538d755129, type: 2}
   - {fileID: 2100000, guid: b51b4023309164fcf96ce24b84003b18, type: 2}
-  ObjectNumberRatio: 40
+  ObjectNumberRatio: 30
   WindowPerWallNumber: 1
   DoorPerWallNumber: 1
   NumberOfEmptyRoomsOnScene: 1

@@ -20,5 +20,9 @@ namespace Pro_gen
             
             return combinedBounds;
         }
+        public BoxCollider GetBoxCollider()
+        {
+            return GetComponentInChildren<BoxCollider>();
+        }
     }
 }

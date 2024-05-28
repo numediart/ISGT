@@ -210,9 +210,9 @@ public class RoomCell : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+  /*  private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(new Vector3(Position.x*2.5f + 1.25f, 1.25f, Position.y*2.5f + 1.25f), new Vector3(2.5f, 2.5f, 2.5f));
-    }
+    }*/
 }

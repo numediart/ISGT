@@ -16,24 +16,21 @@ namespace Pro_gen
         [SerializeField] private List<Bounds> _selectedPropsBounds;
         private QuadTreeNode _quadTree;
         private bool[,][,] _propsGrid;
-
+        private int _maxAttempts = 100;
+        private List<Vector3> _propsPositions;
         [SerializeField] private int _gridSubdivision = 1;
 
         private void Awake()
         {
             _selectedProps = new List<Props>();
             _selectedPropsBounds = new List<Bounds>();
+            _propsPositions = new List<Vector3>();
         }   
 
         public void Init(RoomsGenerationScriptableObject roomGenerationData)
         {
             _roomsGenerationData = roomGenerationData;
             _gridSubdivision = _roomsGenerationData._gridSubdivision;
-            int gridWidth = Mathf.CeilToInt(_roomsGenerationData.width * _gridSubdivision);
-            int gridHeight = Mathf.CeilToInt(_roomsGenerationData.height * _gridSubdivision);
-            int gridWidthOffset = Mathf.CeilToInt(_roomsGenerationData.widthOffset * _gridSubdivision);
-            int gridHeightOffset = Mathf.CeilToInt(_roomsGenerationData.heightOffset * _gridSubdivision);
-
             numberOfProps = _roomsGenerationData.ObjectNumberRatio;
         }
 
@@ -61,43 +58,45 @@ namespace Pro_gen
             );
 
             _quadTree = new QuadTreeNode(roomBounds, 0);
-
+            TimeTools timeTools = new TimeTools();
+            timeTools.Start();
             for (int i = 0; i < numberOfProps; i++)
             {
                 Props selectedProp =
                     _roomsGenerationData.PropsPrefabs[random.Next(_roomsGenerationData.PropsPrefabs.Count)];
-                Props propInstance = Instantiate(selectedProp, Vector3.zero, Quaternion.identity, transform);
+                Props propInstance = Instantiate(selectedProp, Vector3.zero, Quaternion.Euler(0, NextFloat(random, 0f,360f), 0), transform);
                 _selectedProps.Add(propInstance);
 
                 Physics.SyncTransforms(); // Force collider update
 
                 Bounds propBounds = propInstance.CalculateBounds();
                 _selectedPropsBounds.Add(propBounds);
-                Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds);
-
+                Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform);
+                _propsPositions.Add(positionInRoom);
                 propInstance.transform.position = positionInRoom;
+                _selectedProps[i] = propInstance;
                 _quadTree.Insert(propInstance);
                 propBounds = propInstance.CalculateBounds(); // Recalculate bounds after moving
                 _selectedPropsBounds[i] = propBounds;
             }
-
-            Debug.Log("Props placed in " + (Time.time - startTime) + " seconds.");
+            timeTools.Stop();
+            Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
         }
 
 
-        private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds)
+        private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform)
         {
             Vector3 position = Vector3.zero;
             bool isPositionFound = false;
             Vector3 propExtents = bounds.extents;
-
+            int attempts = 0;
             List<QuadTreeNode> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes();
 
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
 
             QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
             
-            while (!isPositionFound)
+            while (!isPositionFound && attempts<_maxAttempts)
             {
                 position = new Vector3(
                     NextFloat(random, selectedNode.bounds.min.x + propExtents.x,
@@ -106,23 +105,28 @@ namespace Pro_gen
                     NextFloat(random, selectedNode.bounds.min.z + propExtents.z,
                         selectedNode.bounds.max.z - propExtents.z)
                 );
-
-                if (CanPropsBePlaced(position, bounds))
+                propTransform.position = position;
+                if (CanPropsBePlaced(propTransform, bounds))
                 {
                        isPositionFound = true;
                 }
+                else
+                {
+                    attempts++;
+                }
+                Debug.Log("Attempts: " + attempts);
             }
 
             return position;
         }
 
-        private bool CanPropsBePlaced(Vector3 position, Bounds bounds)
+        private bool CanPropsBePlaced(Transform propTransform, Bounds bounds)
         {
             // Calculate the new bounds based on the desired position
-            bounds.center = position;
+            bounds.center = propTransform.position;
 
             // Check if the object intersects with walls (tagged "Wall")
-            Collider[] intersectingWalls = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity);
+            Collider[] intersectingWalls = Physics.OverlapBox(bounds.center, bounds.extents,propTransform.rotation);
             
             foreach (Collider wall in intersectingWalls)
             {
@@ -176,6 +180,7 @@ namespace Pro_gen
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);
             }
+
 
             if (_quadTree != null)
             {

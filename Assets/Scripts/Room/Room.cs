@@ -109,11 +109,15 @@ public class Room : MonoBehaviour
     /// </summary>
     private void CreateOpenings()
     {
+        TimeTools timeTools = new TimeTools();
+        timeTools.Start();
         _roomGrid.RandomReplaceActiveWallWithDoorConstraint(
             _openingRandom); // replace the active wall with door with the constraint of the distance between the doors
         _roomGrid.RandomReplaceActiveWithWindowConstraint(
             _openingRandom); // replace the active wall with window with the constraint of the distance between the windows
         _roomGrid.ApplyTextures();
+        timeTools.Stop();
+        Debug.Log("Time to create openings: " + timeTools.GetElapsedTime());
     }
 
     /// <summary>
@@ -121,7 +125,11 @@ public class Room : MonoBehaviour
     /// </summary>
     public void FillRoomWithObjects()
     {
+        TimeTools timeTools = new TimeTools();
+        timeTools.Start();
         _proceduralPropPlacer.PlaceProps(_objectRandom); // place the props in the room
+        timeTools.Stop();
+        Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }
 
     /// <summary>
