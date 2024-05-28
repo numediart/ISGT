@@ -31,7 +31,7 @@ namespace Pro_gen
             //Check if any part of the prop is inside the bounds
             foreach (var collider in intersectingColliders)
             {
-                if (collider.Equals(boxCollider))
+                if (!collider.Equals(boxCollider))
                 {
                     Debug.Log("Prop is already in the tree");
                     return;
