@@ -355,6 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 8801298007301265530}
   _propsCategory: 1
+  _boxCollider: {fileID: 8801298008709820316}
 --- !u!23 &-7292579141358738644
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -442,6 +443,11 @@ Transform:
 --- !u!1 &8801298008709820314 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8491312178852608975, guid: a53510110a352874ca506c683e821689, type: 3}
+  m_PrefabInstance: {fileID: 1149348745909195861}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &8801298008709820316 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 8491312178852608969, guid: a53510110a352874ca506c683e821689, type: 3}
   m_PrefabInstance: {fileID: 1149348745909195861}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8801298008960111384 stripped
