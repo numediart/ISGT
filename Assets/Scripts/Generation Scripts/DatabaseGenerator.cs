@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -128,7 +128,7 @@ public class DatabaseGenerator : MonoBehaviour
 
         yield return new WaitForSeconds(0.1f);
 
-        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-RL.png", ScreenCapture.StereoScreenCaptureMode.RightEye);*/
+        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-RL.png", ScreenCapture.StereoScreenCaptureMode.RightEye);#1#
 
         yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotAndDataGetting);
         GetOpeningsData(room, roomIndex, screenshotIndex, filename);
@@ -492,4 +492,4 @@ public class DatabaseGenerator : MonoBehaviour
 
 
     #endregion
-}
+}*/

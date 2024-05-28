@@ -23,18 +23,5 @@ public class RoomsGeneratorEditor : Editor
         }
 
         serializedObject.ApplyModifiedProperties();
-        
-        
-
-        if (GUILayout.Button("Room Generation"))
-            script.GenerateRooms();
-
-        if (GUILayout.Button("Apply Materials"))
-            script.ApplyMaterialsForAllRooms();
-
-        if (GUILayout.Button("Clear Scene"))
-            script.ClearScene();
-        
-      
     }
 }

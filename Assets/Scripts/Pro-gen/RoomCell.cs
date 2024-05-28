@@ -43,7 +43,7 @@ public class RoomCell : MonoBehaviour
     public void Visit()
     {
         IsVisited = true;
-        Destroy(_unvisitedBlock); // destroy the unvisited block when the room cell is visited (ressource management)
+        DestroyImmediate(_unvisitedBlock); // destroy the unvisited block when the room cell is visited (ressource management)
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public class RoomCell : MonoBehaviour
     /// </summary>
     public void ClearLeftWall()
     {
-        Destroy(_leftWallPrefabs); // destroy the left wall
+        DestroyImmediate(_leftWallPrefabs); // destroy the left wall
         ActiveWalls.Remove(RoomCellDirections.Left); // remove the left wall from the active walls
     }
 
@@ -60,7 +60,7 @@ public class RoomCell : MonoBehaviour
     /// </summary>
     public void ClearRightWall()
     {
-        Destroy(_rightWallPrefabs);
+        DestroyImmediate(_rightWallPrefabs);
         ActiveWalls.Remove(RoomCellDirections.Right); // remove the right wall from the active walls
     }
 
@@ -69,7 +69,7 @@ public class RoomCell : MonoBehaviour
     /// </summary>
     public void ClearFrontWall()
     {
-        Destroy(_frontWallPrefabs);
+        DestroyImmediate(_frontWallPrefabs);
         ActiveWalls.Remove(RoomCellDirections.Front); // remove the front wall from the active walls
     }
 
@@ -78,7 +78,7 @@ public class RoomCell : MonoBehaviour
     /// </summary>
     public void ClearBackWall()
     {
-        Destroy(_backWallPrefabs);
+        DestroyImmediate(_backWallPrefabs);
         ActiveWalls.Remove(RoomCellDirections.Back); // remove the back wall from the active walls
     }
 
@@ -121,7 +121,7 @@ public class RoomCell : MonoBehaviour
         }
 
         ActiveWalls.Remove(direction); // remove the wall from the active walls
-        Destroy(currentWall); // destroy the current wall
+        Transform currentWallTransform = currentWall.transform; // get the transform of the current wall
 
         GameObject instantiatedWall =
             Instantiate(newWall, currentWall.transform.parent); // instantiate the new wall prefab
@@ -167,6 +167,7 @@ public class RoomCell : MonoBehaviour
 
         // Add the new wall back to ActiveWalls
         ActiveWalls[direction] = instantiatedWall;
+        DestroyImmediate(currentWall); // destroy the current wall
     }
 
     public void ApplyWallTexture(int materialIndex, RoomCellDirections directions)
@@ -207,5 +208,11 @@ public class RoomCell : MonoBehaviour
             default:
                 return null;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(new Vector3(Position.x*2.5f + 1.25f, 1.25f, Position.y*2.5f + 1.25f), new Vector3(2.5f, 2.5f, 2.5f));
     }
 }

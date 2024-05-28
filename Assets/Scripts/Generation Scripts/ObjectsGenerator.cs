@@ -1,4 +1,4 @@
-using RealtimeCSG.Components;
+/*using RealtimeCSG.Components;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -469,4 +469,4 @@ public enum ObjectsGenerationType
 {
     RandomGeneration,
     RealisticGenerationWithAIModel
-}
+}*/
