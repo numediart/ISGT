@@ -171,6 +171,11 @@ namespace Pro_gen
         {
             return (float)(random.NextDouble() * (max - min) + min);
         }
+        
+        public List<Vector3> GetPropsPositions()
+        {
+            return _propsPositions;
+        }
 
         private void OnDrawGizmos()
         {
