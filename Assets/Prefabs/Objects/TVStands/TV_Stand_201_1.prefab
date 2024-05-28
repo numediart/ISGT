@@ -328,6 +328,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3111325870016790863, guid: 8bff30a66a73a6d449e6556c65da6901, type: 3}
+      propertyPath: m_TagString
+      value: BoundingBox
+      objectReference: {fileID: 0}
     - target: {fileID: 3111325870119566285, guid: 8bff30a66a73a6d449e6556c65da6901, type: 3}
       propertyPath: m_Layer
       value: 0
