@@ -127,7 +127,7 @@ public class Room : MonoBehaviour
     {
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
-        _proceduralPropPlacer.PlaceProps(_objectRandom); // place the props in the room
+        _proceduralPropPlacer.PlaceProps(_objectRandom, roomGenerationData.width * roomGenerationData.height); // place the props in the room
         timeTools.Stop();
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }

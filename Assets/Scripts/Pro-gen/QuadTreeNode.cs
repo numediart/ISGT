@@ -10,8 +10,8 @@ namespace Pro_gen
         private readonly List<Props> _objects;
         private QuadTreeNode[] _children;
         private readonly int _depth;
-        
-        const int MAX_DEPTH = 5;
+
+        private int max_depth = 5;
 
         public QuadTreeNode(Bounds bounds, int depth)
         {
@@ -19,6 +19,13 @@ namespace Pro_gen
             _objects = new List<Props>();
             _children = null;
             _depth = depth;
+        }
+
+        public void determineMaxDepth(int area)
+        {
+            //Make the max depth go between 5 and 10 depending on the area, max area is 80*80
+            Debug.Log("Area: " + area);
+            max_depth = 4 + (int) (5 * (Mathf.Sqrt(area) / 80f));
         }
 
         public void Insert(Props prop)
@@ -46,7 +53,7 @@ namespace Pro_gen
             _objects.Add(prop);
             
             //Try to subdivide the node if it's not at max depth
-            if (_depth < MAX_DEPTH)
+            if (_depth < max_depth)
             {
                 Subdivide();
                 //Insert the prop in the children nodes

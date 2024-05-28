@@ -34,9 +34,8 @@ namespace Pro_gen
             numberOfProps = _roomsGenerationData.ObjectNumberRatio;
         }
 
-        public void PlaceProps(Random random)
+        public void PlaceProps(Random random, int area)
         {
-            float startTime = Time.time;
             if (_roomsGenerationData == null)
             {
                 Debug.LogError("ProGenParams not assigned.");
@@ -58,6 +57,7 @@ namespace Pro_gen
             );
 
             _quadTree = new QuadTreeNode(roomBounds, 0);
+            _quadTree.determineMaxDepth(area);
             TimeTools timeTools = new TimeTools();
             timeTools.Start();
             for (int i = 0; i < numberOfProps; i++)
@@ -65,8 +65,7 @@ namespace Pro_gen
                 Props selectedProp =
                     _roomsGenerationData.PropsPrefabs[random.Next(_roomsGenerationData.PropsPrefabs.Count)];
                 Props propInstance = Instantiate(selectedProp, Vector3.zero, Quaternion.Euler(0, NextFloat(random, 0f,360f), 0), transform);
-
-                Physics.SyncTransforms(); // Force collider update
+                
 
                 Bounds propBounds = propInstance.CalculateBounds();
                 
@@ -81,7 +80,6 @@ namespace Pro_gen
                   
                     propInstance.transform.position = positionInRoom;
                     _quadTree.Insert(propInstance);
-                    Physics.SyncTransforms(); // Force collider update
                     propBounds = propInstance.CalculateBounds(); // Recalculate bounds after moving
                     _selectedProps.Add(propInstance);
                     _selectedPropsBounds.Add(propBounds);
