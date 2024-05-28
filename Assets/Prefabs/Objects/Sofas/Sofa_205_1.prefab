@@ -369,6 +369,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: -1904656230467069937}
   m_SourcePrefab: {fileID: 100100000, guid: 40a120c9d2828e047ad5b0e098ff8481, type: 3}
+--- !u!65 &4132920443131665866 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 5024011691260753531, guid: 40a120c9d2828e047ad5b0e098ff8481, type: 3}
+  m_PrefabInstance: {fileID: 8999306123778567089}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4155736831175548300 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4994440981851436605, guid: 40a120c9d2828e047ad5b0e098ff8481, type: 3}
@@ -515,6 +520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 4159293789595482222}
   _propsCategory: 6
+  _boxCollider: {fileID: 4132920443131665866}
 --- !u!23 &6933043167153475196
 MeshRenderer:
   m_ObjectHideFlags: 0

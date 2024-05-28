@@ -481,6 +481,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7855095205229838384, guid: 9f80b4dbe8d43eb4b8bc621468984276, type: 3}
   m_PrefabInstance: {fileID: 8920459959545298995}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &1641896773281792005 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 7855095205229838390, guid: 9f80b4dbe8d43eb4b8bc621468984276, type: 3}
+  m_PrefabInstance: {fileID: 8920459959545298995}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1641896773299492316 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7855095205281355247, guid: 9f80b4dbe8d43eb4b8bc621468984276, type: 3}
@@ -587,6 +592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 1641896775020988259}
   _propsCategory: 6
+  _boxCollider: {fileID: 1641896773281792005}
 --- !u!23 &3833496711027152742
 MeshRenderer:
   m_ObjectHideFlags: 0

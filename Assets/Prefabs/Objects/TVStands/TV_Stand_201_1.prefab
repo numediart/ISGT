@@ -584,6 +584,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3111325869902180686, guid: 8bff30a66a73a6d449e6556c65da6901, type: 3}
   m_PrefabInstance: {fileID: 7504755280326740634}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &4831123587933490131 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 3111325870016790857, guid: 8bff30a66a73a6d449e6556c65da6901, type: 3}
+  m_PrefabInstance: {fileID: 7504755280326740634}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4831123587933490133 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3111325870016790863, guid: 8bff30a66a73a6d449e6556c65da6901, type: 3}
@@ -755,6 +760,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 4831123589739531447}
   _propsCategory: 0
+  _boxCollider: {fileID: 4831123587933490131}
 --- !u!23 &5944659114936176806
 MeshRenderer:
   m_ObjectHideFlags: 0

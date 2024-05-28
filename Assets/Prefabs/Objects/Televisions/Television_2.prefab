@@ -205,6 +205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 1207536238640772}
   _propsCategory: 10
+  _boxCollider: {fileID: 65294443493904838}
 --- !u!23 &282441933152382814
 MeshRenderer:
   m_ObjectHideFlags: 0
