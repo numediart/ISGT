@@ -23,10 +23,19 @@ namespace Pro_gen
 
         public void Insert(Props prop)
         {
+            BoxCollider boxCollider = prop.GetBoxCollider();
+            
+            Collider[] intersectingColliders = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity);
+            
+            
             //Check if any part of the prop is inside the bounds
-            if (!bounds.Intersects(prop.CalculateBounds()))
+            foreach (var collider in intersectingColliders)
             {
-                return;
+                if (collider.Equals(boxCollider))
+                {
+                    Debug.Log("Prop is already in the tree");
+                    return;
+                }
             }
             
             

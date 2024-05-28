@@ -6,6 +6,7 @@ namespace Pro_gen
     {
         [SerializeField] private GameObject _propsPrefab;
         [SerializeField] private PropsCategory _propsCategory;
+        [SerializeField] private BoxCollider _boxCollider;
         public PropsCategory PropsCategory => _propsCategory;
         
         public Bounds CalculateBounds()
@@ -22,7 +23,7 @@ namespace Pro_gen
         }
         public BoxCollider GetBoxCollider()
         {
-            return GetComponentInChildren<BoxCollider>();
+            return _boxCollider;
         }
     }
 }
