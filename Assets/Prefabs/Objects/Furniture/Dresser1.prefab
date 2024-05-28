@@ -264,7 +264,7 @@ GameObject:
   - component: {fileID: 4917131046671554667}
   m_Layer: 0
   m_Name: Dresser1
-  m_TagString: Untagged
+  m_TagString: SimObjPhysics
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -601,7 +601,7 @@ GameObject:
   - component: {fileID: 6118535801201820733}
   m_Layer: 0
   m_Name: BoundingBox
-  m_TagString: Untagged
+  m_TagString: BoundingBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
