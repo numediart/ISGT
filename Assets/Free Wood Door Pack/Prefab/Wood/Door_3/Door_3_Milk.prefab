@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7180858003934856353}
   m_Layer: 0
   m_Name: Door_3_Milk
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -6,12 +6,19 @@ namespace Pro_gen
     {
         [SerializeField] private GameObject _propsPrefab;
         [SerializeField] private PropsCategory _propsCategory;
-        
         public PropsCategory PropsCategory => _propsCategory;
         
-        public GameObject InstantiateProp(Vector3 position, Quaternion rotation, Transform parent)
+        public Bounds CalculateBounds()
         {
-            return Instantiate(_propsPrefab, position, rotation, parent);
+            Physics.SyncTransforms(); // Force collider update 
+            Bounds combinedBounds = new Bounds(transform.position, Vector3.zero);
+
+            foreach (Collider collider in GetComponentsInChildren<Collider>())
+            {
+                combinedBounds.Encapsulate(collider.bounds);
+            }
+            
+            return combinedBounds;
         }
     }
 }

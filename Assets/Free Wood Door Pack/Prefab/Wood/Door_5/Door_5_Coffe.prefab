@@ -233,7 +233,7 @@ GameObject:
   - component: {fileID: 2170675447242265946}
   m_Layer: 0
   m_Name: Door_5_Coffe
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

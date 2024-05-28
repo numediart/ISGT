@@ -183,10 +183,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proGenParams: {fileID: 11400000, guid: 05f9f87b3e12cb44091a4e30c62bd028, type: 2}
-  numberOfProps: 5
+  numberOfProps: 10
   _selectedProps: []
   _selectedPropsBounds: []
-  _gridSubdivision: 10
 --- !u!1 &1622715488
 GameObject:
   m_ObjectHideFlags: 0

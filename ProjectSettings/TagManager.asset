@@ -10,6 +10,10 @@ TagManager:
   - Receptacle
   - HighFriction
   - Ground
+  - Opening Ratio Sphere
+  - Structure
+  - Wall
+  - Door
   layers:
   - Default
   - TransparentFX

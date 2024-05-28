@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
@@ -11,20 +12,15 @@ namespace Pro_gen
         [SerializeField] private int numberOfProps = 4;
         [SerializeField] private List<Props> _selectedProps;
         [SerializeField] private List<Bounds> _selectedPropsBounds;
-        private bool[,] _propsGrid;
-         
-        [SerializeField] private int _gridSubdivision = 1;
+        
+        private QuadTreeNode _quadTree;
 
-        private void Awake()
-        {
-            int gridWidth = Mathf.CeilToInt(_proGenParams.width * _gridSubdivision);
-            int gridHeight = Mathf.CeilToInt(_proGenParams.height * _gridSubdivision);
-            _propsGrid = new bool[gridWidth, gridHeight];
-            
-        }
+        
 
-        public void PlaceProps(System.Random random)
+
+        public void PlaceProps(Random random)
         {
+            float startTime = Time.time;
             if (_proGenParams == null)
             {
                 Debug.LogError("ProGenParams not assigned.");
@@ -45,35 +41,50 @@ namespace Pro_gen
                 )
             );
 
+            _quadTree = new QuadTreeNode(roomBounds, 0);
+
             for (int i = 0; i < numberOfProps; i++)
             {
                 Props selectedProp = _proGenParams.PropsPrefabs[random.Next(_proGenParams.PropsPrefabs.Count)];
                 Props propInstance = Instantiate(selectedProp, Vector3.zero, Quaternion.identity, transform);
                 _selectedProps.Add(propInstance);
+                
+                Physics.SyncTransforms(); // Force collider update
 
-                Bounds propBounds = CalculateBounds(propInstance);
+                Bounds propBounds = propInstance.CalculateBounds();
                 _selectedPropsBounds.Add(propBounds);
                 Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds);
 
                 propInstance.transform.position = positionInRoom;
-                propBounds = CalculateBounds(propInstance); // Recalculate bounds after moving
-                PopulatePropsGridWithProps();
+                
+
+                propBounds = propInstance.CalculateBounds(); // Recalculate bounds after moving
+                _quadTree.Insert(propInstance);
                 _selectedPropsBounds[i] = propBounds;
             }
+            
+            Debug.Log("Props placed in " + (Time.time - startTime) + " seconds.");
         }
 
+        
         private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds)
         {
             Vector3 position = Vector3.zero;
             bool isPositionFound = false;
             Vector3 propExtents = bounds.extents;
+            
+            List<QuadTreeNode> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes();
+            
+            int nodeIndex = random.Next(biggestEmptyNodes.Count);
+            
+            QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
 
             while (!isPositionFound)
             {
                 position = new Vector3(
-                    NextFloat(random, roomBounds.min.x + propExtents.x, roomBounds.max.x - propExtents.x),
-                    GetGroundBounds().max.y - bounds.min.y, // Adjust the height to align with the ground
-                    NextFloat(random, roomBounds.min.z + propExtents.z, roomBounds.max.z - propExtents.z)
+                    NextFloat(random, selectedNode.bounds.min.x + propExtents.x, selectedNode.bounds.max.x - propExtents.x),
+                    GetGroundBounds().max.y - bounds.min.y, // Adjust the height to align with the ground,
+                    NextFloat(random, selectedNode.bounds.min.z + propExtents.z, selectedNode.bounds.max.z - propExtents.z)
                 );
 
                 if (CanPropsBePlaced(position, bounds))
@@ -87,50 +98,28 @@ namespace Pro_gen
 
         private bool CanPropsBePlaced(Vector3 position, Bounds bounds)
         {
-            int gridX = Mathf.FloorToInt(position.x * _gridSubdivision / _proGenParams.width);
-            int gridZ = Mathf.FloorToInt(position.z * _gridSubdivision / _proGenParams.height);
-            int propWidth = Mathf.CeilToInt(bounds.extents.x * _gridSubdivision / _proGenParams.width);
-            int propHeight = Mathf.CeilToInt(bounds.extents.z * _gridSubdivision / _proGenParams.height);
+            // Calculate the new bounds based on the desired position
+            bounds.center = position;
 
-            for (int x = gridX; x < gridX + propWidth; x++)
+            // Check if the object intersects with walls (tagged "Wall")
+            Collider[] intersectingWalls = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity, LayerMask.GetMask("Wall"));
+            if (intersectingWalls.Length > 0)
             {
-                for (int z = gridZ; z < gridZ + propHeight; z++)
-                {
-                    if (x < 0 || x >= _propsGrid.GetLength(0) || z < 0 || z >= _propsGrid.GetLength(1) || _propsGrid[x, z])
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
+
+            // Check if the object intersects with other props (tagged "SimObjPhysics")
+            Collider[] intersectingProps = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity, LayerMask.GetMask("SimObjPhysics"));
+            if (intersectingProps.Length > 0)
+            {
+                return false;
+            }
+            
+            // Check if the object intersects with doors (tagged "Door")
 
             return true;
         }
-
-        private void PopulatePropsGridWithProps()
-        {
-            foreach (Props props in _selectedProps)
-            {
-                Bounds bounds = CalculateBounds(props);
-                Vector3 position = props.transform.position;
-                Vector3 extents = bounds.extents;
-
-                int gridX = Mathf.FloorToInt(position.x * _gridSubdivision / _proGenParams.width);
-                int gridZ = Mathf.FloorToInt(position.z * _gridSubdivision / _proGenParams.height);
-                int propWidth = Mathf.CeilToInt(extents.x * _gridSubdivision / _proGenParams.width);
-                int propHeight = Mathf.CeilToInt(extents.z * _gridSubdivision / _proGenParams.height);
-
-                for (int x = gridX; x < gridX + propWidth; x++)
-                {
-                    for (int z = gridZ; z < gridZ + propHeight; z++)
-                    {
-                        if (x >= 0 && x < _propsGrid.GetLength(0) && z >= 0 && z < _propsGrid.GetLength(1))
-                        {
-                            _propsGrid[x, z] = true;
-                        }
-                    }
-                }
-            }
-        }
+        
 
         private Bounds GetGroundBounds()
         {
@@ -146,19 +135,7 @@ namespace Pro_gen
             return groundBounds;
         }
 
-        Bounds CalculateBounds(Props props)
-        {
-            Bounds combinedBounds = new Bounds(props.transform.position, Vector3.zero);
-
-            foreach (Collider collider in props.GetComponentsInChildren<Collider>())
-            {
-                combinedBounds.Encapsulate(collider.bounds);
-            }
-
-            return combinedBounds;
-        }
-
-        private float NextFloat(System.Random random, float min, float max)
+        private float NextFloat(Random random, float min, float max)
         {
             return (float)(random.NextDouble() * (max - min) + min);
         }
@@ -179,37 +156,15 @@ namespace Pro_gen
 
             foreach (Props props in _selectedProps)
             {
-                Bounds bounds = CalculateBounds(props);
+                Bounds bounds = props.CalculateBounds();
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);
             }
             
-            //Preview grid 
-            float cellWidth = _proGenParams.width / _gridSubdivision;
-            
-            
-            
-            
-            // if (_propsGrid != null)
-            // {
-            //     
-            //     float cellWidth = _proGenParams.width / _gridSubdivision;
-            //     float cellHeight = _proGenParams.height / _gridSubdivision;
-            //     for (int x = 0; x < _propsGrid.GetLength(0); x++)
-            //     {
-            //         for (int z = 0; z < _propsGrid.GetLength(1); z++)
-            //         {
-            //             Vector3 cellCenter = new Vector3(
-            //                 x * cellWidth + cellWidth / 2,
-            //                 groundBounds.max.y + 0.1f,
-            //                 z * cellHeight + cellHeight / 2
-            //             );
-            //
-            //             Gizmos.color = _propsGrid[x, z] ? Color.magenta : Color.blue;
-            //             Gizmos.DrawCube(cellCenter, new Vector3(cellWidth, 0.1f, cellHeight));
-            //         }
-            //     }
-            // }
+            if (_quadTree != null)
+            {
+                _quadTree.DrawGizmo();
+            }
         }
     }
 }

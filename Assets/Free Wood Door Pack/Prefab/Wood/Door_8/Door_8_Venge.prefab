@@ -316,7 +316,7 @@ GameObject:
   - component: {fileID: 2921711280018221231}
   m_Layer: 0
   m_Name: Door_8_Venge
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
