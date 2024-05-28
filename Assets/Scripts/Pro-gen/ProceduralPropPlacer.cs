@@ -65,19 +65,30 @@ namespace Pro_gen
                 Props selectedProp =
                     _roomsGenerationData.PropsPrefabs[random.Next(_roomsGenerationData.PropsPrefabs.Count)];
                 Props propInstance = Instantiate(selectedProp, Vector3.zero, Quaternion.Euler(0, NextFloat(random, 0f,360f), 0), transform);
-                _selectedProps.Add(propInstance);
 
                 Physics.SyncTransforms(); // Force collider update
 
                 Bounds propBounds = propInstance.CalculateBounds();
-                _selectedPropsBounds.Add(propBounds);
+                
                 Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform);
-                _propsPositions.Add(positionInRoom);
-                propInstance.transform.position = positionInRoom;
-                _selectedProps[i] = propInstance;
-                _quadTree.Insert(propInstance);
-                propBounds = propInstance.CalculateBounds(); // Recalculate bounds after moving
-                _selectedPropsBounds[i] = propBounds;
+                
+                if (positionInRoom == Vector3.zero)
+                {
+                    Destroy(propInstance.gameObject);
+                }
+                else
+                {
+                  
+                    propInstance.transform.position = positionInRoom;
+                    _quadTree.Insert(propInstance);
+                    Physics.SyncTransforms(); // Force collider update
+                    propBounds = propInstance.CalculateBounds(); // Recalculate bounds after moving
+                    _selectedProps.Add(propInstance);
+                    _selectedPropsBounds.Add(propBounds);
+                    _propsPositions.Add(positionInRoom);
+                    
+                }
+                
             }
             timeTools.Stop();
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
@@ -114,9 +125,12 @@ namespace Pro_gen
                 {
                     attempts++;
                 }
-                Debug.Log("Attempts: " + attempts);
             }
-
+            
+            if (attempts == _maxAttempts)
+            {
+                return Vector3.zero;
+            }
             return position;
         }
 
@@ -132,6 +146,7 @@ namespace Pro_gen
             {
                 if (wall.CompareTag("Wall") || wall.CompareTag("SimObjPhysics") || wall.CompareTag("Door")) 
                 {
+                    Debug.Log("Collided with" + wall.tag);
                     return false;
                 }
             }
@@ -169,19 +184,19 @@ namespace Pro_gen
                 new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width,
                     _roomsGenerationData.heightOffset,
                     _roomsGenerationData.heightOffset * _roomsGenerationData.height));
-
+        
             Bounds groundBounds = GetGroundBounds();
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(groundBounds.center, groundBounds.size);
-
+        
             foreach (Props props in _selectedProps)
             {
                 Bounds bounds = props.CalculateBounds();
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);
             }
-
-
+        
+        
             if (_quadTree != null)
             {
                 _quadTree.DrawGizmo();
