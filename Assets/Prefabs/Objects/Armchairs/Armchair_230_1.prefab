@@ -399,6 +399,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8097195374663983756}
   m_SourcePrefab: {fileID: 100100000, guid: a43ec32830be64a429445c861d5c1038, type: 3}
+--- !u!65 &5907560035605577057 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 4789996339945747395, guid: a43ec32830be64a429445c861d5c1038, type: 3}
+  m_PrefabInstance: {fileID: 1405865011128258210}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5907560035605577063 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4789996339945747397, guid: a43ec32830be64a429445c861d5c1038, type: 3}
@@ -500,6 +505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 5907560037555045203}
   _propsCategory: 1
+  _boxCollider: {fileID: 5907560035605577057}
 --- !u!23 &1076881891071643589
 MeshRenderer:
   m_ObjectHideFlags: 0

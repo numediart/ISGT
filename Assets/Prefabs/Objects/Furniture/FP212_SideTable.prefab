@@ -203,3 +203,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 1786985192146526450}
   _propsCategory: 13
+  _boxCollider: {fileID: 1786985191858169095}

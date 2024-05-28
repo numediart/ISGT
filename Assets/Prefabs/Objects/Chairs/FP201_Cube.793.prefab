@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _propsPrefab: {fileID: 3322881468734740868}
   _propsCategory: 0
+  _boxCollider: {fileID: 3322881469208544515}
 --- !u!1 &3322881469208544514
 GameObject:
   m_ObjectHideFlags: 0
