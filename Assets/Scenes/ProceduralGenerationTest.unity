@@ -233,6 +233,7 @@ MonoBehaviour:
   numberOfProps: 5
   _selectedProps: []
   _selectedPropsBounds: []
+  _gridSubdivision: 1
 --- !u!1 &1622715488
 GameObject:
   m_ObjectHideFlags: 0

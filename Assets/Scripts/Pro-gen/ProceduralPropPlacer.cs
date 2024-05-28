@@ -96,7 +96,7 @@ namespace Pro_gen
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
 
             QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
-
+            
             while (!isPositionFound)
             {
                 position = new Vector3(
@@ -107,11 +107,10 @@ namespace Pro_gen
                         selectedNode.bounds.max.z - propExtents.z)
                 );
 
-                isPositionFound = true;
-                /*   if (CanPropsBePlaced(position, bounds))
-                   {
+                if (CanPropsBePlaced(position, bounds))
+                {
                        isPositionFound = true;
-                   }*/
+                }
             }
 
             return position;
@@ -123,23 +122,16 @@ namespace Pro_gen
             bounds.center = position;
 
             // Check if the object intersects with walls (tagged "Wall")
-            Collider[] intersectingWalls = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity,
-                LayerMask.GetMask("Wall"));
-            if (intersectingWalls.Length > 0)
+            Collider[] intersectingWalls = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity);
+            
+            foreach (Collider wall in intersectingWalls)
             {
-                return false;
+                if (wall.CompareTag("Wall") || wall.CompareTag("SimObjPhysics") || wall.CompareTag("Door")) 
+                {
+                    return false;
+                }
             }
-
-            // Check if the object intersects with other props (tagged "SimObjPhysics")
-            Collider[] intersectingProps = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity,
-                LayerMask.GetMask("SimObjPhysics"));
-            if (intersectingProps.Length > 0)
-            {
-                return false;
-            }
-
-            // Check if the object intersects with doors (tagged "Door")
-
+            
             return true;
         }
 
