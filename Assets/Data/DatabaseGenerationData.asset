@@ -22,7 +22,7 @@ MonoBehaviour:
   TimeMargin: 0.2
   CameraMinimumDistanceFromWall: 1
   CameraMinimumDistanceFromGroundAndCeiling: 0
-  CameraMinimumDistanceFromObjects: 0.5
+  CameraMinimumDistanceFromObjects: 1
   MaximumCameraXRotation: 45
   MaximumCameraYRotation: 180
   MaximumCameraZRotation: 45

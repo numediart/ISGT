@@ -114,18 +114,18 @@ namespace Pro_gen
             _children[3] = new QuadTreeNode(new Bounds(center + new Vector3(size.x / 2, 0, size.z / 2), size), _depth + 1);
         }
         
-        public List<Vector3> GetAllEmptyNodes()
+        public List<Bounds> GetAllEmptyNodes()
         {
-            List<Vector3> result = new List<Vector3>();
+            List<Bounds> result = new List<Bounds>();
             GetAllEmptyNodesRecursive(this, result);
             return result;
         }
         
-        private void GetAllEmptyNodesRecursive(QuadTreeNode node, List<Vector3> result)
+        private void GetAllEmptyNodesRecursive(QuadTreeNode node, List<Bounds> result)
         {
             if (node._objects.Count == 0)
             {
-                result.Add(node.bounds.center);
+                result.Add(node.bounds);
             }
             else if (node._children != null)
             {

@@ -149,7 +149,7 @@ MonoBehaviour:
   ObjectNumberRatio: 50
   WindowPerWallNumber: 1
   DoorPerWallNumber: 1
-  NumberOfEmptyRoomsOnScene: 1
+  NumberOfEmptyRoomsOnScene: 100
   MinimumDistanceBetweenBorders: 0.3
   WindowPerWallMinimumNumber: 0
   WindowPerWallMaximumNumber: 2

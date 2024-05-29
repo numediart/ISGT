@@ -121,8 +121,6 @@ public class RoomCell : MonoBehaviour
         }
 
         ActiveWalls.Remove(direction); // remove the wall from the active walls
-        Transform currentWallTransform = currentWall.transform; // get the transform of the current wall
-
         GameObject instantiatedWall =
             Instantiate(newWall, currentWall.transform.parent); // instantiate the new wall prefab
         Vector3 newPosition = currentWall.transform.position; // get the position of the current wall
@@ -134,10 +132,7 @@ public class RoomCell : MonoBehaviour
                 newPosition =
                     new Vector3(-0.055f + newPosition.x, 1.25f,
                         1.25f + newPosition.z); // set the new position of the wall
-                newRotation = newWall.GetComponent<WallDoor>()
-                    ? Quaternion.Euler(0, 270, 0)
-                    : Quaternion.Euler(0, 270,
-                        0); // set the new rotation of the wall to be 90 degrees on the y axis it can be 270 degrees if the wall is a window
+                newRotation = Quaternion.Euler(0, 270, 0); // set the new rotation of the wall to be 90 degrees on the y axis it can be 270 degrees if the wall is a window
                 _frontWallPrefabs = instantiatedWall;
                 break;
             case RoomCellDirections.Back:
@@ -149,10 +144,7 @@ public class RoomCell : MonoBehaviour
                 break;
             case RoomCellDirections.Left:
                 newPosition = new Vector3(1.25f + newPosition.x, 1.25f, 0.05f + newPosition.z + 0.005f);
-                newRotation = newWall.GetComponent<WallDoor>()
-                    ? Quaternion.Euler(0, 180, 0)
-                    : Quaternion.Euler(0, 180,
-                        0); // set the new rotation of the wall to be 0 degrees on the y axis it can be 180 degrees if the wall is a window (need to flip it to have well oriented windows)
+                newRotation = Quaternion.Euler(0, 180, 0);// set the new rotation of the wall to be 0 degrees on the y axis it can be 180 degrees if the wall is a window (need to flip it to have well oriented windows)
                 _leftWallPrefabs = instantiatedWall;
                 break;
             case RoomCellDirections.Right:
@@ -174,18 +166,23 @@ public class RoomCell : MonoBehaviour
     {
         if (ActiveWalls.ContainsKey(directions))
         {
-            ActiveWalls[directions].GetComponent<Renderer>().material = _proGenParams.WallMaterials[materialIndex];
+            if (ActiveWalls[directions].TryGetComponent<Renderer>(out Renderer renderer))
+            {
+                renderer.material = _proGenParams.WallMaterials[materialIndex];
+            }
         }
     }
 
     public void ApplyFloorTexture(int materialIndex)
     {
-        _floorPrefab.GetComponent<Renderer>().material = _proGenParams.FloorMaterials[materialIndex];
+        if(_floorPrefab.TryGetComponent<Renderer>(out Renderer renderer))
+            renderer.material = _proGenParams.FloorMaterials[materialIndex];
     }
 
     public void ApplyCeilingTexture(int materialIndex)
     {
-        _ceilingPrefabs.GetComponent<Renderer>().material = _proGenParams.CeilingMaterials[materialIndex];
+        if(_ceilingPrefabs.TryGetComponent<Renderer>(out Renderer renderer))
+            renderer.material = _proGenParams.CeilingMaterials[materialIndex];
     }
 
     /// <summary>
@@ -208,6 +205,10 @@ public class RoomCell : MonoBehaviour
             default:
                 return null;
         }
+    }
+    public GameObject GetActiveWall(RoomCellDirections direction)
+    {
+        return ActiveWalls[direction];
     }
 
   /*  private void OnDrawGizmos()

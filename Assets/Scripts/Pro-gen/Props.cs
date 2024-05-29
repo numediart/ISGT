@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Pro_gen
@@ -8,7 +9,12 @@ namespace Pro_gen
         [SerializeField] private PropsCategory _propsCategory;
         [SerializeField] private BoxCollider _boxCollider;
         public PropsCategory PropsCategory => _propsCategory;
-        
+
+        private void Awake()
+        {
+            tag="SimObjPhysics";
+        }
+
         public Bounds CalculateBounds()
         {
             Physics.SyncTransforms(); // Force collider update 

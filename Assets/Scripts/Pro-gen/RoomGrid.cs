@@ -16,16 +16,18 @@ namespace Pro_gen
 
         private Dictionary<RoomCellDirections, List<RoomCell>> _wallSections;
         private Dictionary<RoomCellDirections, int> _wallDoorPerSection;
-    
-
+        
         public void InitGrid(int roomSeed, RoomsGenerationScriptableObject roomsGenerationData)
         {
             _roomsGenerationData = roomsGenerationData;
             _gridRandom = new Random(roomSeed);
-            _roomsGenerationData.width = _roomsGenerationData.MaxRoomWidth ;// _gridRandom.Next(2, _roomsGenerationData.MaxRoomWidth);
-            _roomsGenerationData.height = _roomsGenerationData.MaxRoomHeight;// _gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
+            _roomsGenerationData.width =
+                _roomsGenerationData.MaxRoomWidth; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomWidth);
+            _roomsGenerationData.height =
+                _roomsGenerationData.MaxRoomHeight; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
             _grid = new RoomCell[_roomsGenerationData.width,
-                _roomsGenerationData.height]; // initialize the grid with the width and height in pro gen scriptable Object
+                _roomsGenerationData
+                    .height]; // initialize the grid with the width and height in pro gen scriptable Object
             _wallSections =
                 new
                     Dictionary<RoomCellDirections,
@@ -107,11 +109,14 @@ namespace Pro_gen
         private IEnumerable<RoomCell> GetUnvisitedCells(RoomCell currentCell)
         {
             Vector2
-                cellPosition = currentCell.GetCellPosition(); // return the position of the cell in the grid (index x and y)
-            if (cellPosition.x + 1 < _roomsGenerationData.width) // check if the cell is not in the right corner of the grid
+                cellPosition =
+                    currentCell.GetCellPosition(); // return the position of the cell in the grid (index x and y)
+            if (cellPosition.x + 1 <
+                _roomsGenerationData.width) // check if the cell is not in the right corner of the grid
             {
                 var cellToRight =
-                    _grid[(int)cellPosition.x + 1, (int)cellPosition.y]; // get the cell to the right of the current cell
+                    _grid[(int)cellPosition.x + 1,
+                        (int)cellPosition.y]; // get the cell to the right of the current cell
                 if (cellToRight.IsVisited == false)
                 {
                     yield return cellToRight; // return the cell if it is not visited
@@ -128,10 +133,12 @@ namespace Pro_gen
                 }
             }
 
-            if (cellPosition.y + 1 < _roomsGenerationData.height) // check if the cell is not in the top corner of the grid
+            if (cellPosition.y + 1 <
+                _roomsGenerationData.height) // check if the cell is not in the top corner of the grid
             {
                 var cellToFront =
-                    _grid[(int)cellPosition.x, (int)cellPosition.y + 1]; // get the cell to the front of the current cell
+                    _grid[(int)cellPosition.x,
+                        (int)cellPosition.y + 1]; // get the cell to the front of the current cell
                 if (cellToFront.IsVisited == false)
                 {
                     yield return cellToFront; // return the cell if it is not visited
@@ -155,13 +162,15 @@ namespace Pro_gen
         /// <param name="cell"></param>
         private void ClearWalls(RoomCell cell)
         {
-            Vector2 cellPosition = cell.GetCellPosition(); // return the position of the cell in the grid (index x and y)
+            Vector2
+                cellPosition = cell.GetCellPosition(); // return the position of the cell in the grid (index x and y)
             if (cellPosition is { x: 0, y: 0 }) // if the cell is in the top left corner of the grid
             {
                 cell.ClearBackWall();
                 cell.ClearRightWall();
                 _wallSections[RoomCellDirections.Front].Add(cell);
                 _wallSections[RoomCellDirections.Left].Add(cell);
+   
             }
 
             else if (cellPosition is { x: 0, y: > 0 } &&
@@ -171,14 +180,17 @@ namespace Pro_gen
                 cell.ClearRightWall();
                 cell.ClearLeftWall();
                 _wallSections[RoomCellDirections.Front].Add(cell);
+       
             }
             else if (cellPosition.x == 0 &&
-                     cellPosition.y.Equals(_roomsGenerationData.height - 1)) // if the cell is in the top right corner of the grid
+                     cellPosition.y.Equals(_roomsGenerationData.height -
+                                           1)) // if the cell is in the top right corner of the grid
             {
                 cell.ClearBackWall();
                 cell.ClearLeftWall();
                 _wallSections[RoomCellDirections.Front].Add(cell);
                 _wallSections[RoomCellDirections.Right].Add(cell);
+
             }
 
             else if (cellPosition is { x: > 0, y: 0 } &&
@@ -197,9 +209,11 @@ namespace Pro_gen
                 cell.ClearRightWall();
                 _wallSections[RoomCellDirections.Back].Add(cell);
                 _wallSections[RoomCellDirections.Left].Add(cell);
+      
             }
 
-            else if (cellPosition.x.Equals(_roomsGenerationData.width - 1) && cellPosition.y < _roomsGenerationData.height - 1 &&
+            else if (cellPosition.x.Equals(_roomsGenerationData.width - 1) &&
+                     cellPosition.y < _roomsGenerationData.height - 1 &&
                      cellPosition.y > 0) // if the cell is in the bottom of the grid
             {
                 cell.ClearFrontWall();
@@ -215,6 +229,7 @@ namespace Pro_gen
                 cell.ClearLeftWall();
                 _wallSections[RoomCellDirections.Back].Add(cell);
                 _wallSections[RoomCellDirections.Right].Add(cell);
+         
             }
 
             else if (cellPosition.x > 0 && cellPosition.x < _roomsGenerationData.width - 1 &&
@@ -250,7 +265,8 @@ namespace Pro_gen
                 for (int j = _wallDoorPerSection[wallSection.Key]; j < _roomsGenerationData.DoorPerWallNumber; j++)
                 {
                     int wallDoorIndex =
-                        random.Next(0, _roomsGenerationData.WallDoorPrefabs.Count); // get a random door prefab in the list
+                        random.Next(0,
+                            _roomsGenerationData.WallDoorPrefabs.Count); // get a random door prefab in the list
                     var wallDoor = _roomsGenerationData.WallDoorPrefabs[wallDoorIndex]; // get the door prefab
                     var cell = wallSection.Value[
                         random.Next(0, wallSection.Value.Count)]; // get a random cell in the wall section
@@ -316,9 +332,7 @@ namespace Pro_gen
                     }
                     else
                     {
-                        if (Vector2.Distance(cell.GetCellPosition(), previousCell!.GetCellPosition()) > 1 &&
-                            !cell.GetComponentInChildren<
-                                WallDoor>()) // check if the distance between the current cell and the previous cell is greater than 1 and there is no door in the cell Hardcoded value should be in the pro gen scriptable object
+                        if (Vector2.Distance(cell.GetCellPosition(), previousCell!.GetCellPosition()) > 1)// check if the distance between the current cell and the previous cell is greater than 1 and there is no door in the cell Hardcoded value should be in the pro gen scriptable object
                         {
                             cell.ReplaceWall(wallSection.Key, wallWindow); // replace the wall with the window
                             windowNumber++; // increment the window number
@@ -339,7 +353,8 @@ namespace Pro_gen
             foreach (var wallSection in _wallSections) // loop through the wall sections (front, back, left, right)
             {
                 int wallMaterialIndex =
-                    _gridRandom.Next(0, _roomsGenerationData.WallMaterials.Count); // get a random wall material in the list
+                    _gridRandom.Next(0,
+                        _roomsGenerationData.WallMaterials.Count); // get a random wall material in the list
                 foreach (var cell in wallSection.Value) // loop through the cells in the wall section
                 {
                     cell.ApplyWallTexture(wallMaterialIndex, wallSection.Key); // apply the texture to the wall
@@ -347,9 +362,11 @@ namespace Pro_gen
             }
 
             int floorMaterialIndex =
-                _gridRandom.Next(0, _roomsGenerationData.FloorMaterials.Count); // get a random floor material in the list
+                _gridRandom.Next(0,
+                    _roomsGenerationData.FloorMaterials.Count); // get a random floor material in the list
             int ceilingMaterialIndex =
-                _gridRandom.Next(0, _roomsGenerationData.CeilingMaterials.Count); // get a random ceiling material in the list
+                _gridRandom.Next(0,
+                    _roomsGenerationData.CeilingMaterials.Count); // get a random ceiling material in the list
 
 
             foreach (var cell in _grid) // loop through the cells in the grid
@@ -357,6 +374,22 @@ namespace Pro_gen
                 cell.ApplyFloorTexture(floorMaterialIndex); // apply the texture to the floor
                 cell.ApplyCeilingTexture(ceilingMaterialIndex); // apply the texture to the ceiling
             }
+        }
+
+
+        public List<GameObject> GetAllWalls()
+        {
+            List<GameObject> walls = new List<GameObject>();
+            foreach (KeyValuePair<RoomCellDirections, List<RoomCell>> wallSection in _wallSections)
+            {
+                foreach (RoomCell cell in wallSection.Value)
+                {
+                    walls.Add(cell.GetActiveWall(wallSection.Key));
+                }
+            }
+
+            return walls;
+
         }
     }
 }

@@ -1,50 +1,71 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor;
+using Utils;
 
 public class RoomsGenerator : MonoBehaviour
 {
     #region Public Fields
 
     public RoomsGenerationScriptableObject RoomsGenerationData;
-    private Room _room;
-
+    public DatabaseGenerationScriptableObject DatabaseGenerationData;
+    public bool _manualSeeds = false;
+    
     #endregion
 
     #region Private Fields
-
-    public bool _manualSeeds = false;
+    private Room _room;
     [HideInInspector] [SerializeField] private int _roomSeed;
     [HideInInspector] [SerializeField] private int _openingSeed;
     [HideInInspector] [SerializeField] private int _objectSeed;
     [HideInInspector] [SerializeField] private int _databaseSeed;
 
     #endregion
-    
+
     #region Methods Called By Buttons
 
     private void Start()
     {
-        GenerateRooms();
+        StartCoroutine(GenerateRooms());
     }
 
     /// <summary>
     /// This method calls all the methods building the final rooms without painting on surfaces. 
     /// (Creation of the room shells, then the openings in the walls and finally the objects).
     /// </summary>
-    private void GenerateRooms()
+    private IEnumerator GenerateRooms()
     {
-        GameObject go = new GameObject("GeneratedRoom");
-         go.AddComponent<Room>();
-         go.TryGetComponent<Room>(out _room);
-        if (_manualSeeds)
+        TimeTools timeTools = new TimeTools();
+        timeTools.Start();
+        for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
         {
-            _room.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);
+            GameObject go = new GameObject("GeneratedRoom");
+            go.AddComponent<Room>();
+            go.TryGetComponent<Room>(out _room);
+            if (_manualSeeds)
+            {
+                _room.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);
+            }
+
+            _room.ManualSeeds = _manualSeeds;
+            _room.InitRoom(RoomsGenerationData, DatabaseGenerationData);
+    
+            yield return new WaitUntil(() =>
+            {
+                if (_room.RoomState == RoomState.DatabaseGenerated)
+                {
+                    DestroyImmediate(go);
+                    return true;
+                }
+                return false;
+                
+            });
         }
-        _room.ManualSeeds = _manualSeeds;
-        Debug.Log("Room Generation Started");
-        _room.InitRoom(RoomsGenerationData);
-        Debug.Log("Room Generation Finished");
+        timeTools.Stop();
+        Debug.Log("Rooms generated in " + timeTools.GetElapsedTimeInSeconds() + " seconds.");
+        timeTools.GetFormattedElapsedTime();
     }
 
     /// <summary>
@@ -59,7 +80,7 @@ public class RoomsGenerator : MonoBehaviour
     }
 
     #endregion
-    
+
 
     #region Information And Objects Getting Methods
 
@@ -70,9 +91,10 @@ public class RoomsGenerator : MonoBehaviour
 
     public float GetWallWidth(GameObject wall)
     {
-        return Mathf.Max(wall.transform.localScale.x, wall.transform.localScale.z);
+        var localScale = wall.transform.localScale;
+        return Mathf.Max(localScale.x, localScale.z);
     }
-    
+
     public static List<GameObject> GetRoomCategoryObjects(GameObject room, RoomCategory category)
     {
         List<GameObject> categoryObjects = new List<GameObject>();
@@ -93,9 +115,9 @@ public class RoomsGenerator : MonoBehaviour
     /// <param name="room"></param>
     /// <param name="nextCameraPosition"></param>
     /// <returns></returns>
-    public static bool IsCameraInsideAWall(GameObject room, Vector3 nextCameraPosition)
+    public static bool IsCameraInsideAWall(Room room, Vector3 nextCameraPosition)
     {
-        List<GameObject> walls = GetRoomCategoryObjects(room, RoomCategory.Walls);
+        List<GameObject> walls = room.RoomGrid.GetAllWalls();
 
         if (walls.Count == 0) return false;
 
@@ -122,7 +144,21 @@ public class RoomsGenerator : MonoBehaviour
     }
 
     #endregion
+
+    public static GameObject GetRoomCategory(GameObject room, RoomCategory wantedCategory)
+    {
+        for(int i = 0; i < room.transform.childCount; i++)
+        {
+            RoomCategory roomCategory;
+
+            if (Enum.TryParse(room.transform.GetChild(i).gameObject.name, out roomCategory) && roomCategory == wantedCategory)
+                return room.transform.GetChild(i).gameObject;
+        }
+
+        return null;
+    }
 }
+
 
 public enum RoomCategory
 {

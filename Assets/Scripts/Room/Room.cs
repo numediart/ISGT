@@ -12,10 +12,10 @@ public class Room : MonoBehaviour
 {
     private ProGenParams _proGenParams;
     private RoomsGenerationScriptableObject roomGenerationData;
+    public DatabaseGenerationScriptableObject DatabaseGenerationData;
     private GameObject _roomObject; //
     private Vector3 _position;
     private Quaternion _rotation;
-
     private bool _manualSeeds;
     private Random _roomRandom;
     private Random _openingRandom;
@@ -28,9 +28,9 @@ public class Room : MonoBehaviour
     [SerializeField] private int _objectSeed;
     [SerializeField] private int _databaseSeed;
 
-     private RoomGrid _roomGrid;
-     private ProceduralPropPlacer _proceduralPropPlacer;
-    
+    private RoomGrid _roomGrid;
+    private ProceduralPropPlacer _proceduralPropPlacer;
+
     private SeedsProvider _seedsProvider;
 
     private int _roomIdx;
@@ -45,11 +45,20 @@ public class Room : MonoBehaviour
     public int ObjectSeed => _objectSeed;
     public int DatabaseSeed => _databaseSeed;
 
+    public RoomState RoomState
+    {
+        get;
+        set;
+    }
     public Random DatabaseRandom => _databaseRandom;
     public string Id => _id; //unique id of the room (use for screenshot data)
     public GameObject RoomObject => _roomObject;
 
+    public List<Bounds> EmptyQuadNodesCenters { get; set; }
 
+    public RoomGrid RoomGrid => _roomGrid;
+
+    
     private void Awake()
     {
         _objectRandom = new Random(_objectSeed);
@@ -59,36 +68,43 @@ public class Room : MonoBehaviour
         _roomObject = gameObject;
         _roomObject.AddComponent<RoomGrid>();
         _roomObject.AddComponent<ProceduralPropPlacer>();
+        _roomObject.AddComponent<DatabaseGenerator>();
+        RoomState = RoomState.Empty;
     }
-    
+
     /// <summary>
     /// init method of the Room class.
     /// </summary>
     /// <param name="roomGenerationData"></param>
-
-    public void InitRoom(RoomsGenerationScriptableObject roomGenerationData)
+    public void InitRoom(RoomsGenerationScriptableObject roomGenerationData, DatabaseGenerationScriptableObject databaseGenerationData)
     {
         this.roomGenerationData = roomGenerationData;
+        this.DatabaseGenerationData = databaseGenerationData;
         _seedsProvider = new SeedsProvider();
         _id = Guid.NewGuid().ToString();
         if (!_manualSeeds)
         {
             InitSeeds();
         }
-        
-        
+
+
         name = "Room_" + _id;
-        bool isRoomGridComponent =TryGetComponent<RoomGrid>(out _roomGrid);
-        if(!isRoomGridComponent)
+        bool isRoomGridComponent = TryGetComponent<RoomGrid>(out _roomGrid);
+        if (!isRoomGridComponent)
         {
             Debug.Log("Room Grid is null");
             return;
         }
-        _roomGrid.InitGrid( _roomSeed,this.roomGenerationData);
+
+        _roomGrid.InitGrid(_roomSeed, this.roomGenerationData);
         TryGetComponent<ProceduralPropPlacer>(out _proceduralPropPlacer);
         _proceduralPropPlacer.Init(this.roomGenerationData);
         CreateOpenings();
         FillRoomWithObjects();
+        RoomState = RoomState.Filled;
+        EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
+        GenerateDatabase();
+       
     }
 
     public void SetSeeds(int roomSeed, int openingSeed, int objectSeed, int databaseSeed)
@@ -117,7 +133,7 @@ public class Room : MonoBehaviour
             _openingRandom); // replace the active wall with window with the constraint of the distance between the windows
         _roomGrid.ApplyTextures();
         timeTools.Stop();
-        Debug.Log("Time to create openings: " + timeTools.GetElapsedTime());
+        Debug.Log("Time to create openings: " + timeTools.GetElapsedTimeInSeconds() + " seconds");
     }
 
     /// <summary>
@@ -131,6 +147,13 @@ public class Room : MonoBehaviour
             roomGenerationData.width * roomGenerationData.height));// place the props in the room
         timeTools.Stop();
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
+    }
+
+    public void GenerateDatabase()
+    {
+        TryGetComponent<DatabaseGenerator>(out var databaseGenerator);
+        databaseGenerator.Init(this);
+        StartCoroutine(databaseGenerator.DatabaseGeneration());
     }
 
     /// <summary>
@@ -149,5 +172,12 @@ public class Room : MonoBehaviour
     }
 
     public Room GetRoom => this; // return the Room instance
-    
+}
+
+// create enum for Room State
+public enum RoomState
+{
+    Empty,
+    Filled,
+    DatabaseGenerated
 }

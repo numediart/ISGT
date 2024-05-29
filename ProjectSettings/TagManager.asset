@@ -12,9 +12,10 @@ TagManager:
   - Ground
   - Opening Ratio Sphere
   - Structure
-  - Wall
   - Door
   - BoundingBox
+  - Walls
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -7,7 +8,7 @@ public class Opening : MonoBehaviour
     #region Public Fields
 
     [HideInInspector] public float OpennessDegree;
-    [HideInInspector] public OpeningType Type;
+    public OpeningType Type;
     public MeansOfOpening MeansOfOpening;
     public GameObject MovingPart;
 
@@ -73,11 +74,15 @@ public class Opening : MonoBehaviour
     {
         return _visibilityRatio;
     }
-
+    
+   
+  
     public BoundingBox2D GetVisibilityBoundingBox()
     {
-        _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
-        _height = gameObject.GetComponent<BoxCollider>().size.y;
+
+       BoxCollider openingBounds = gameObject.GetComponent<BoxCollider>();
+        _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
+        _height = openingBounds.size.y;
         int minX = Screen.width + 1;
         int maxX = -1;
         int minY = Screen.height + 1;
@@ -127,6 +132,8 @@ public class Opening : MonoBehaviour
         Vector3 screenPoint = Camera.main.WorldToViewportPoint(point);
         return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1 && screenPoint.z > 0;
     }
+
+
 }
 
 public enum OpeningType
