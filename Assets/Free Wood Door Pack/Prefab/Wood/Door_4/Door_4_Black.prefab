@@ -231,6 +231,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4970741399400872}
   - component: {fileID: 6263901960541228569}
+  - component: {fileID: 2537434025388146539}
   m_Layer: 0
   m_Name: Door_4_Black
   m_TagString: Door
@@ -268,9 +269,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OpennessDegree: 0
-  Type: 0
+  Type: 1
   MeansOfOpening: 1
   MovingPart: {fileID: 1534469393933210}
+--- !u!65 &2537434025388146539
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831504449878450}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1818764, y: 2.169303, z: 0.035000246}
+  m_Center: {x: -0.0027977228, y: 1.0846515, z: 0}
 --- !u!1 &1875921088058430
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4073697980755798}
   - component: {fileID: 326556754563895758}
+  - component: {fileID: 3165570546233135477}
   m_Layer: 0
   m_Name: Door_4_Yellow
   m_TagString: Door
@@ -47,9 +48,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OpennessDegree: 0
-  Type: 0
+  Type: 1
   MeansOfOpening: 1
   MovingPart: {fileID: 1988184177506868}
+--- !u!65 &3165570546233135477
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160928174161554}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1818764, y: 2.169303, z: 0.035000246}
+  m_Center: {x: -0.0027977228, y: 1.0846515, z: 0}
 --- !u!1 &1640358248201884
 GameObject:
   m_ObjectHideFlags: 0

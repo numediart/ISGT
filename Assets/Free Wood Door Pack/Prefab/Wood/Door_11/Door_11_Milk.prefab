@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4089299432780678}
   - component: {fileID: 3266959386279169328}
+  - component: {fileID: -8639505510821868592}
   m_Layer: 0
   m_Name: Door_11_Milk
   m_TagString: Door
@@ -47,9 +48,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OpennessDegree: 0
-  Type: 0
+  Type: 1
   MeansOfOpening: 1
   MovingPart: {fileID: 1783271946408016}
+--- !u!65 &-8639505510821868592
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208035809094850}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1818764, y: 2.169303, z: 0.035000246}
+  m_Center: {x: -0.0027977228, y: 1.0846515, z: 0}
 --- !u!1 &1704842805020558
 GameObject:
   m_ObjectHideFlags: 0

@@ -199,6 +199,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4894436672217640}
   - component: {fileID: 6266617382572601287}
+  - component: {fileID: 7608391213047382791}
   m_Layer: 0
   m_Name: Door_14_Venge
   m_TagString: Door
@@ -236,9 +237,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OpennessDegree: 0
-  Type: 0
+  Type: 1
   MeansOfOpening: 1
   MovingPart: {fileID: 1034450928204766}
+--- !u!65 &7608391213047382791
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621344227884394}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1818764, y: 2.169303, z: 0.035000246}
+  m_Center: {x: -0.0027977228, y: 1.0846515, z: 0}
 --- !u!1 &1970458233803284
 GameObject:
   m_ObjectHideFlags: 0
