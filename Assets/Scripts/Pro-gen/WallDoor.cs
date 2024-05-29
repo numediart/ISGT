@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class WallDoor : MonoBehaviour
 {
-    [SerializeField] private ProGenParams _proGenParams;
     [SerializeField] private List<GameObject> _doorPrefabs;
     [SerializeField] private Transform _doorPosition;
 

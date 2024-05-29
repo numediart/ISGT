@@ -146,10 +146,12 @@ MonoBehaviour:
   - {fileID: 2100000, guid: e59b7fa896c484b4ebc5f738c338940e, type: 2}
   - {fileID: 2100000, guid: 9554c30067d9e4b40a657e538d755129, type: 2}
   - {fileID: 2100000, guid: b51b4023309164fcf96ce24b84003b18, type: 2}
-  ObjectNumberRatio: 50
+  WindowMaterials:
+  - {fileID: 2100000, guid: 57c5fc4cce8584d758d649a6ad4e62ac, type: 2}
+  ObjectNumberRatio: 25
   WindowPerWallNumber: 1
   DoorPerWallNumber: 1
-  NumberOfEmptyRoomsOnScene: 100
+  NumberOfEmptyRoomsOnScene: 1
   MinimumDistanceBetweenBorders: 0.3
   WindowPerWallMinimumNumber: 0
   WindowPerWallMaximumNumber: 2

@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636d075ee9f247f1815393d636cf8f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _proGenParams: {fileID: 11400000, guid: 05f9f87b3e12cb44091a4e30c62bd028, type: 2}
+  _proGenParams: {fileID: 11400000, guid: 4c1f468e5f7bbfa40afb0c89f2d9e265, type: 2}
   _floorPrefab: {fileID: 4625065489914081561}
   _frontWallPrefabs: {fileID: 7867697787067238909}
   _backWallPrefabs: {fileID: 5472685384999631424}

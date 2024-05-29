@@ -33,6 +33,7 @@ public class RoomsGenerationScriptableObject : ScriptableObject
     public List<Material> WallMaterials;
     public List<Material> FloorMaterials;
     public List<Material> CeilingMaterials;
+    public List<Material> WindowMaterials;
 
 
 

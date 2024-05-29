@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class RoomCell : MonoBehaviour
 {
-    [SerializeField] private ProGenParams _proGenParams;
+    [SerializeField] private RoomsGenerationScriptableObject _proGenParams;
     [SerializeField] private GameObject _floorPrefab;
     [SerializeField] private GameObject _frontWallPrefabs;
     [SerializeField] private GameObject _backWallPrefabs;
@@ -166,7 +166,7 @@ public class RoomCell : MonoBehaviour
     {
         if (ActiveWalls.ContainsKey(directions))
         {
-            if (ActiveWalls[directions].TryGetComponent<Renderer>(out Renderer renderer))
+            if (ActiveWalls[directions].TryGetComponent(out Renderer renderer))
             {
                 renderer.material = _proGenParams.WallMaterials[materialIndex];
             }
@@ -175,15 +175,36 @@ public class RoomCell : MonoBehaviour
 
     public void ApplyFloorTexture(int materialIndex)
     {
-        if(_floorPrefab.TryGetComponent<Renderer>(out Renderer renderer))
+        if(_floorPrefab.TryGetComponent(out Renderer renderer))
             renderer.material = _proGenParams.FloorMaterials[materialIndex];
     }
 
     public void ApplyCeilingTexture(int materialIndex)
     {
-        if(_ceilingPrefabs.TryGetComponent<Renderer>(out Renderer renderer))
+        if(_ceilingPrefabs.TryGetComponent(out Renderer renderer))
             renderer.material = _proGenParams.CeilingMaterials[materialIndex];
     }
+    
+    public void ApplyWindowTexture(int materialIndex, RoomCellDirections directions)
+    {
+        if (ActiveWalls.ContainsKey(directions))
+        {
+            // Find all the windows in the wall
+            Opening[] windows = ActiveWalls[directions].GetComponentsInChildren<Opening>(); //Get all the openings in the wall
+            foreach (var window in windows)
+            {
+                if (window.MeansOfOpening == MeansOfOpening.Translation) // Make sure the opening is a window
+                {
+                    GameObject windowFrame = window.Structure; // Get the window frame
+                    if (windowFrame.TryGetComponent(out Renderer renderer))
+                    {
+                        renderer.material = _proGenParams.WindowMaterials[materialIndex];
+                    }
+                }
+            }
+        }
+    }
+
 
     /// <summary>
     ///  Return the wall prefab of the room cell based on the direction
@@ -210,10 +231,4 @@ public class RoomCell : MonoBehaviour
     {
         return ActiveWalls[direction];
     }
-
-  /*  private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(new Vector3(Position.x*2.5f + 1.25f, 1.25f, Position.y*2.5f + 1.25f), new Vector3(2.5f, 2.5f, 2.5f));
-    }*/
 }

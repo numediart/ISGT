@@ -11,6 +11,7 @@ public class Opening : MonoBehaviour
     public OpeningType Type;
     public MeansOfOpening MeansOfOpening;
     public GameObject MovingPart;
+    public GameObject Structure;
 
     #endregion
 

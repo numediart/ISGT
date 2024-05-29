@@ -11,7 +11,6 @@ using Random = System.Random;
 /// </summary>
 public class Room : MonoBehaviour
 {
-    private ProGenParams _proGenParams;
     private RoomsGenerationScriptableObject roomGenerationData;
     public DatabaseGenerationScriptableObject DatabaseGenerationData;
     private GameObject _roomObject; //

@@ -355,9 +355,15 @@ namespace Pro_gen
                 int wallMaterialIndex =
                     _gridRandom.Next(0,
                         _roomsGenerationData.WallMaterials.Count); // get a random wall material in the list
+                
+                int windowMaterialIndex =
+                    _gridRandom.Next(0,
+                        _roomsGenerationData.WindowMaterials.Count); // get a random window material in the list
+                
                 foreach (var cell in wallSection.Value) // loop through the cells in the wall section
                 {
                     cell.ApplyWallTexture(wallMaterialIndex, wallSection.Key); // apply the texture to the wall
+                    cell.ApplyWindowTexture(windowMaterialIndex, wallSection.Key); // apply the texture to the window
                 }
             }
 
