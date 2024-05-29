@@ -23,8 +23,6 @@ namespace Pro_gen
 
         public void determineMaxDepth(int area)
         {
-            //Make the max depth go between 5 and 10 depending on the area, max area is 80*80
-            Debug.Log("Area: " + area);
             max_depth = 4 + (int) (5 * (Mathf.Sqrt(area) / 80f));
         }
 

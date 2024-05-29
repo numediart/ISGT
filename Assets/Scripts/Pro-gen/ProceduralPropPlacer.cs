@@ -16,7 +16,7 @@ namespace Pro_gen
         [SerializeField] private List<Bounds> _selectedPropsBounds;
         private QuadTreeNode _quadTree;
         private bool[,][,] _propsGrid;
-        private int _maxAttempts = 100;
+        private int _maxAttempts = 25;
         private List<Vector3> _propsPositions;
         [SerializeField] private int _gridSubdivision = 1;
 
@@ -34,12 +34,12 @@ namespace Pro_gen
             numberOfProps = _roomsGenerationData.ObjectNumberRatio;
         }
 
-        public void PlaceProps(Random random, int area)
+        public IEnumerator PlaceProps(Random random, int area)
         {
             if (_roomsGenerationData == null)
             {
                 Debug.LogError("ProGenParams not assigned.");
-                return;
+                yield break;
             }
 
             Vector3 roomCenter = new Vector3(
@@ -69,6 +69,9 @@ namespace Pro_gen
 
                 Bounds propBounds = propInstance.CalculateBounds();
                 
+                // wait for next fixed frame
+                Physics.SyncTransforms();
+                yield return new WaitForFixedUpdate();
                 Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform);
                 
                 if (positionInRoom == Vector3.zero)
@@ -79,6 +82,8 @@ namespace Pro_gen
                 {
                   
                     propInstance.transform.position = positionInRoom;
+                    // yield return new WaitForFixedUpdate();
+                    Physics.SyncTransforms();
                     _quadTree.Insert(propInstance);
                     propBounds = propInstance.CalculateBounds(); // Recalculate bounds after moving
                     _selectedProps.Add(propInstance);
@@ -144,7 +149,6 @@ namespace Pro_gen
             {
                 if (wall.CompareTag("Wall") || wall.CompareTag("SimObjPhysics") || wall.CompareTag("Door")) 
                 {
-                    Debug.Log("Collided with" + wall.tag);
                     return false;
                 }
             }
