@@ -199,13 +199,9 @@ public class RoomCell : MonoBehaviour
                     GameObject windowFrame = window.Structure; // Get the window frame
                     
                     // Check if window frame is not null
-
-                    if (!windowFrame)
+                    if (windowFrame.TryGetComponent(out Renderer renderer))
                     {
-                        if (windowFrame.TryGetComponent(out Renderer renderer))
-                        {
-                            renderer.material = _proGenParams.WindowMaterials[materialIndex];
-                        }
+                        renderer.material = _proGenParams.WindowMaterials[materialIndex];
                     }
                 }
             }
