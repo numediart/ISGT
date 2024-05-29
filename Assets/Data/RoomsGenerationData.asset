@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxRoomWidth: 5
   MaxRoomHeight: 5
-  width: 5
-  height: 5
+  width: 80
+  height: 80
   widthOffset: 2.5
   heightOffset: 2.5
   _gridSubdivision: 1
@@ -139,7 +139,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 0f39f81e7b9e08548b54c2517b0ea61f, type: 2}
   - {fileID: 2100000, guid: 06108bbff614c4bd2bf736887d1e9c50, type: 2}
   - {fileID: 2100000, guid: 4fc567df9b3f88b4bb5f7510db14cf3b, type: 2}
-  - {fileID: 0}
   - {fileID: 2100000, guid: b722a1e65336a4864a6f89e71067b905, type: 2}
   - {fileID: 2100000, guid: f7f7c8faa49e338498727af5cedb24cd, type: 2}
   - {fileID: 2100000, guid: 924194e9f9eb04d3e80c81899f30e29f, type: 2}
@@ -205,7 +204,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 0cd833354e4dc4678a0232a4c982924a, type: 2}
   - {fileID: 2100000, guid: 5854603e959ccbc4d89dfba95e6bd3bc, type: 2}
   - {fileID: 2100000, guid: 4b735863f181ac743b853d2947b57ed6, type: 2}
-  - {fileID: 2100000, guid: 83f72cffa1bdb4ce69103c5aeadda700, type: 2}
   - {fileID: 2100000, guid: c3212eb0294bc4965900a9a908c12688, type: 2}
   - {fileID: 2100000, guid: 9554c30067d9e4b40a657e538d755129, type: 2}
   - {fileID: 2100000, guid: b5ca49d4d55f547918cd20905f47610c, type: 2}
@@ -266,7 +264,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 1847e93484350f54e9925a86710147db, type: 2}
   - {fileID: 2100000, guid: 9af183a49a7554173a818136dffae7f4, type: 2}
   - {fileID: 2100000, guid: fd0ef5f6b19914a22abf6a9fe0da391c, type: 2}
-  ObjectNumberRatio: 25
+  ObjectNumberRatio: 40
   WindowPerWallNumber: 1
   DoorPerWallNumber: 1
   NumberOfEmptyRoomsOnScene: 100

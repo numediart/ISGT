@@ -196,19 +196,19 @@ namespace Pro_gen
                 new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width,
                     _roomsGenerationData.heightOffset,
                     _roomsGenerationData.heightOffset * _roomsGenerationData.height));
-
+        
             Bounds groundBounds = GetGroundBounds();
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(groundBounds.center, groundBounds.size);
-
+        
             foreach (Props props in _selectedProps)
             {
                 Bounds bounds = props.CalculateBounds();
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);
             }
-
-
+        
+        
             if (_quadTree != null)
             {
                 _quadTree.DrawGizmo();

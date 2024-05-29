@@ -11,20 +11,22 @@ namespace Pro_gen
         private QuadTreeNode[] _children;
         private readonly int _depth;
 
-        private int max_depth = 5;
+        private int max_depth;
 
-        public QuadTreeNode(Bounds bounds, int depth)
+        public QuadTreeNode(Bounds bounds, int depth, int maxDepth = 5)
         {
             this.bounds = bounds;
             _objects = new List<Props>();
             _children = null;
             _depth = depth;
+            max_depth = maxDepth;
         }
 
         public void determineMaxDepth(int area)
         {
             max_depth = 4 + (int) (5 * (Mathf.Sqrt(area) / 80f));
         }
+        
 
         public void Insert(Props prop)
         {
@@ -108,10 +110,10 @@ namespace Pro_gen
             size.y = bounds.size.y;
             Vector3 center = bounds.center;
 
-            _children[0] = new QuadTreeNode(new Bounds(center + new Vector3(-size.x / 2, 0, -size.z / 2), size), _depth + 1);
-            _children[1] = new QuadTreeNode(new Bounds(center + new Vector3(size.x / 2, 0, -size.z / 2), size), _depth + 1);
-            _children[2] = new QuadTreeNode(new Bounds(center + new Vector3(-size.x / 2, 0, size.z / 2), size), _depth + 1);
-            _children[3] = new QuadTreeNode(new Bounds(center + new Vector3(size.x / 2, 0, size.z / 2), size), _depth + 1);
+            _children[0] = new QuadTreeNode(new Bounds(center + new Vector3(-size.x / 2, 0, -size.z / 2), size), _depth + 1, max_depth);
+            _children[1] = new QuadTreeNode(new Bounds(center + new Vector3(size.x / 2, 0, -size.z / 2), size), _depth + 1, max_depth);
+            _children[2] = new QuadTreeNode(new Bounds(center + new Vector3(-size.x / 2, 0, size.z / 2), size), _depth + 1, max_depth);
+            _children[3] = new QuadTreeNode(new Bounds(center + new Vector3(size.x / 2, 0, size.z / 2), size), _depth + 1, max_depth);
         }
         
         public List<Bounds> GetAllEmptyNodes()
