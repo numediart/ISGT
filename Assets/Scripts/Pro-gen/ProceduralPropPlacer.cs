@@ -24,6 +24,7 @@ namespace Pro_gen
             _selectedProps = new List<Props>();
             _selectedPropsBounds = new List<Bounds>();
             _propsPositions = new List<Vector3>();
+            Time.fixedDeltaTime = 0.001f;
         }
 
         public void Init(RoomsGenerationScriptableObject roomGenerationData)
@@ -34,6 +35,11 @@ namespace Pro_gen
 
         public IEnumerator PlaceProps(Random random, int area)
         {
+            if (!TryGetComponent<Room>(out Room room))
+            {
+                Debug.LogError("Room component not found.");
+            }
+            
             if (_roomsGenerationData == null)
             {
                 Debug.LogError("ProGenParams not assigned.");
@@ -92,6 +98,7 @@ namespace Pro_gen
 
             timeTools.Stop();
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
+            room.RoomState = RoomState.Filled;
         }
         private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform)
         {

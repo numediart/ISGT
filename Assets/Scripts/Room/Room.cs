@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Pro_gen;
 using UnityEngine;
@@ -44,6 +45,7 @@ public class Room : MonoBehaviour
     public int OpeningSeed => _openingSeed;
     public int ObjectSeed => _objectSeed;
     public int DatabaseSeed => _databaseSeed;
+    
     public RoomState RoomState
     {
         get;
@@ -100,8 +102,7 @@ public class Room : MonoBehaviour
         _proceduralPropPlacer.Init(this.roomGenerationData);
         CreateOpenings();
         FillRoomWithObjects();
-        RoomState = RoomState.Filled;
-        GenerateDatabase();
+        StartCoroutine(GenerateDatabase());
        
     }
 
@@ -146,9 +147,10 @@ public class Room : MonoBehaviour
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }
 
-    public void GenerateDatabase()
+    private IEnumerator GenerateDatabase()
     {
         TryGetComponent<DatabaseGenerator>(out var databaseGenerator);
+        yield return new WaitUntil(()=> RoomState == RoomState.Filled);
         EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
         databaseGenerator.Init(this);
         StartCoroutine(databaseGenerator.DatabaseGeneration());

@@ -29,10 +29,10 @@ public class Opening : MonoBehaviour
     private void Awake()
     {
         _mainCamera = Camera.main;
+        SetOpeningRandomOpenness();
     }
     public void Start()
     {
-        SetOpeningRandomOpenness();
     }
 
     private void SetOpeningRandomOpenness()

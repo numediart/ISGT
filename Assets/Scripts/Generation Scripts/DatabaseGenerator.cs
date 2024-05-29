@@ -32,12 +32,12 @@ public class DatabaseGenerator : MonoBehaviour
 
     #endregion
 
+    
     private void Awake()
     {
         _camera = Camera.main;
- //      _camera.Render();
     }
-
+    
     public void Init(Room room)
     {
         _room = room;
@@ -77,12 +77,12 @@ public class DatabaseGenerator : MonoBehaviour
             for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
             {
                 TakeScreenshots(_room.RoomObject, _room.Id, j);
-                yield return new WaitForSecondsRealtime(0.03f);
+                yield return new WaitForSecondsRealtime(0.05f);
             }
         }
 
 
-       _camera.transform.rotation = Quaternion.identity;
+        _camera.transform.rotation = Quaternion.identity;
 
 
         _room.RoomState = RoomState.DatabaseGenerated;
@@ -98,7 +98,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private void TakeScreenshots(GameObject room, string roomID, int screenshotIndex)
     {
-        Camera camera =_camera!;
+        Camera camera = _camera!;
         manualScreenShots = false;
         camera.transform.position = RandomCameraPosition(room);
         camera.transform.rotation =
@@ -117,19 +117,15 @@ public class DatabaseGenerator : MonoBehaviour
         }
 
         string filename = $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}";
-        TimeTools timeTools = new TimeTools();
-        timeTools.Start();
+  
         //  yield return new WaitForSecondsRealtime(0.01f);
         ScreenCapture.CaptureScreenshot(
-            $"Photographs//Room-{roomID}/" + filename + ".png", 1) ;
-        timeTools.Stop();
-        Debug.Log("Time to take screenshot: " + timeTools.GetElapsedTime() + " ms");
-
+                $"Photographs//Room-{roomID}/" + filename + ".png", 1) ;
         GetOpeningsData(room, screenshotIndex, filename);
     }
+    
 
-
-// You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the camera stereo mode.
+// You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the _cameraera stereo mode.
 /*        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-LL.png", ScreenCapture.StereoScreenCaptureMode.LeftEye);
 
         yield return new WaitForSeconds(0.1f);
@@ -151,8 +147,6 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private Vector3 RandomCameraPosition(GameObject room)
     {
-        TimeTools timeTools = new TimeTools();
-        timeTools.Start();
         Vector3 nextCameraPosition = new Vector3();
         bool positionSet;
         do
@@ -182,9 +176,7 @@ public class DatabaseGenerator : MonoBehaviour
 
         //  Debug.LogError("Error - Grounds child object not found or empty :\n" + ex);
         //    nextCameraPosition = Vector3.negativeInfinity;
-
-        timeTools.Stop();
-        Debug.Log("Time to get camera position: " + timeTools.GetElapsedTime() + " ms");
+        
         return nextCameraPosition;
     }
 
@@ -229,12 +221,13 @@ public class DatabaseGenerator : MonoBehaviour
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
         List<GameObject> walls = _room.RoomGrid.GetAllWalls();
+        var cameraTransform = _camera.transform;
         ScreenshotData screenshotData = new ScreenshotData
         {
-            CameraRotation =_camera.transform.rotation
+            CameraRotation = cameraTransform.rotation
         };
 
-        Vector3 cameraPosition =_camera.transform.position;
+        Vector3 cameraPosition = cameraTransform.position;
 
         foreach (GameObject wall in walls)
         {
@@ -275,13 +268,10 @@ public class DatabaseGenerator : MonoBehaviour
             }
         }
 
-        timeTools.Stop();
-        Debug.Log("Time to get openings data: " + timeTools.GetElapsedTimeInSeconds() + " seconds");
+      
         StoreData(screenshotData, screenshotIndex, filename);
-        timeTools.Stop();
-        Debug.Log("Time to get and store openings Data: " + timeTools.GetElapsedTimeInSeconds() + " seconds");
     }
-    
+
     /// <summary>
     /// Get the bounding box 2D (origin and 2D dimensions) in pixels of a given opening on a screenshot.
     /// </summary>
@@ -290,12 +280,12 @@ public class DatabaseGenerator : MonoBehaviour
     private BoundingBox2D GetOpeningBoundingBox2D(GameObject opening)
     {
         Vector3 openingPosition = opening.transform.position;
-        
+
         opening.TryGetComponent<BoxCollider>(out BoxCollider boxCollider);
         Vector3 colliderSize = boxCollider.size;
 
-        int screenWidth =_camera.pixelWidth;
-        int screenHeight =_camera.pixelHeight;
+        int screenWidth = _camera.pixelWidth;
+        int screenHeight = _camera.pixelHeight;
 
         float width = RoomsGenerator.GetOpeningWidth(colliderSize);
         float height = colliderSize.y;
@@ -315,17 +305,17 @@ public class DatabaseGenerator : MonoBehaviour
         Vector3[] screenCorners = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
-            screenCorners[i] =_camera.WorldToScreenPoint(corners[i]);
+            screenCorners[i] = _camera.WorldToScreenPoint(corners[i]);
             if (screenCorners[i].z < 0)
             {
                 var cameraTransform = _camera.transform;
                 var forward = cameraTransform.forward;
                 Vector3 distVector = Vector3.Project(
-                   cameraTransform.position +forward *_camera.nearClipPlane -
+                    cameraTransform.position + forward * _camera.nearClipPlane -
                     corners[i],
-                   forward
+                    forward
                 );
-                screenCorners[i] =_camera.WorldToScreenPoint(corners[i] + distVector);
+                screenCorners[i] = _camera.WorldToScreenPoint(corners[i] + distVector);
             }
         }
 
@@ -354,7 +344,6 @@ public class DatabaseGenerator : MonoBehaviour
     ///
     /// </summary>
     /// <param name="screenshotData"></param>
-    /// <param name="roomIndex"></param>
     /// <param name="screenshotIndex"></param>
     private void StoreData(ScreenshotData screenshotData, int screenshotIndex, string filename)
     {
