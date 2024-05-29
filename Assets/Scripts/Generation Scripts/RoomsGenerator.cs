@@ -21,7 +21,7 @@ public class RoomsGenerator : MonoBehaviour
     [HideInInspector] [SerializeField] private int _openingSeed;
     [HideInInspector] [SerializeField] private int _objectSeed;
     [HideInInspector] [SerializeField] private int _databaseSeed;
-
+    
     #endregion
 
     #region Methods Called By Buttons

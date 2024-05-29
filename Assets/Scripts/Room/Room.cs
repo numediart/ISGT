@@ -44,7 +44,6 @@ public class Room : MonoBehaviour
     public int OpeningSeed => _openingSeed;
     public int ObjectSeed => _objectSeed;
     public int DatabaseSeed => _databaseSeed;
-
     public RoomState RoomState
     {
         get;
@@ -102,7 +101,6 @@ public class Room : MonoBehaviour
         CreateOpenings();
         FillRoomWithObjects();
         RoomState = RoomState.Filled;
-        EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
         GenerateDatabase();
        
     }
@@ -143,8 +141,7 @@ public class Room : MonoBehaviour
     {
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
-        StartCoroutine(_proceduralPropPlacer.PlaceProps(_objectRandom,
-            roomGenerationData.width * roomGenerationData.height));// place the props in the room
+        StartCoroutine(_proceduralPropPlacer.PlaceProps(_objectRandom, roomGenerationData.width * roomGenerationData.height));// place the props in the room
         timeTools.Stop();
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }
@@ -152,6 +149,7 @@ public class Room : MonoBehaviour
     public void GenerateDatabase()
     {
         TryGetComponent<DatabaseGenerator>(out var databaseGenerator);
+        EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
         databaseGenerator.Init(this);
         StartCoroutine(databaseGenerator.DatabaseGeneration());
     }

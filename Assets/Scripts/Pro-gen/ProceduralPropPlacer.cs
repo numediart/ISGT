@@ -93,8 +93,6 @@ namespace Pro_gen
             timeTools.Stop();
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
         }
-
-
         private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform)
         {
             Vector3 position = Vector3.zero;

@@ -4,10 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Data_Classes;
-using UnityEditor;
 using Utils;
 using Random = System.Random;
 
@@ -31,12 +28,14 @@ public class DatabaseGenerator : MonoBehaviour
     private List<Bounds> _emptyQuadNodesCenters;
     private TimeTools _timeTools;
     private Room _room;
+    private Camera _camera;
 
     #endregion
 
-    private void Start()
+    private void Awake()
     {
- //       Camera.main.Render();
+        _camera = Camera.main;
+ //      _camera.Render();
     }
 
     public void Init(Room room)
@@ -78,12 +77,12 @@ public class DatabaseGenerator : MonoBehaviour
             for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
             {
                 TakeScreenshots(_room.RoomObject, _room.Id, j);
-                yield return new WaitForSecondsRealtime(0.08f);
+                yield return new WaitForSecondsRealtime(0.03f);
             }
         }
 
 
-        Camera.main.transform.rotation = Quaternion.identity;
+       _camera.transform.rotation = Quaternion.identity;
 
 
         _room.RoomState = RoomState.DatabaseGenerated;
@@ -99,7 +98,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private void TakeScreenshots(GameObject room, string roomID, int screenshotIndex)
     {
-        Camera camera = Camera.main!;
+        Camera camera =_camera!;
         manualScreenShots = false;
         camera.transform.position = RandomCameraPosition(room);
         camera.transform.rotation =
@@ -232,10 +231,10 @@ public class DatabaseGenerator : MonoBehaviour
         List<GameObject> walls = _room.RoomGrid.GetAllWalls();
         ScreenshotData screenshotData = new ScreenshotData
         {
-            CameraRotation = Camera.main.transform.rotation
+            CameraRotation =_camera.transform.rotation
         };
 
-        Vector3 cameraPosition = Camera.main.transform.position;
+        Vector3 cameraPosition =_camera.transform.position;
 
         foreach (GameObject wall in walls)
         {
@@ -282,36 +281,7 @@ public class DatabaseGenerator : MonoBehaviour
         timeTools.Stop();
         Debug.Log("Time to get and store openings Data: " + timeTools.GetElapsedTimeInSeconds() + " seconds");
     }
-
-
-    /// <summary>
-    /// Gets the presence or not of any object on the screen thanks to the field of view angle and the screen resolution.
-    /// (Method created because the boolean MeshRenderer.isVisible is not accurate enough).
-    /// </summary>
-    /// <param name="anyObject"></param>
-    /// <returns></returns>
-    public static bool IsOnScreen(GameObject anyObject)
-    {
-        Vector3 cameraPosition = Camera.main.transform.position;
-        Vector3 cameraForwardVector = Camera.main.transform.forward;
-        Vector3 cameraToObject = anyObject.transform.position - cameraPosition;
-
-        float verticalFieldOfView = Camera.main.fieldOfView;
-        float horizontalFieldOfView = Camera.VerticalToHorizontalFieldOfView(verticalFieldOfView, Camera.main.aspect);
-
-        Vector3 XZCameraToObject = Vector3.Project(cameraToObject, Camera.main.transform.right.normalized) +
-                                   Vector3.Project(cameraToObject, cameraForwardVector.normalized);
-        if (Mathf.Abs(Vector3.Angle(cameraForwardVector, XZCameraToObject)) > horizontalFieldOfView / 2f)
-            return false;
-
-        Vector3 ZYCameraToObject = Vector3.Project(cameraToObject, cameraForwardVector.normalized) +
-                                   Vector3.Project(cameraToObject, Camera.main.transform.up.normalized);
-        if (Mathf.Abs(Vector3.Angle(cameraForwardVector, ZYCameraToObject)) > verticalFieldOfView / 2f)
-            return false;
-
-        return true;
-    }
-
+    
     /// <summary>
     /// Get the bounding box 2D (origin and 2D dimensions) in pixels of a given opening on a screenshot.
     /// </summary>
@@ -320,37 +290,42 @@ public class DatabaseGenerator : MonoBehaviour
     private BoundingBox2D GetOpeningBoundingBox2D(GameObject opening)
     {
         Vector3 openingPosition = opening.transform.position;
-        opening.TryGetComponent<BoxCollider>(out BoxCollider collider);
-        Vector3 colliderSize = collider.size;
+        
+        opening.TryGetComponent<BoxCollider>(out BoxCollider boxCollider);
+        Vector3 colliderSize = boxCollider.size;
 
-        int screenWidth = Camera.main.pixelWidth;
-        int screenHeight = Camera.main.pixelHeight;
+        int screenWidth =_camera.pixelWidth;
+        int screenHeight =_camera.pixelHeight;
 
         float width = RoomsGenerator.GetOpeningWidth(colliderSize);
         float height = colliderSize.y;
 
         Vector3[] corners = new Vector3[4];
-        corners[0] = openingPosition - opening.transform.right.normalized * width / 2f -
-                     opening.transform.up.normalized * height / 2f;
-        corners[1] = openingPosition + opening.transform.right.normalized * width / 2f -
-                     opening.transform.up.normalized * height / 2f;
-        corners[2] = openingPosition + opening.transform.right.normalized * width / 2f +
-                     opening.transform.up.normalized * height / 2f;
-        corners[3] = openingPosition - opening.transform.right.normalized * width / 2f +
-                     opening.transform.up.normalized * height / 2f;
+        var right = opening.transform.right;
+        var up = opening.transform.up;
+        corners[0] = openingPosition - right.normalized * width / 2f -
+                     up.normalized * height / 2f;
+        corners[1] = openingPosition + right.normalized * width / 2f -
+                     up.normalized * height / 2f;
+        corners[2] = openingPosition + right.normalized * width / 2f +
+                     up.normalized * height / 2f;
+        corners[3] = openingPosition - right.normalized * width / 2f +
+                     up.normalized * height / 2f;
 
         Vector3[] screenCorners = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
-            screenCorners[i] = Camera.main.WorldToScreenPoint(corners[i]);
+            screenCorners[i] =_camera.WorldToScreenPoint(corners[i]);
             if (screenCorners[i].z < 0)
             {
+                var cameraTransform = _camera.transform;
+                var forward = cameraTransform.forward;
                 Vector3 distVector = Vector3.Project(
-                    Camera.main.transform.position + Camera.main.transform.forward * Camera.main.nearClipPlane -
+                   cameraTransform.position +forward *_camera.nearClipPlane -
                     corners[i],
-                    Camera.main.transform.forward
+                   forward
                 );
-                screenCorners[i] = Camera.main.WorldToScreenPoint(corners[i] + distVector);
+                screenCorners[i] =_camera.WorldToScreenPoint(corners[i] + distVector);
             }
         }
 

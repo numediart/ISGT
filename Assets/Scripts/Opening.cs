@@ -19,12 +19,17 @@ public class Opening : MonoBehaviour
     private float _visibilityRatio;
     private float _width;
     private float _height;
-    
+    private Camera _mainCamera;
+
     //TODO : make this a parameter
     private static readonly float _numberOfPoints = 1000f;
 
     #endregion
 
+    private void Awake()
+    {
+        _mainCamera = Camera.main;
+    }
     public void Start()
     {
         SetOpeningRandomOpenness();
@@ -42,7 +47,8 @@ public class Opening : MonoBehaviour
                 Vector3 openingDimensions = MovingPart.transform.GetChild(0).localScale;
                 float sideLength = openingDimensions.y;
                 MovingPart.transform.position += OpennessDegree * (sideLength / 2f) * openingDirection.normalized;
-                MovingPart.transform.GetChild(0).localScale = new Vector3(openingDimensions.x, (1 - OpennessDegree) * sideLength, openingDimensions.z);
+                MovingPart.transform.GetChild(0).localScale = new Vector3(openingDimensions.x,
+                    (1 - OpennessDegree) * sideLength, openingDimensions.z);
                 break;
             case MeansOfOpening.Rotation:
                 float adjustedOpenness = (OpennessDegree * 2f) - 1f;
@@ -56,10 +62,9 @@ public class Opening : MonoBehaviour
     public bool IsVisible()
     {
         Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
-
-        foreach (Renderer renderer in childRenderers)
+        foreach (Renderer renderers in childRenderers)
         {
-            if (renderer.isVisible)
+            if (renderers.isVisible)
             {
                 return true;
             }
@@ -74,13 +79,11 @@ public class Opening : MonoBehaviour
     {
         return _visibilityRatio;
     }
-    
-   
-  
+
+
     public BoundingBox2D GetVisibilityBoundingBox()
     {
-
-       BoxCollider openingBounds = gameObject.GetComponent<BoxCollider>();
+        gameObject.TryGetComponent<BoxCollider>(out BoxCollider openingBounds);
         _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
         _height = openingBounds.size.y;
         int minX = Screen.width + 1;
@@ -96,13 +99,14 @@ public class Opening : MonoBehaviour
         {
             for (float y = -_height / 2f + heightStep / 2; y <= _height / 2f; y += heightStep)
             {
-                Vector3 positionOffset = transform.right * x + transform.up * y;
-                Vector3 aimPoint = transform.position + positionOffset;
+                var thisTransform = transform;
+                Vector3 positionOffset = thisTransform.right * x + thisTransform.up * y;
+                Vector3 aimPoint = thisTransform.position + positionOffset;
                 if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
                 {
                     _visibilityRatio += 1 / _numberOfPoints;
 
-                    Vector3 screenPoint = Camera.main.WorldToScreenPoint(aimPoint);
+                    Vector3 screenPoint = _mainCamera.WorldToScreenPoint(aimPoint);
                     minX = (int)Mathf.Min(minX, screenPoint.x);
                     maxX = (int)Mathf.Max(maxX, screenPoint.x);
                     minY = (int)Mathf.Min(minY, screenPoint.y);
@@ -116,7 +120,7 @@ public class Opening : MonoBehaviour
 
     private bool IsPointVisible(Vector3 aimPoint)
     {
-        GameObject mainCamera = Camera.main.gameObject;
+        GameObject mainCamera = _mainCamera!.gameObject;
         Vector3 aimPointDirection = aimPoint - mainCamera.transform.position;
 
         if (Physics.Raycast(mainCamera.transform.position, aimPointDirection, out var hit, float.MaxValue))
@@ -124,16 +128,15 @@ public class Opening : MonoBehaviour
             if (hit.collider.gameObject == gameObject || hit.collider.gameObject.transform.parent == transform)
                 return true;
         }
+
         return false;
     }
 
     private bool IsPointOnScreen(Vector3 point)
     {
-        Vector3 screenPoint = Camera.main.WorldToViewportPoint(point);
-        return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1 && screenPoint.z > 0;
+        Vector3 screenPoint = _mainCamera!.WorldToViewportPoint(point);
+        return screenPoint.x is > 0 and < 1 && screenPoint.y is > 0 and < 1 && screenPoint.z > 0;
     }
-
-
 }
 
 public enum OpeningType
