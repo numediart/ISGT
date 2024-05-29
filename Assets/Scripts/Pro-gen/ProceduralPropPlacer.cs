@@ -18,6 +18,7 @@ namespace Pro_gen
         private bool[,][,] _propsGrid;
         private int _maxAttempts = 25;
         private List<Vector3> _propsPositions;
+        private Bounds _groundBounds;
 
         private void Awake()
         {
@@ -31,6 +32,7 @@ namespace Pro_gen
         {
             _roomsGenerationData = roomGenerationData;
             numberOfProps = _roomsGenerationData.ObjectNumberRatio;
+            _groundBounds = GetGroundBounds();
         }
 
         public IEnumerator PlaceProps(Random random, int area)
@@ -111,13 +113,13 @@ namespace Pro_gen
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
 
             QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
-
+            
             while (!isPositionFound && attempts < _maxAttempts)
             {
                 position = new Vector3(
                     NextFloat(random, selectedNode.bounds.min.x + propExtents.x,
                         selectedNode.bounds.max.x - propExtents.x),
-                    GetGroundBounds().max.y - bounds.min.y, // Adjust the height to align with the ground,
+                    _groundBounds.max.y - bounds.min.y, // Adjust the height to align with the ground,
                     NextFloat(random, selectedNode.bounds.min.z + propExtents.z,
                         selectedNode.bounds.max.z - propExtents.z)
                 );
@@ -196,10 +198,9 @@ namespace Pro_gen
                 new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width,
                     _roomsGenerationData.heightOffset,
                     _roomsGenerationData.heightOffset * _roomsGenerationData.height));
-        
-            Bounds groundBounds = GetGroundBounds();
+            
             Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(groundBounds.center, groundBounds.size);
+            Gizmos.DrawWireCube(_groundBounds.center, _groundBounds.size);
         
             foreach (Props props in _selectedProps)
             {
