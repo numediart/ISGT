@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baf2388f4923b0b459f0646abaa5ecc4, type: 3}
   m_Name: DatabaseGenerationData
   m_EditorClassIdentifier: 
-  ScreenshotsNumberPerRoom: 50
+  ScreenshotsNumberPerRoom: 5
   TimeBeforeScreenshotsTakingBeginning: 1
   TimeBetweenCameraPlacementAndScreenshot: 0.01
   TimeBetweenScreenshotAndDataGetting: 0.01

@@ -270,8 +270,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OpennessDegree: 0
   Type: 1
-  MeansOfOpening: 0
+  MeansOfOpening: 1
   MovingPart: {fileID: 1358950855282810}
+  Structure: {fileID: 0}
 --- !u!65 &-7492741189705435652
 BoxCollider:
   m_ObjectHideFlags: 0

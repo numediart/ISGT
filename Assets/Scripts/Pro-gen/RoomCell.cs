@@ -195,10 +195,17 @@ public class RoomCell : MonoBehaviour
             {
                 if (window.MeansOfOpening == MeansOfOpening.Translation) // Make sure the opening is a window
                 {
+                    //Name of the window
                     GameObject windowFrame = window.Structure; // Get the window frame
-                    if (windowFrame.TryGetComponent(out Renderer renderer))
+                    
+                    // Check if window frame is not null
+
+                    if (!windowFrame)
                     {
-                        renderer.material = _proGenParams.WindowMaterials[materialIndex];
+                        if (windowFrame.TryGetComponent(out Renderer renderer))
+                        {
+                            renderer.material = _proGenParams.WindowMaterials[materialIndex];
+                        }
                     }
                 }
             }

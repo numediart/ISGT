@@ -180,6 +180,7 @@ MonoBehaviour:
   Type: 0
   MeansOfOpening: 0
   MovingPart: {fileID: 8342082288572492190}
+  Structure: {fileID: 5042857556122722817}
 --- !u!1 &5042857556122722817
 GameObject:
   m_ObjectHideFlags: 0
