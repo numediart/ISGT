@@ -343,6 +343,7 @@ public class DatabaseGenerator : MonoBehaviour
         CombinedData combinedData = new CombinedData
         {
             SeedsData = new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed),
+            CameraData = new CameraData(_camera.fieldOfView, _camera.nearClipPlane, _camera.farClipPlane, _camera.pixelRect.x, _camera.pixelRect.y, _camera.pixelWidth, _camera.pixelHeight, _camera.depth, _camera.orthographic),
             ScreenshotData = screenshotData
         };
 
@@ -361,7 +362,9 @@ public class DatabaseGenerator : MonoBehaviour
     public class CombinedData
     {
         public SeedsData SeedsData { get; set; }
+        public CameraData CameraData { get; set; }
         public ScreenshotData ScreenshotData { get; set; }
+        
     }
 
     #endregion

@@ -15,7 +15,6 @@ namespace Pro_gen
         [SerializeField] private List<Props> _selectedProps;
         [SerializeField] private List<Bounds> _selectedPropsBounds;
         private QuadTreeNode _quadTree;
-        private bool[,][,] _propsGrid;
         private int _maxAttempts = 25;
         private List<Vector3> _propsPositions;
         private Bounds _groundBounds;
@@ -31,8 +30,10 @@ namespace Pro_gen
         public void Init(RoomsGenerationScriptableObject roomGenerationData)
         {
             _roomsGenerationData = roomGenerationData;
-            numberOfProps = _roomsGenerationData.ObjectNumberRatio;
+            numberOfProps = Mathf.RoundToInt(((float)_roomsGenerationData.ObjectNumberRatio/100) * (Math.Max(roomGenerationData.width, roomGenerationData.height)*Math.Max(roomGenerationData.widthOffset, roomGenerationData.heightOffset)*Math.Min(roomGenerationData.width, roomGenerationData.height)/2));
             _groundBounds = GetGroundBounds();
+            Debug.Log("Number of props: " + numberOfProps);
+            
         }
 
         public IEnumerator PlaceProps(Random random, int area)
@@ -61,7 +62,7 @@ namespace Pro_gen
                     _roomsGenerationData.heightOffset * _roomsGenerationData.height
                 )
             );
-
+            
             _quadTree = new QuadTreeNode(roomBounds, 0);
             _quadTree.determineMaxDepth(area);
             TimeTools timeTools = new TimeTools();

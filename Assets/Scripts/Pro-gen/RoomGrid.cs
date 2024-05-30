@@ -398,37 +398,5 @@ namespace Pro_gen
             return walls;
 
         }
-        
-        private void OnDrawGizmos()
-        {
-            // draw Door Gizmos
-            Gizmos.color = Color.blue;
-            //find door in walls and draw 2D gizmo
-            foreach (var wallSection in _wallSections)
-            {
-                foreach (var cell in wallSection.Value)
-                {
-                    if (cell.GetActiveWall(wallSection.Key).TryGetComponent(out WallDoor door))
-                    {
-                            
-                        Bounds bounds = door.CalculateBounds();
-                        if (door.transform.rotation.eulerAngles.y == 0)
-                        {
-                            //draw 2D gizmo and care about the bounds center
-                            Gizmos.DrawWireCube(new Vector3(bounds.center.x, bounds.center.y, bounds.center.z- bounds.extents.z), new Vector3(bounds.size.x, bounds.size.y,0));
-                        }
-                        else
-                        {
-                            //draw 2D gizmo and care about the bounds center
-                            Gizmos.DrawWireCube(
-                                new Vector3(bounds.center.x - bounds.extents.x, bounds.center.y, bounds.center.z),
-                                new Vector3(0.1f, bounds.size.y, bounds.size.z));
-                        }
-
-                    }
-                }
-
-            }
-        }
     }
 }
