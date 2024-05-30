@@ -33,6 +33,7 @@ Transform:
   m_Children:
   - {fileID: 4597036708610470}
   - {fileID: 4568997170405134}
+  - {fileID: 1690218035837476906}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3312562524481306203
@@ -51,6 +52,8 @@ MonoBehaviour:
   Type: 1
   MeansOfOpening: 1
   MovingPart: {fileID: 1783271946408016}
+  Structure: {fileID: 0}
+  centerObj: {fileID: 7736930247805623013}
 --- !u!65 &1367152717856863485
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -70,8 +73,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.1818764, y: 2.169303, z: 0.035000246}
-  m_Center: {x: -0.0027977228, y: 1.0846515, z: 0}
+  m_Size: {x: 1.1090822, y: 2.1571422, z: 0.035000246}
+  m_Center: {x: 0.008102894, y: 1.0785711, z: 0}
 --- !u!1 &1704842805020558
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,7 +278,7 @@ GameObject:
   - component: {fileID: 64876170826228512}
   m_Layer: 0
   m_Name: Frame
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -367,3 +370,34 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 670e9ab602834f049b0dac77d6a298d8, type: 3}
+--- !u!1 &7736930247805623013
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1690218035837476906}
+  m_Layer: 0
+  m_Name: Center
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1690218035837476906
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7736930247805623013}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.000000021855694, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.075, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4089299432780678}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

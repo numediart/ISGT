@@ -237,8 +237,8 @@ public class DatabaseGenerator : MonoBehaviour
                 {
                     OpeningData openingData = new OpeningData
                     {
-                        DistanceToCamera = (wallChild.position - cameraPosition).magnitude,
-                        RotationQuaternionFromCamera = Quaternion.LookRotation(wallChild.position - cameraPosition),
+                        DistanceToCamera = (opening.GetCenter() - cameraPosition).magnitude,
+                        RotationQuaternionFromCamera = Quaternion.LookRotation(opening.GetCenter() - cameraPosition),
                         OpenessDegree = opening.OpennessDegree,
                         Type = opening.Type.ToString(),
                     };
@@ -260,7 +260,7 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.VisibilityBoundingBox = opening.GetVisibilityBoundingBox();
                     openingData.VisibilityRatio = opening.GetVisibilityRatio();
 
-                    if (openingData.VisibilityRatio > 0f && openingData.BoundingBox != null)
+                    if (openingData.VisibilityRatio > 0f)
                     {
                         screenshotData.OpeningsData.Add(openingData);
                     }
@@ -279,7 +279,8 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private BoundingBox2D GetOpeningBoundingBox2D(GameObject opening)
     {
-        Vector3 openingPosition = opening.transform.position;
+        opening.TryGetComponent<Opening>(out Opening openingComponent);
+        Vector3 openingPosition = openingComponent.GetCenter();
 
         opening.TryGetComponent<BoxCollider>(out BoxCollider boxCollider);
         Vector3 colliderSize = boxCollider.size;

@@ -12,6 +12,7 @@ public class Opening : MonoBehaviour
     public MeansOfOpening MeansOfOpening;
     public GameObject MovingPart;
     public GameObject Structure;
+    public GameObject centerObj;
 
     #endregion
 
@@ -30,11 +31,18 @@ public class Opening : MonoBehaviour
     private void Awake()
     {
         _mainCamera = Camera.main;
+        if (centerObj == null)
+        {
+            Debug.LogError("Center object not assigned for opening : " + gameObject.name);
+        }
         SetOpeningRandomOpenness();
     }
-    public void Start()
+    
+    public Vector3 GetCenter()
     {
+        return centerObj.transform.position;
     }
+    
 
     private void SetOpeningRandomOpenness()
     {
@@ -84,6 +92,7 @@ public class Opening : MonoBehaviour
 
     public BoundingBox2D GetVisibilityBoundingBox()
     {
+        //Display name and center 
         gameObject.TryGetComponent<BoxCollider>(out BoxCollider openingBounds);
         _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
         _height = openingBounds.size.y;
@@ -102,7 +111,7 @@ public class Opening : MonoBehaviour
             {
                 var thisTransform = transform;
                 Vector3 positionOffset = thisTransform.right * x + thisTransform.up * y;
-                Vector3 aimPoint = thisTransform.position + positionOffset;
+                Vector3 aimPoint = GetCenter() + positionOffset;
                 if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
                 {
                     _visibilityRatio += 1 / _numberOfPoints;
