@@ -1256,7 +1256,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4257311104005400}
   - component: {fileID: 65561454720836264}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BoundingBox
   m_TagString: BoundingBox
   m_Icon: {fileID: 0}

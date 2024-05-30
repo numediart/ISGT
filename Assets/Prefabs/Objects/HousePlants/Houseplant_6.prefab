@@ -753,7 +753,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4595697962627070}
   - component: {fileID: 65556936362821190}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BoundingBox
   m_TagString: BoundingBox
   m_Icon: {fileID: 0}
