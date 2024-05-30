@@ -6,9 +6,9 @@ using UnityEngine;
 public class RoomsGenerationScriptableObject : ScriptableObject  
 {
     [Header("Room generation parameters")]
-    [Tooltip("Max width of a generated room"), Range(2,80)]
+    [Tooltip("Max width of a generated room"), Range(4,20)] 
     public int MaxRoomWidth;
-    [Tooltip("Max height of a generated room"), Range(2,80)]
+    [Tooltip("Max height of a generated room"), Range(4,20)]
     public int MaxRoomHeight;
     
     [HideInInspector] [SerializeField] public int width;

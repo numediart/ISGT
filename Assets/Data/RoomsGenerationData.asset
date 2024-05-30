@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19461801cf77bd84cad76d05a784732b, type: 3}
   m_Name: RoomsGenerationData
   m_EditorClassIdentifier: 
-  MaxRoomWidth: 5
-  MaxRoomHeight: 5
-  width: 5
-  height: 5
+  MaxRoomWidth: 20
+  MaxRoomHeight: 20
+  width: 14
+  height: 16
   widthOffset: 2.5
   heightOffset: 2.5
   _gridSubdivision: 1
@@ -263,10 +263,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 1847e93484350f54e9925a86710147db, type: 2}
   - {fileID: 2100000, guid: 9af183a49a7554173a818136dffae7f4, type: 2}
   - {fileID: 2100000, guid: fd0ef5f6b19914a22abf6a9fe0da391c, type: 2}
-  ObjectNumberRatio: 30
+  ObjectNumberRatio: 50
   WindowPerWallNumber: 1
   DoorPerWallNumber: 1
-  NumberOfEmptyRoomsOnScene: 10
+  NumberOfEmptyRoomsOnScene: 1
   MinimumDistanceBetweenBorders: 0.3
   WindowPerWallMinimumNumber: 0
   WindowPerWallMaximumNumber: 2
