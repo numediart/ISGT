@@ -278,66 +278,57 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="opening"></param>
     /// <returns></returns>
     private BoundingBox2D GetOpeningBoundingBox2D(GameObject opening)
+{
+    if (!opening.TryGetComponent<Opening>(out Opening openingComponent) ||
+        !opening.TryGetComponent<BoxCollider>(out BoxCollider boxCollider))
     {
-        opening.TryGetComponent<Opening>(out Opening openingComponent);
-        Vector3 openingPosition = openingComponent.GetCenter();
-
-        opening.TryGetComponent<BoxCollider>(out BoxCollider boxCollider);
-        Vector3 colliderSize = boxCollider.size;
-
-        int screenWidth = _camera.pixelWidth;
-        int screenHeight = _camera.pixelHeight;
-
-        float width = RoomsGenerator.GetOpeningWidth(colliderSize);
-        float height = colliderSize.y;
-
-        Vector3[] corners = new Vector3[4];
-        var right = opening.transform.right;
-        var up = opening.transform.up;
-        corners[0] = openingPosition - right.normalized * width / 2f -
-                     up.normalized * height / 2f;
-        corners[1] = openingPosition + right.normalized * width / 2f -
-                     up.normalized * height / 2f;
-        corners[2] = openingPosition + right.normalized * width / 2f +
-                     up.normalized * height / 2f;
-        corners[3] = openingPosition - right.normalized * width / 2f +
-                     up.normalized * height / 2f;
-
-        Vector3[] screenCorners = new Vector3[4];
-        for (int i = 0; i < 4; i++)
-        {
-            screenCorners[i] = _camera.WorldToScreenPoint(corners[i]);
-            if (screenCorners[i].z < 0)
-            {
-                var cameraTransform = _camera.transform;
-                var forward = cameraTransform.forward;
-                Vector3 distVector = Vector3.Project(
-                    cameraTransform.position + forward * _camera.nearClipPlane -
-                    corners[i],
-                    forward
-                );
-                screenCorners[i] = _camera.WorldToScreenPoint(corners[i] + distVector);
-            }
-        }
-
-        float minX = Mathf.Min(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
-        float minY = Mathf.Min(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
-        float maxX = Mathf.Max(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
-        float maxY = Mathf.Max(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
-
-        if (minX > screenWidth || minY > screenHeight || maxX < 0 || maxY < 0)
-            return null;
-
-        Vector2Int boundingBoxOrigin = new Vector2Int(
-            Mathf.Max((int)minX, 0),
-            Mathf.Max((int)minY, 0)
-        );
-
-        int boxWidth = Mathf.Min((int)maxX, screenWidth) - boundingBoxOrigin.x;
-        int boxHeight = Mathf.Min((int)maxY, screenHeight) - boundingBoxOrigin.y;
-
-        return new BoundingBox2D(boundingBoxOrigin, boxWidth, boxHeight);
+        return null;
     }
+
+    Vector3 openingPosition = openingComponent.GetCenter();
+    Vector3 colliderSize = boxCollider.size;
+    float width = RoomsGenerator.GetOpeningWidth(colliderSize);
+    float height = colliderSize.y;
+
+    Vector3[] corners = new Vector3[4];
+    var right = opening.transform.right;
+    var up = opening.transform.up;
+    corners[0] = openingPosition - right * width / 2f - up * height / 2f;
+    corners[1] = openingPosition + right * width / 2f - up * height / 2f;
+    corners[2] = openingPosition + right * width / 2f + up * height / 2f;
+    corners[3] = openingPosition - right * width / 2f + up * height / 2f;
+
+    Vector3[] screenCorners = new Vector3[4];
+    for (int i = 0; i < 4; i++)
+    {
+        screenCorners[i] = _camera.WorldToScreenPoint(corners[i]);
+        if (screenCorners[i].z < 0)
+        {
+            Vector3 distVector = Vector3.Project(_camera.transform.position + _camera.transform.forward * _camera.nearClipPlane - corners[i], _camera.transform.forward);
+            screenCorners[i] = _camera.WorldToScreenPoint(corners[i] + distVector);
+        }
+    }
+
+    float minX = Mathf.Min(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
+    float minY = Mathf.Min(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
+    float maxX = Mathf.Max(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
+    float maxY = Mathf.Max(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
+
+    int screenWidth = _camera.pixelWidth;
+    int screenHeight = _camera.pixelHeight;
+
+    if (minX > screenWidth || minY > screenHeight || maxX < 0 || maxY < 0)
+    {
+        return null;
+    }
+
+    Vector2Int boundingBoxOrigin = new Vector2Int(Mathf.Clamp((int)minX, 0, screenWidth), Mathf.Clamp((int)minY, 0, screenHeight));
+    int boxWidth = Mathf.Clamp((int)maxX, 0, screenWidth) - boundingBoxOrigin.x;
+    int boxHeight = Mathf.Clamp((int)maxY, 0, screenHeight) - boundingBoxOrigin.y;
+
+    return new BoundingBox2D(boundingBoxOrigin, boxWidth, boxHeight);
+}
+
 
 
     /// <summary>
