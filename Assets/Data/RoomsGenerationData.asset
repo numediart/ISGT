@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxRoomWidth: 20
   MaxRoomHeight: 20
-  width: 14
-  height: 16
+  width: 17
+  height: 13
   widthOffset: 2.5
   heightOffset: 2.5
   _gridSubdivision: 1
@@ -106,15 +106,6 @@ MonoBehaviour:
   - {fileID: 898062640758659395, guid: 431e3af8ed848b84b9989f95b9fb515a, type: 3}
   - {fileID: 8217909100325707676, guid: 499fcdb3bf2a7bb48991a7e482014fdc, type: 3}
   - {fileID: 4877792590767736253, guid: dec842f12c39d90498271e1dafda9218, type: 3}
-  - {fileID: 1670899656029140080, guid: ac1ffee904a4d3548ab0a03b252b11d3, type: 3}
-  - {fileID: 6855807913002357239, guid: e4ed01e104f58a94094cc28777829ddb, type: 3}
-  - {fileID: 5598708419590334833, guid: 568175cd9bfa116429346629aa656c5a, type: 3}
-  - {fileID: 5393943512199949679, guid: 5a695849a827d0540b171638e7b974c6, type: 3}
-  - {fileID: 6702745027001396258, guid: 9b46a2a69344ba846981d0eb37cfc421, type: 3}
-  - {fileID: 3896725097431730584, guid: 7c292468d07c8ff4cb4a437167879aa4, type: 3}
-  - {fileID: 1894113437033805064, guid: 87c32091bb1e98f40a8f8aedaa0cd558, type: 3}
-  - {fileID: 9092134201641007932, guid: c003caeea1b2a794791295864edad511, type: 3}
-  - {fileID: 3511096935560440762, guid: 788918d28771b01478c3e650a0fec697, type: 3}
   - {fileID: 5385161450297218541, guid: c929e8f75456cb94ebf72906433a22e3, type: 3}
   - {fileID: 6551328178050318275, guid: 2c47e4f16fdbf394599fe9c444be6509, type: 3}
   - {fileID: 1310285861914640362, guid: 57c94a45f3db9f64497ffac5f7f8959f, type: 3}
