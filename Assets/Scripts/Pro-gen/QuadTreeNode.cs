@@ -11,6 +11,7 @@ namespace Pro_gen
         private QuadTreeNode[] _children;
         private readonly int _depth;
 
+        private bool isWallNode;
         private int max_depth;
 
         public QuadTreeNode(Bounds bounds, int depth, int maxDepth = 5)

@@ -144,7 +144,7 @@ namespace Pro_gen
         }
 
         private bool CanPropsBePlaced(Transform propTransform, Bounds bounds)
-        {
+        {   
             // Calculate the new bounds based on the desired position
             bounds.center = propTransform.position;
 
@@ -189,32 +189,32 @@ namespace Pro_gen
             return _quadTree.GetAllEmptyNodes();
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.cyan;
-            Vector3 roomCenter = new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width / 2,
-                _roomsGenerationData.heightOffset / 2,
-                _roomsGenerationData.heightOffset * _roomsGenerationData.height / 2);
-            Gizmos.DrawWireCube(roomCenter,
-                new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width,
-                    _roomsGenerationData.heightOffset,
-                    _roomsGenerationData.heightOffset * _roomsGenerationData.height));
-            
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(_groundBounds.center, _groundBounds.size);
-        
-            foreach (Props props in _selectedProps)
-            {
-                Bounds bounds = props.CalculateBounds();
-                Gizmos.color = Color.red;
-                Gizmos.DrawWireCube(bounds.center, bounds.size);
-            }
-        
-        
-            if (_quadTree != null)
-            {
-                _quadTree.DrawGizmo();
-            }
-        }
+        // private void OnDrawGizmos()
+        // {
+        //     Gizmos.color = Color.cyan;
+        //     Vector3 roomCenter = new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width / 2,
+        //         _roomsGenerationData.heightOffset / 2,
+        //         _roomsGenerationData.heightOffset * _roomsGenerationData.height / 2);
+        //     Gizmos.DrawWireCube(roomCenter,
+        //         new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width,
+        //             _roomsGenerationData.heightOffset,
+        //             _roomsGenerationData.heightOffset * _roomsGenerationData.height));
+        //     
+        //     Gizmos.color = Color.green;
+        //     Gizmos.DrawWireCube(_groundBounds.center, _groundBounds.size);
+        //
+        //     foreach (Props props in _selectedProps)
+        //     {
+        //         Bounds bounds = props.CalculateBounds();
+        //         Gizmos.color = Color.red;
+        //         Gizmos.DrawWireCube(bounds.center, bounds.size);
+        //     }
+        //
+        //
+        //     if (_quadTree != null)
+        //     {
+        //         _quadTree.DrawGizmo();
+        //     }
+        // }
     }
 }
