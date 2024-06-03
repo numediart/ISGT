@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxRoomWidth: 20
   MaxRoomHeight: 20
-  width: 17
-  height: 13
+  width: 8
+  height: 7
   widthOffset: 2.5
   heightOffset: 2.5
   _gridSubdivision: 1
@@ -114,6 +114,8 @@ MonoBehaviour:
   - {fileID: 8187114116187396577, guid: 6bab37b0d4a4cc34a8590721185bc11a, type: 3}
   - {fileID: 1867584826047249176, guid: bd9a4d750b8fa844d90403e9045b3bf2, type: 3}
   - {fileID: 8177529461057755931, guid: d232e70213fab8f41bfed6da52c38fd8, type: 3}
+  - {fileID: 4877792590767736253, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+  - {fileID: 8217909100325707676, guid: 6fef38fd074b45942a5375f6686e52f8, type: 3}
   WallMaterials:
   - {fileID: 2100000, guid: 57c5fc4cce8584d758d649a6ad4e62ac, type: 2}
   - {fileID: 2100000, guid: 0c8205c3f57e6456491684762ff94de4, type: 2}

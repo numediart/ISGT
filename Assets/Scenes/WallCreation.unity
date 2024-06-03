@@ -1559,6 +1559,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoomCell
       objectReference: {fileID: 0}
+    - target: {fileID: 7627698914716408082, guid: a702b1f7496dc3142af9b4e07d63b8f5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8102023056502022227, guid: a702b1f7496dc3142af9b4e07d63b8f5, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -1768,6 +1772,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1001 &1415695051
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.1138446
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.235
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177986, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7832590658843177997, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
+      propertyPath: m_Name
+      value: Rectangle table chairs
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3ed8fd4b8ca642546916c3bccca4a5be, type: 3}
 --- !u!43 &1505413668
 Mesh:
   m_ObjectHideFlags: 0
@@ -2479,3 +2540,4 @@ SceneRoots:
   - {fileID: 2075678759}
   - {fileID: 117584737}
   - {fileID: 1155668634}
+  - {fileID: 1415695051}
