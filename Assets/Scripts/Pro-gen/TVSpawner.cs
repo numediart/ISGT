@@ -15,7 +15,13 @@ namespace Pro_gen
         
         private void SpawnTV()
         {
-            int randomIndex = Random.Range(0, _TVPrefabs.Count);
+            int randomIndex = Random.Range(0, _TVPrefabs.Count + 1);
+            
+            if (randomIndex == _TVPrefabs.Count)
+            {
+                return;
+            }
+            
             GameObject TV = Instantiate(_TVPrefabs[randomIndex], _SpawnPoint.transform.position, Quaternion.identity);
             
             //Make the TV go up by half of its height
