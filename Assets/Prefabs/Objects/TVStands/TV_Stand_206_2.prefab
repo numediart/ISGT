@@ -3612,7 +3612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7586311c983948379437880b5932cdf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TVPrefabs:
+  _SpawnablePrefabs:
   - {fileID: 1207536238640772, guid: 788918d28771b01478c3e650a0fec697, type: 3}
   - {fileID: 1318879454378374, guid: c003caeea1b2a794791295864edad511, type: 3}
   - {fileID: 1367246238680048, guid: 87c32091bb1e98f40a8f8aedaa0cd558, type: 3}
@@ -3622,7 +3622,9 @@ MonoBehaviour:
   - {fileID: 1432916623219658, guid: 568175cd9bfa116429346629aa656c5a, type: 3}
   - {fileID: 1382841302016814, guid: e4ed01e104f58a94094cc28777829ddb, type: 3}
   - {fileID: 1720296553578768, guid: ac1ffee904a4d3548ab0a03b252b11d3, type: 3}
-  _SpawnPoint: {fileID: 2310806249792326291}
+  _SpawnPoints:
+  - {fileID: 2310806249792326291}
+  _typeOfProp: 0
 --- !u!1 &6772873273472527013
 GameObject:
   m_ObjectHideFlags: 0

@@ -73,7 +73,13 @@ namespace Pro_gen
                     _roomsGenerationData.PropsPrefabs[random.Next(_roomsGenerationData.PropsPrefabs.Count)];
                 Props propInstance = Instantiate(selectedProp, Vector3.zero,
                     Quaternion.Euler(0, NextFloat(random, 0f, 360f), 0), transform);
-
+                
+                // If object has a spawner script, use it
+                if (propInstance.TryGetComponent<PropsSpawner>(out PropsSpawner propSpawner))
+                {
+                    propSpawner.Spawn(random);
+                }
+                
 
                 Bounds propBounds = propInstance.CalculateBounds();
                 
