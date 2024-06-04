@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5427448416491027142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4106499969176647540}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4106499969176647540
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5427448416491027142}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.122, y: 0, z: 0.283}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7347891113733007005}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7347891113733007004
 GameObject:
   m_ObjectHideFlags: 0
@@ -13,6 +44,7 @@ GameObject:
   - component: {fileID: 8391503404945097343}
   - component: {fileID: 3080824401677413308}
   - component: {fileID: 6277662483001594373}
+  - component: {fileID: 493631554693726092}
   m_Layer: 0
   m_Name: Desk
   m_TagString: SimObjPhysics
@@ -35,6 +67,7 @@ Transform:
   m_Children:
   - {fileID: 7347891114694590099}
   - {fileID: 7347891114271309752}
+  - {fileID: 4106499969176647540}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &7347891113733007002
@@ -143,6 +176,25 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &493631554693726092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7347891113733007004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7586311c983948379437880b5932cdf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _SpawnablePrefabs:
+  - {fileID: 8801298007301265530, guid: 1ddb5d43eede1934287f94e50c856732, type: 3}
+  - {fileID: 3534472118081114466, guid: 540f7c95d61d6a34f873ff7e6cba7685, type: 3}
+  - {fileID: 5907560037555045203, guid: d871dace119a7e648af01cadb57e39d3, type: 3}
+  _SpawnPoints:
+  - {fileID: 5427448416491027142}
+  _typeOfProp: 2
 --- !u!1 &7347891113929438213
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,8 +776,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.9694275, y: 0.7289687, z: 0.7856821}
-  m_Center: {x: -0.0995639, y: 0.3498359, z: -0.26024324}
+  m_Size: {x: 1.9694275, y: 0.7289687, z: 1.170133}
+  m_Center: {x: -0.0995639, y: 0.3498359, z: -0.06801778}
 --- !u!1 &7347891114791689904
 GameObject:
   m_ObjectHideFlags: 0

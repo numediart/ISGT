@@ -10,6 +10,7 @@ namespace Pro_gen
         [SerializeField] private TypeOfProp _typeOfProp;
         private Random _random;
         
+        
         public void Spawn(Random random)
         {
             _random = random;
@@ -22,6 +23,7 @@ namespace Pro_gen
                     SpawnChairs();
                     break;
                 case TypeOfProp.Armchair:
+                    SpawnArmchairs();
                     break;
             }
         }
@@ -82,6 +84,32 @@ namespace Pro_gen
                 }
                 
             }
+        }
+        
+        private void SpawnArmchairs()
+        {
+            int randomIndex = _random.Next(_SpawnablePrefabs.Count + 1);
+            
+            if (randomIndex == _SpawnablePrefabs.Count)
+            {
+                return;
+            }
+            
+            GameObject chair = Instantiate(_SpawnablePrefabs[randomIndex], _SpawnPoints[0].transform.position, transform.rotation);
+            
+            chair.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            
+            //Make the chair rotation equal to the opposite of the forward of this, and add a random rotation between -6 and 6 degrees
+            chair.transform.Rotate(0,180, 0);
+            
+            
+            float randomRotation = _random.Next(-60, 60);
+            chair.transform.Rotate(0, randomRotation / 10, 0);
+            
+            //Make the chair a child of the spawn point
+            chair.transform.parent = _SpawnPoints[0].transform;
+            
+            
         }
 
     }
