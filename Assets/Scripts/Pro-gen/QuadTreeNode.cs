@@ -21,6 +21,17 @@ namespace Pro_gen
             _children = null;
             _depth = depth;
             max_depth = maxDepth;
+            
+            //Check if the node contains a wall
+            Collider[] intersectingColliders = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity);
+            foreach (var collider in intersectingColliders)
+            {
+                if (collider.CompareTag("Walls") || collider.CompareTag("Door"))
+                {
+                    isWallNode = true;
+                    break;
+                }
+            }
         }
 
         public void determineMaxDepth(int area)
@@ -66,15 +77,22 @@ namespace Pro_gen
         }
         
 
-        public List<QuadTreeNode> FindBiggestEmptyNodes()
+        public List<QuadTreeNode> FindBiggestEmptyNodes(PropsCategory category)
         {
+            Debug.Log("Category: " + category);
             List<QuadTreeNode> result = new List<QuadTreeNode>();
+            List<QuadTreeNode> bestResult = new List<QuadTreeNode>();
             int minDepth = int.MaxValue;
-            FindBiggestEmptyNodesRecursive(this, ref minDepth, result);
+            FindBiggestEmptyNodesRecursive(this, ref minDepth, result, bestResult, category);
+            Debug.Log("Best result count: " + bestResult.Count);
+            if (bestResult.Count > 0)
+            {
+                return bestResult;
+            }
             return result;
         }
 
-        private void FindBiggestEmptyNodesRecursive(QuadTreeNode node, ref int minDepth, List<QuadTreeNode> result)
+        private void FindBiggestEmptyNodesRecursive(QuadTreeNode node, ref int minDepth, List<QuadTreeNode> result, List<QuadTreeNode> bestResult, PropsCategory category)
         {
             if (node._objects.Count == 0)
             {
@@ -82,20 +100,39 @@ namespace Pro_gen
                 {
                     minDepth = node._depth;
                     result.Clear();
+                    bestResult.Clear();
                     result.Add(node);
+                    if (IsBestChoice(node, category))
+                    {
+                        bestResult.Add(node);
+                    }
                 }
                 else if (node._depth == minDepth)
                 {
                     result.Add(node);
+                    if (IsBestChoice(node, category))
+                    {
+                        bestResult.Add(node);
+                    }
                 }
             }
             else if (node._children != null)
             {
                 foreach (var child in node._children)
                 {
-                    FindBiggestEmptyNodesRecursive(child, ref minDepth, result);
+                    FindBiggestEmptyNodesRecursive(child, ref minDepth, result, bestResult, category);
                 }
             }
+        }
+
+        private bool IsBestChoice(QuadTreeNode node, PropsCategory category)
+        {
+            //If the object is a sofa, a fridge, a bed or a shelf, we want a wall node
+            if (category == PropsCategory.Sofa || category == PropsCategory.Fridge || category == PropsCategory.Bed || category == PropsCategory.Bookshelf)
+            {
+                return node.isWallNode;
+            }
+            return false;
         }
 
         
@@ -141,7 +178,8 @@ namespace Pro_gen
 
         public void DrawGizmo()
         {
-            Gizmos.color = _objects.Count == 0 ? Color.green : Color.magenta;
+            // Gizmos.color = _objects.Count == 0 ? Color.green : Color.magenta;
+            Gizmos.color = isWallNode ? Color.magenta : Color.green;
             Gizmos.DrawWireCube(bounds.center, bounds.size);
             if (_children != null)
             {

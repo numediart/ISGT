@@ -31,5 +31,10 @@ namespace Pro_gen
         {
             return _boxCollider;
         }
+        
+        public PropsCategory GetPropsCategory()
+        {
+            return _propsCategory;
+        }
     }
 }

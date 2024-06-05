@@ -86,7 +86,7 @@ namespace Pro_gen
                 // wait for next fixed frame
                 Physics.SyncTransforms();
                 yield return new WaitForFixedUpdate();
-                Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform);
+                Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform, propInstance.PropsCategory);
 
                 if (positionInRoom == Vector3.zero)
                 {
@@ -109,13 +109,13 @@ namespace Pro_gen
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
             room.RoomState = RoomState.Filled;
         }
-        private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform)
+        private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform, PropsCategory category)
         {
             Vector3 position = Vector3.zero;
             bool isPositionFound = false;
             Vector3 propExtents = bounds.extents;
             int attempts = 0;
-            List<QuadTreeNode> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes();
+            List<QuadTreeNode> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes(category);
 
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
 
