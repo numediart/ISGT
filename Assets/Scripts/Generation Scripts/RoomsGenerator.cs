@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 using Utils;
 
 public class RoomsGenerator : MonoBehaviour
@@ -26,6 +27,17 @@ public class RoomsGenerator : MonoBehaviour
 
     #region Methods Called By Buttons
 
+    private void Awake()
+    {
+        RoomsGenerationData.MaxRoomWidth = MainMenuController.PresetData.MaxWidth;
+        RoomsGenerationData.MaxRoomHeight = MainMenuController.PresetData.MaxDepth;
+        RoomsGenerationData.ObjectNumberRatio = MainMenuController.PresetData.PropsRatio;
+        RoomsGenerationData.WindowPerWallNumber = MainMenuController.PresetData.WindowRatio;
+        RoomsGenerationData.DoorPerWallNumber = MainMenuController.PresetData.DoorRatio;
+        RoomsGenerationData.NumberOfEmptyRoomsOnScene = MainMenuController.PresetData.NumberOfRoomsToGenerate;
+        DatabaseGenerationData.ScreenshotsNumberPerRoom = MainMenuController.PresetData.ScreenshotsCountPerRoom;
+    }
+
     private void Start()
     {
         StartCoroutine(GenerateRooms());
@@ -37,6 +49,7 @@ public class RoomsGenerator : MonoBehaviour
     /// </summary>
     private IEnumerator GenerateRooms()
     {
+        Debug.Log(RoomsGenerationData.NumberOfEmptyRoomsOnScene);
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
         for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
@@ -66,6 +79,7 @@ public class RoomsGenerator : MonoBehaviour
         timeTools.Stop();
         Debug.Log("Rooms generated in " + timeTools.GetElapsedTimeInSeconds() + " seconds.");
         timeTools.GetFormattedElapsedTime();
+        SceneManager.LoadScene(0);
     }
 
     /// <summary>
