@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using Data_Classes;
+using UnityEngine.SceneManagement;
 using Utils;
 using Random = System.Random;
 
@@ -32,24 +33,35 @@ public class DatabaseGenerator : MonoBehaviour
 
     #endregion
 
-    
+
     private void Awake()
     {
         _camera = Camera.main;
+        if (!Directory.Exists((MainMenuController.PresetData.ExportPath == null
+                ? Application.dataPath
+                : MainMenuController.PresetData.ExportPath) + "/ExportVISG"))
+            Directory.CreateDirectory((MainMenuController.PresetData.ExportPath == null
+                ? Application.dataPath
+                : MainMenuController.PresetData.ExportPath) + "/ExportVISG");
     }
-    
+
     public void Init(Room room)
     {
         _room = room;
         _random = new Random(_room.DatabaseSeed);
         this._emptyQuadNodesCenters = room.EmptyQuadNodesCenters;
-        string path = Directory.GetCurrentDirectory();
-        if (!Directory.Exists(path + "/OpeningsData"))
+
+        string path = (MainMenuController.PresetData.ExportPath == null
+            ? Application.dataPath
+            : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
+        Debug.Log("Export path: " + path);
+
+        if (!Directory.Exists(path + "OpeningsData"))
         {
-            Directory.CreateDirectory(path + "/OpeningsData");
+            Directory.CreateDirectory(path + "OpeningsData");
         }
 
-        _openingsDataFolderPath = path + "/OpeningsData";
+        _openingsDataFolderPath = path + "OpeningsData";
         _timeTools = new TimeTools();
 
         DatabaseGenerationData = room.DatabaseGenerationData;
@@ -104,26 +116,31 @@ public class DatabaseGenerator : MonoBehaviour
         camera.transform.rotation =
             manualScreenShots ? Quaternion.Euler(_cameraRotations[_cameraIndex]) : RandomRotation();
         _cameraIndex++;
+
+
+        string path = (MainMenuController.PresetData.ExportPath == null
+            ? Application.dataPath
+            : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
         //Camera.main.Render();
         // You need to comment the line below if you want to use the camera stereo mode and take a screenshot with each eye.
-        if (!Directory.Exists("Photographs"))
+        if (!Directory.Exists(path + "Photographs"))
         {
-            Directory.CreateDirectory("Photographs");
+            Directory.CreateDirectory(path + "Photographs");
         }
 
-        if (!Directory.Exists("Photographs/Room-" + roomID))
+        if (!Directory.Exists(path + "Photographs/Room-" + roomID))
         {
-            Directory.CreateDirectory("Photographs/Room-" + roomID);
+            Directory.CreateDirectory(path + "Photographs/Room-" + roomID);
         }
 
         string filename = $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}";
-  
+
         //  yield return new WaitForSecondsRealtime(0.01f);
         ScreenCapture.CaptureScreenshot(
-                $"Photographs//Room-{roomID}/" + filename + ".png", 1) ;
+            $"{path}Photographs/Room-{roomID}/" + filename + ".png", 1);
         GetOpeningsData(room, screenshotIndex, filename);
     }
-    
+
 
 // You need to uncomment the lines below to take a screenshot with each eye from a view point if tou use the _cameraera stereo mode.
 /*        ScreenCapture.CaptureScreenshot($"Photographs/Room{roomIndex + 1}-P{screenshotIndex + 1}-LL.png", ScreenCapture.StereoScreenCaptureMode.LeftEye);
@@ -176,7 +193,7 @@ public class DatabaseGenerator : MonoBehaviour
 
         //  Debug.LogError("Error - Grounds child object not found or empty :\n" + ex);
         //    nextCameraPosition = Vector3.negativeInfinity;
-        
+
         return nextCameraPosition;
     }
 
@@ -268,7 +285,7 @@ public class DatabaseGenerator : MonoBehaviour
             }
         }
 
-      
+
         StoreData(screenshotData, screenshotIndex, filename);
     }
 
@@ -278,57 +295,60 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="opening"></param>
     /// <returns></returns>
     private BoundingBox2D GetOpeningBoundingBox2D(GameObject opening)
-{
-    if (!opening.TryGetComponent<Opening>(out Opening openingComponent) ||
-        !opening.TryGetComponent<BoxCollider>(out BoxCollider boxCollider))
     {
-        return null;
-    }
-
-    Vector3 openingPosition = openingComponent.GetCenter();
-    Vector3 colliderSize = boxCollider.size;
-    float width = RoomsGenerator.GetOpeningWidth(colliderSize);
-    float height = colliderSize.y;
-
-    Vector3[] corners = new Vector3[4];
-    var right = opening.transform.right;
-    var up = opening.transform.up;
-    corners[0] = openingPosition - right * width / 2f - up * height / 2f;
-    corners[1] = openingPosition + right * width / 2f - up * height / 2f;
-    corners[2] = openingPosition + right * width / 2f + up * height / 2f;
-    corners[3] = openingPosition - right * width / 2f + up * height / 2f;
-
-    Vector3[] screenCorners = new Vector3[4];
-    for (int i = 0; i < 4; i++)
-    {
-        screenCorners[i] = _camera.WorldToScreenPoint(corners[i]);
-        if (screenCorners[i].z < 0)
+        if (!opening.TryGetComponent<Opening>(out Opening openingComponent) ||
+            !opening.TryGetComponent<BoxCollider>(out BoxCollider boxCollider))
         {
-            Vector3 distVector = Vector3.Project(_camera.transform.position + _camera.transform.forward * _camera.nearClipPlane - corners[i], _camera.transform.forward);
-            screenCorners[i] = _camera.WorldToScreenPoint(corners[i] + distVector);
+            return null;
         }
+
+        Vector3 openingPosition = openingComponent.GetCenter();
+        Vector3 colliderSize = boxCollider.size;
+        float width = RoomsGenerator.GetOpeningWidth(colliderSize);
+        float height = colliderSize.y;
+
+        Vector3[] corners = new Vector3[4];
+        var right = opening.transform.right;
+        var up = opening.transform.up;
+        corners[0] = openingPosition - right * width / 2f - up * height / 2f;
+        corners[1] = openingPosition + right * width / 2f - up * height / 2f;
+        corners[2] = openingPosition + right * width / 2f + up * height / 2f;
+        corners[3] = openingPosition - right * width / 2f + up * height / 2f;
+
+        Vector3[] screenCorners = new Vector3[4];
+        for (int i = 0; i < 4; i++)
+        {
+            screenCorners[i] = _camera.WorldToScreenPoint(corners[i]);
+            if (screenCorners[i].z < 0)
+            {
+                Vector3 distVector =
+                    Vector3.Project(
+                        _camera.transform.position + _camera.transform.forward * _camera.nearClipPlane - corners[i],
+                        _camera.transform.forward);
+                screenCorners[i] = _camera.WorldToScreenPoint(corners[i] + distVector);
+            }
+        }
+
+        float minX = Mathf.Min(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
+        float minY = Mathf.Min(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
+        float maxX = Mathf.Max(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
+        float maxY = Mathf.Max(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
+
+        int screenWidth = _camera.pixelWidth;
+        int screenHeight = _camera.pixelHeight;
+
+        if (minX > screenWidth || minY > screenHeight || maxX < 0 || maxY < 0)
+        {
+            return null;
+        }
+
+        Vector2Int boundingBoxOrigin =
+            new Vector2Int(Mathf.Clamp((int)minX, 0, screenWidth), Mathf.Clamp((int)minY, 0, screenHeight));
+        int boxWidth = Mathf.Clamp((int)maxX, 0, screenWidth) - boundingBoxOrigin.x;
+        int boxHeight = Mathf.Clamp((int)maxY, 0, screenHeight) - boundingBoxOrigin.y;
+
+        return new BoundingBox2D(boundingBoxOrigin, boxWidth, boxHeight);
     }
-
-    float minX = Mathf.Min(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
-    float minY = Mathf.Min(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
-    float maxX = Mathf.Max(screenCorners[0].x, screenCorners[1].x, screenCorners[2].x, screenCorners[3].x);
-    float maxY = Mathf.Max(screenCorners[0].y, screenCorners[1].y, screenCorners[2].y, screenCorners[3].y);
-
-    int screenWidth = _camera.pixelWidth;
-    int screenHeight = _camera.pixelHeight;
-
-    if (minX > screenWidth || minY > screenHeight || maxX < 0 || maxY < 0)
-    {
-        return null;
-    }
-
-    Vector2Int boundingBoxOrigin = new Vector2Int(Mathf.Clamp((int)minX, 0, screenWidth), Mathf.Clamp((int)minY, 0, screenHeight));
-    int boxWidth = Mathf.Clamp((int)maxX, 0, screenWidth) - boundingBoxOrigin.x;
-    int boxHeight = Mathf.Clamp((int)maxY, 0, screenHeight) - boundingBoxOrigin.y;
-
-    return new BoundingBox2D(boundingBoxOrigin, boxWidth, boxHeight);
-}
-
 
 
     /// <summary>
@@ -343,7 +363,9 @@ public class DatabaseGenerator : MonoBehaviour
         CombinedData combinedData = new CombinedData
         {
             SeedsData = new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed),
-            CameraData = new CameraData(_camera.fieldOfView, _camera.nearClipPlane, _camera.farClipPlane, _camera.pixelRect.x, _camera.pixelRect.y, _camera.pixelWidth, _camera.pixelHeight, _camera.depth, _camera.orthographic),
+            CameraData = new CameraData(_camera.fieldOfView, _camera.nearClipPlane, _camera.farClipPlane,
+                _camera.pixelRect.x, _camera.pixelRect.y, _camera.pixelWidth, _camera.pixelHeight, _camera.depth,
+                _camera.orthographic),
             ScreenshotData = screenshotData
         };
 
@@ -364,7 +386,6 @@ public class DatabaseGenerator : MonoBehaviour
         public SeedsData SeedsData { get; set; }
         public CameraData CameraData { get; set; }
         public ScreenshotData ScreenshotData { get; set; }
-        
     }
 
     #endregion
