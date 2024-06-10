@@ -75,5 +75,7 @@ crashlytics-build.properties
 Photographs/*
 OpeningsData/*
 Assets/Export/ExportVISG/*
+Assets/ExportVISG.meta
+Assets/ExportVISG/*
 Assets/Resources/*
 .idea/

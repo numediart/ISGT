@@ -79,12 +79,10 @@ namespace Pro_gen
 
         public List<QuadTreeNode> FindBiggestEmptyNodes(PropsCategory category)
         {
-            Debug.Log("Category: " + category);
             List<QuadTreeNode> result = new List<QuadTreeNode>();
             List<QuadTreeNode> bestResult = new List<QuadTreeNode>();
             int minDepth = int.MaxValue;
             FindBiggestEmptyNodesRecursive(this, ref minDepth, result, bestResult, category);
-            Debug.Log("Best result count: " + bestResult.Count);
             if (bestResult.Count > 0)
             {
                 return bestResult;
@@ -128,7 +126,7 @@ namespace Pro_gen
         private bool IsBestChoice(QuadTreeNode node, PropsCategory category)
         {
             //If the object is a sofa, a fridge, a bed or a shelf, we want a wall node
-            if (category == PropsCategory.Sofa || category == PropsCategory.Fridge || category == PropsCategory.Bed || category == PropsCategory.Bookshelf)
+            if (category == PropsCategory.Sofa || category == PropsCategory.Fridge || category == PropsCategory.Bed)
             {
                 return node.isWallNode;
             }
@@ -178,8 +176,7 @@ namespace Pro_gen
 
         public void DrawGizmo()
         {
-            // Gizmos.color = _objects.Count == 0 ? Color.green : Color.magenta;
-            Gizmos.color = isWallNode ? Color.magenta : Color.green;
+            Gizmos.color = _objects.Count == 0 ? Color.green : Color.magenta;
             Gizmos.DrawWireCube(bounds.center, bounds.size);
             if (_children != null)
             {

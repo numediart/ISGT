@@ -131,6 +131,7 @@ namespace Pro_gen
                         selectedNode.bounds.max.z - propExtents.z)
                 );
                 propTransform.position = position;
+                RotateProp(propTransform, category);
                 if (CanPropsBePlaced(propTransform, bounds))
                 {
                     isPositionFound = true;
@@ -170,9 +171,54 @@ namespace Pro_gen
             return true;
         }
         
-        private void RotateProp(Transform propTransform)
+        private void RotateProp(Transform propTransform, PropsCategory category)
         {
-            propTransform.rotation = Quaternion.Euler(0, NextFloat(new Random(), 0f, 360f), 0);
+            // If the object is a fridge, a shelf or a sofa, we want to align it perpendicular with the closest wall
+            // If it's a bed, we want to align it with the closest wall but parallel to it
+            // Do it only if the object is close enough to a wall
+
+            if (category == PropsCategory.Bed || category == PropsCategory.Sofa || category == PropsCategory.Fridge)
+            {
+                GameObject closestWall = findClosestWall(propTransform);
+                if (closestWall != null)
+                {
+                    propTransform.LookAt(closestWall.transform.position);
+
+                    // Adjust rotation for Bed, Sofa, and Fridge
+                    float rotationOffset = category == PropsCategory.Bed ? 90 : 180;
+
+                    // Get the current Y rotation and add the offset
+                    float currentYRotation = propTransform.eulerAngles.y + rotationOffset;
+
+                    // Round the Y rotation to the nearest multiple of 90 degrees
+                    float roundedYRotation = Mathf.Round(currentYRotation / 90) * 90;
+
+                    // Apply the rounded rotation back to the propTransform
+                    propTransform.rotation = Quaternion.Euler(0, roundedYRotation, 0);
+                }
+            }
+        }
+
+
+        
+        private GameObject findClosestWall(Transform propTransform)
+        {
+            // Iterate through all the walls and find the closest one
+            GameObject closestWall = null;
+            float minDistance = float.MaxValue;
+            foreach (GameObject wall in GameObject.FindGameObjectsWithTag("Walls"))
+            {
+                float distance = Vector3.Distance(propTransform.position, wall.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestWall = wall;
+                }
+            }
+            
+            
+            return minDistance < 3f ? closestWall : null;
+            
         }
 
 
