@@ -74,4 +74,6 @@ crashlytics-build.properties
 # Generated images and Json files
 Photographs/*
 OpeningsData/*
+Assets/Export/ExportVISG/*
+Assets/Resources/*
 .idea/

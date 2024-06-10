@@ -169,6 +169,11 @@ namespace Pro_gen
 
             return true;
         }
+        
+        private void RotateProp(Transform propTransform)
+        {
+            propTransform.rotation = Quaternion.Euler(0, NextFloat(new Random(), 0f, 360f), 0);
+        }
 
 
         private Bounds GetGroundBounds()
