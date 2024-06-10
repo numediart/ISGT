@@ -45,11 +45,9 @@ public class Room : MonoBehaviour
     public int ObjectSeed => _objectSeed;
     public int DatabaseSeed => _databaseSeed;
     
-    public RoomState RoomState
-    {
-        get;
-        set;
-    }
+    public int DeltaTimeRoomGeneration { get; private set; }
+
+    public RoomState RoomState { get; set; }
     public Random DatabaseRandom => _databaseRandom;
     public string Id => _id; //unique id of the room (use for screenshot data)
     public GameObject RoomObject => _roomObject;
@@ -58,7 +56,7 @@ public class Room : MonoBehaviour
 
     public RoomGrid RoomGrid => _roomGrid;
 
-    
+
     private void Awake()
     {
         _objectRandom = new Random(_objectSeed);
@@ -76,7 +74,8 @@ public class Room : MonoBehaviour
     /// init method of the Room class.
     /// </summary>
     /// <param name="roomGenerationData"></param>
-    public void InitRoom(RoomsGenerationScriptableObject roomGenerationData, DatabaseGenerationScriptableObject databaseGenerationData)
+    public void InitRoom(RoomsGenerationScriptableObject roomGenerationData,
+        DatabaseGenerationScriptableObject databaseGenerationData)
     {
         this.roomGenerationData = roomGenerationData;
         this.DatabaseGenerationData = databaseGenerationData;
@@ -96,13 +95,16 @@ public class Room : MonoBehaviour
             return;
         }
 
+        TimeTools timeTools = new TimeTools();
+        timeTools.Start();
         _roomGrid.InitGrid(_roomSeed, this.roomGenerationData);
         TryGetComponent<ProceduralPropPlacer>(out _proceduralPropPlacer);
         _proceduralPropPlacer.Init(this.roomGenerationData);
         CreateOpenings();
         FillRoomWithObjects();
+        timeTools.Stop();
+        DeltaTimeRoomGeneration = timeTools.GetElapsedTime();
         StartCoroutine(GenerateDatabase());
-       
     }
 
     public void SetSeeds(int roomSeed, int openingSeed, int objectSeed, int databaseSeed)
@@ -141,7 +143,8 @@ public class Room : MonoBehaviour
     {
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
-        StartCoroutine(_proceduralPropPlacer.PlaceProps(_objectRandom, roomGenerationData.width * roomGenerationData.height));// place the props in the room
+        StartCoroutine(_proceduralPropPlacer.PlaceProps(_objectRandom,
+            roomGenerationData.width * roomGenerationData.height)); // place the props in the room
         timeTools.Stop();
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }
@@ -149,7 +152,7 @@ public class Room : MonoBehaviour
     private IEnumerator GenerateDatabase()
     {
         TryGetComponent<DatabaseGenerator>(out var databaseGenerator);
-        yield return new WaitUntil(()=> RoomState == RoomState.Filled);
+        yield return new WaitUntil(() => RoomState == RoomState.Filled);
         EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
         databaseGenerator.Init(this);
         StartCoroutine(databaseGenerator.DatabaseGeneration());

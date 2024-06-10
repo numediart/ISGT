@@ -13,35 +13,77 @@ public class RoomsGenerator : MonoBehaviour
     public RoomsGenerationScriptableObject RoomsGenerationData;
     public DatabaseGenerationScriptableObject DatabaseGenerationData;
     public bool _manualSeeds = false;
-    
+    public static int RoomIndex = 0;
+    public static int NumberOfRoomToGenerate = 0; 
+    public static int ScreenshotsIndex = 0;
+
+    public static float TimeBetween2Screenshots = 0;
     #endregion
 
     #region Private Fields
+
     private Room _room;
     [HideInInspector] [SerializeField] private int _roomSeed;
     [HideInInspector] [SerializeField] private int _openingSeed;
     [HideInInspector] [SerializeField] private int _objectSeed;
     [HideInInspector] [SerializeField] private int _databaseSeed;
-    
+    TimeTools _timeTools = new TimeTools();
+    TimeTools _timeTools2 = new TimeTools();
     #endregion
 
     #region Methods Called By Buttons
 
     private void Awake()
     {
-        RoomsGenerationData.MaxRoomWidth = MainMenuController.PresetData.MaxWidth;
-        RoomsGenerationData.MaxRoomHeight = MainMenuController.PresetData.MaxDepth;
-        RoomsGenerationData.ObjectNumberRatio = MainMenuController.PresetData.PropsRatio;
-        RoomsGenerationData.WindowPerWallNumber = MainMenuController.PresetData.WindowRatio;
-        RoomsGenerationData.DoorPerWallNumber = MainMenuController.PresetData.DoorRatio;
-        RoomsGenerationData.NumberOfEmptyRoomsOnScene = MainMenuController.PresetData.NumberOfRoomsToGenerate;
-        DatabaseGenerationData.ScreenshotsNumberPerRoom = MainMenuController.PresetData.ScreenshotsCountPerRoom;
+        if (MainMenuController.PresetData != null)
+        {
+            RoomsGenerationData.MaxRoomWidth = MainMenuController.PresetData.MaxWidth;
+            RoomsGenerationData.MaxRoomHeight = MainMenuController.PresetData.MaxDepth;
+            RoomsGenerationData.ObjectNumberRatio = MainMenuController.PresetData.PropsRatio;
+            RoomsGenerationData.WindowPerWallNumber = MainMenuController.PresetData.WindowRatio;
+            RoomsGenerationData.DoorPerWallNumber = MainMenuController.PresetData.DoorRatio;
+            RoomsGenerationData.NumberOfEmptyRoomsOnScene = MainMenuController.PresetData.NumberOfRoomsToGenerate;
+            DatabaseGenerationData.ScreenshotsNumberPerRoom = MainMenuController.PresetData.ScreenshotsCountPerRoom;
+            NumberOfRoomToGenerate = MainMenuController.PresetData.NumberOfRoomsToGenerate;
+        }
+
+        NumberOfRoomToGenerate = RoomsGenerationData.NumberOfEmptyRoomsOnScene;
     }
 
     private void Start()
     {
         StartCoroutine(GenerateRooms());
+        _timeTools2.Start();
     }
+
+    private void Update()
+    {
+        if (_timeTools != null && _room != null)
+        {
+           // actualise l'éta toute les 2 sec pour ne pas surcharger le calcul
+            if (_timeTools2.GetElapsedTimeInSeconds() >=0.99f)
+            {
+                InGameMenuController.ElapsedTimeValueLabel.text = _timeTools.GetStringFormattedElapsedTime();
+                InGameMenuController.ETAValueLabel.text = FormattedRemainingTime();
+                _timeTools2.Start();
+            }
+          
+        }
+    }
+    private string FormattedRemainingTime()
+    {
+        float remainingTime =TimeBetween2Screenshots * (DatabaseGenerationData.ScreenshotsNumberPerRoom * NumberOfRoomToGenerate - ScreenshotsIndex);
+        int hours = (int)remainingTime / 3600;
+        int minutes = (int)(remainingTime % 3600) / 60;
+        int seconds = (int)(remainingTime % 3600) % 60;
+        if (hours > 0)
+            return hours + "h " + minutes + "m " + seconds + "s";
+        if (minutes > 0)
+            return minutes + "m " + seconds + "s";
+        
+        return seconds + "s";
+    }
+
 
     /// <summary>
     /// This method calls all the methods building the final rooms without painting on surfaces. 
@@ -49,11 +91,12 @@ public class RoomsGenerator : MonoBehaviour
     /// </summary>
     private IEnumerator GenerateRooms()
     {
-        Debug.Log(RoomsGenerationData.NumberOfEmptyRoomsOnScene);
-        TimeTools timeTools = new TimeTools();
-        timeTools.Start();
+        Debug.Log("Generating Rooms");
+        _timeTools.Start();
         for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
         {
+            RoomIndex= i + 1;
+            InGameMenuController.RoomValueLabel.text =  RoomIndex + " / " + RoomsGenerationData.NumberOfEmptyRoomsOnScene;
             GameObject go = new GameObject("GeneratedRoom");
             go.AddComponent<Room>();
             go.TryGetComponent<Room>(out _room);
@@ -64,7 +107,7 @@ public class RoomsGenerator : MonoBehaviour
 
             _room.ManualSeeds = _manualSeeds;
             _room.InitRoom(RoomsGenerationData, DatabaseGenerationData);
-    
+
             yield return new WaitUntil(() =>
             {
                 if (_room.RoomState == RoomState.DatabaseGenerated)
@@ -72,13 +115,12 @@ public class RoomsGenerator : MonoBehaviour
                     DestroyImmediate(go);
                     return true;
                 }
+
                 return false;
-                
             });
         }
-        timeTools.Stop();
-        Debug.Log("Rooms generated in " + timeTools.GetElapsedTimeInSeconds() + " seconds.");
-        timeTools.GetFormattedElapsedTime();
+
+        _timeTools.Stop();
         SceneManager.LoadScene(0);
     }
 
@@ -161,11 +203,12 @@ public class RoomsGenerator : MonoBehaviour
 
     public static GameObject GetRoomCategory(GameObject room, RoomCategory wantedCategory)
     {
-        for(int i = 0; i < room.transform.childCount; i++)
+        for (int i = 0; i < room.transform.childCount; i++)
         {
             RoomCategory roomCategory;
 
-            if (Enum.TryParse(room.transform.GetChild(i).gameObject.name, out roomCategory) && roomCategory == wantedCategory)
+            if (Enum.TryParse(room.transform.GetChild(i).gameObject.name, out roomCategory) &&
+                roomCategory == wantedCategory)
                 return room.transform.GetChild(i).gameObject;
         }
 

@@ -27,9 +27,11 @@ public class DatabaseGenerator : MonoBehaviour
     [SerializeField] [HideInInspector] private List<Vector3> _cameraRotations;
     private int _cameraIndex = 0;
     private List<Bounds> _emptyQuadNodesCenters;
-    private TimeTools _timeTools;
+    private TimeTools _timeTools = new TimeTools();
     private Room _room;
     private Camera _camera;
+
+    private int _timeBetween2Screenshots;
 
     #endregion
 
@@ -37,13 +39,16 @@ public class DatabaseGenerator : MonoBehaviour
     private void Awake()
     {
         _camera = Camera.main;
-        if (!Directory.Exists((MainMenuController.PresetData.ExportPath == null
+        if (!Directory.Exists((MainMenuController.PresetData == null
                 ? Application.dataPath
-                : MainMenuController.PresetData.ExportPath) + "/ExportVISG"))
-            Directory.CreateDirectory((MainMenuController.PresetData.ExportPath == null
+                : MainMenuController.PresetData.ExportPath == null
+                    ? Application.dataPath
+                    : MainMenuController.PresetData.ExportPath) + "/ExportVISG"))
+            Directory.CreateDirectory((MainMenuController.PresetData?.ExportPath == null
                 ? Application.dataPath
                 : MainMenuController.PresetData.ExportPath) + "/ExportVISG");
     }
+
 
     public void Init(Room room)
     {
@@ -51,9 +56,12 @@ public class DatabaseGenerator : MonoBehaviour
         _random = new Random(_room.DatabaseSeed);
         this._emptyQuadNodesCenters = room.EmptyQuadNodesCenters;
 
-        string path = (MainMenuController.PresetData.ExportPath == null
+
+        string path = (MainMenuController.PresetData == null
             ? Application.dataPath
-            : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
+            : MainMenuController.PresetData.ExportPath == null
+                ? Application.dataPath
+                : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
         Debug.Log("Export path: " + path);
 
         if (!Directory.Exists(path + "OpeningsData"))
@@ -74,22 +82,36 @@ public class DatabaseGenerator : MonoBehaviour
     public IEnumerator DatabaseGeneration()
     {
         _random = new Random(_room.DatabaseSeed);
-
+        InGameMenuController.ProgressBar.value = 0;
+        InGameMenuController.ProgressLabel.text = "Room_" + _room.Id;
         if (manualScreenShots)
         {
             //Iterate over cam positions and rotations
             for (int i = 0; i < _cameraPositions.Count; i++)
             {
+                _timeTools.Start();
+                RoomsGenerator.ScreenshotsIndex++;
+
                 TakeScreenshots(_room.RoomObject, _room.Id, i);
+                InGameMenuController.ScreenshotValueLabel.text = RoomsGenerator.ScreenshotsIndex + " / " +
+                                                                 DatabaseGenerationData.ScreenshotsNumberPerRoom *
+                                                                 RoomsGenerator.NumberOfRoomToGenerate;
                 yield return new WaitForSeconds(DatabaseGenerationData.TimeBetweenScreenshotsInManualMode);
+                RoomsGenerator.TimeBetween2Screenshots = _timeTools.GetElapsedTime();
             }
         }
         else
         {
             for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
             {
+                _timeTools.Start();
+                RoomsGenerator.ScreenshotsIndex++;
                 TakeScreenshots(_room.RoomObject, _room.Id, j);
+                InGameMenuController.ScreenshotValueLabel.text = RoomsGenerator.ScreenshotsIndex + " / " +
+                                                                 DatabaseGenerationData.ScreenshotsNumberPerRoom *
+                                                                 RoomsGenerator.NumberOfRoomToGenerate;
                 yield return new WaitForSecondsRealtime(0.05f);
+                RoomsGenerator.TimeBetween2Screenshots = _timeTools.GetElapsedTimeInSeconds();
             }
         }
 
@@ -110,6 +132,12 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private void TakeScreenshots(GameObject room, string roomID, int screenshotIndex)
     {
+        InGameMenuController.ProgressBar.value =
+        RoomsGenerator.ScreenshotsIndex * 100f /
+                    (DatabaseGenerationData.ScreenshotsNumberPerRoom * RoomsGenerator.NumberOfRoomToGenerate);
+        InGameMenuController.ProgressBar.title = "Progress: " +
+                                                 InGameMenuController.ProgressBar.value +
+                                                 " /  " + InGameMenuController.ProgressBar.highValue + "%";
         Camera camera = _camera!;
         manualScreenShots = false;
         camera.transform.position = RandomCameraPosition(room);
@@ -118,9 +146,11 @@ public class DatabaseGenerator : MonoBehaviour
         _cameraIndex++;
 
 
-        string path = (MainMenuController.PresetData.ExportPath == null
+        string path = (MainMenuController.PresetData == null
             ? Application.dataPath
-            : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
+            : MainMenuController.PresetData.ExportPath == null
+                ? Application.dataPath
+                : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
         //Camera.main.Render();
         // You need to comment the line below if you want to use the camera stereo mode and take a screenshot with each eye.
         if (!Directory.Exists(path + "Photographs"))
@@ -136,8 +166,13 @@ public class DatabaseGenerator : MonoBehaviour
         string filename = $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}";
 
         //  yield return new WaitForSecondsRealtime(0.01f);
-        ScreenCapture.CaptureScreenshot(
-            $"{path}Photographs/Room-{roomID}/" + filename + ".png", 1);
+      // ScreenCapture.CaptureScreenshot(
+        //    $"{path}Photographs/Room-{roomID}/" + filename + ".png", 1);
+        
+        Camera.main.TryGetComponent<CameraScreenshot>(out var cameraScreenshot);
+        cameraScreenshot.savePath = path + "Photographs/Room-" + roomID + "/" + filename + ".png";
+        cameraScreenshot.CaptureScreenshot();
+        
         GetOpeningsData(room, screenshotIndex, filename);
     }
 
@@ -154,6 +189,7 @@ public class DatabaseGenerator : MonoBehaviour
 
     #endregion
 */
+
 
     #region Random Camera Coordinates Calculation Methods
 
