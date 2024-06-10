@@ -47,5 +47,6 @@ public class MainMenuController : MonoBehaviour
         _rootUi.Q<VisualElement>("Panel").Add(_settingsMenuAsset.CloneTree());
         _rootUi.Q<VisualElement>("SettingsMenu").style.display = DisplayStyle.Flex;
         gameObject.AddComponent<SettingsMenuController>();
+        _rootUi.Q<VisualElement>("LastGenerationInfo").style.display = DisplayStyle.None;
     }
 }

@@ -51,6 +51,9 @@ public class SettingsMenuController : MonoBehaviour
             _presetDropdown.value = MainMenuController.PresetDataFilename;
     }
 
+    /// <summary>
+    ///  OnEnable method to add event handlers to the UI elements
+    /// </summary>
     private void OnEnable()
     {
         _browseButton = _rootVisualElement.Q<Button>("BrowsePath");
@@ -71,7 +74,6 @@ public class SettingsMenuController : MonoBehaviour
     /// <param name="changeEvent"></param>
     private void OnPresetDropdownValueChanged(ChangeEvent<string> changeEvent)
     {
-        Debug.Log("Preset Dropdown Value Changed : " + changeEvent.newValue);
         string path = Application.dataPath + ResourcesDirectory;
         string presetDataJson = File.ReadAllText(path + "/" + changeEvent.newValue);
         MainMenuController.PresetData = JsonConvert.DeserializeObject<PresetData>(presetDataJson);
@@ -185,6 +187,8 @@ public class SettingsMenuController : MonoBehaviour
     {
         _rootVisualElement.Q<VisualElement>("SettingsMenu").style.display = DisplayStyle.None;
         _rootVisualElement.Q<VisualElement>("Menu").style.display = DisplayStyle.Flex;
+        if(InterSceneManager.LastMaxRooms > 0)
+        _rootVisualElement.Q<VisualElement>("LastGenerationInfo").style.display = DisplayStyle.Flex;
         Destroy(this);
     }
 
@@ -196,7 +200,6 @@ public class SettingsMenuController : MonoBehaviour
         PresetData presetData =
             new PresetData(10, 10, 40, 1, 1, 10, 10, UnityEngine.Device.Application.dataPath + "/Export");
         string presetDataJson = JsonConvert.SerializeObject(presetData);
-        Debug.Log("Preset Data: " + presetDataJson);
 
         if (!Directory.Exists(Application.dataPath + ResourcesDirectory))
             Directory.CreateDirectory(Application.dataPath + ResourcesDirectory);
