@@ -118,6 +118,11 @@ namespace Pro_gen
             List<QuadTreeNode> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes(category);
 
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
+            
+            if (biggestEmptyNodes.Count == 0)
+            {
+                return Vector3.zero;
+            }
 
             QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
             

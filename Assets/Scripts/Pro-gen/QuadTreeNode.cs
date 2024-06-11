@@ -36,7 +36,7 @@ namespace Pro_gen
 
         public void determineMaxDepth(int area)
         {
-            max_depth = 4 + (int) (5 * (Mathf.Sqrt(area) / 80f));
+            max_depth = 5 + (int) (4 * (Mathf.Sqrt(area) / 40f));
         }
         
 
