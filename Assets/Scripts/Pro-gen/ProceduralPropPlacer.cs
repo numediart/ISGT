@@ -15,7 +15,7 @@ namespace Pro_gen
         [SerializeField] private List<Props> _selectedProps;
         [SerializeField] private List<Bounds> _selectedPropsBounds;
         private QuadTreeNode _quadTree;
-        private int _maxAttempts = 25;
+        private readonly int _maxAttempts = 25;
         private List<Vector3> _propsPositions;
         private Bounds _groundBounds;
 
@@ -86,22 +86,26 @@ namespace Pro_gen
                 // wait for next fixed frame
                 Physics.SyncTransforms();
                 yield return new WaitForFixedUpdate();
-                Vector3 positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform, propInstance.PropsCategory);
+                Vector3? positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform, propInstance.PropsCategory);
 
-                if (positionInRoom == Vector3.zero)
+                if (positionInRoom == null) // if there is no empty node anymore, stop placing props
+                {
+                    Destroy(propInstance.gameObject);
+                    break;
+                }
+                else if (positionInRoom == Vector3.zero) // if the prop couldn't be placed, in the max attempts, destroy it
                 {
                     Destroy(propInstance.gameObject);
                 }
                 else
                 {
-                    propInstance.transform.position = positionInRoom;
-                    // yield return new WaitForFixedUpdate();
+                    propInstance.transform.position = (Vector3)positionInRoom;
                     Physics.SyncTransforms();
                     _quadTree.Insert(propInstance);
                     propBounds = propInstance.CalculateBounds(); // Recalculate bounds after moving
                     _selectedProps.Add(propInstance);
                     _selectedPropsBounds.Add(propBounds);
-                    _propsPositions.Add(positionInRoom);
+                    _propsPositions.Add((Vector3)positionInRoom);
                 }
             }
 
@@ -109,20 +113,20 @@ namespace Pro_gen
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
             room.RoomState = RoomState.Filled;
         }
-        private Vector3 PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform, PropsCategory category)
+        private Vector3? PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform, PropsCategory category)
         {
             Vector3 position = Vector3.zero;
             bool isPositionFound = false;
             Vector3 propExtents = bounds.extents;
             int attempts = 0;
             List<QuadTreeNode> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes(category);
+            
+            if (biggestEmptyNodes.Count == 0) // if there are no empty nodes
+            {
+                return null;
+            }
 
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
-            
-            if (biggestEmptyNodes.Count == 0)
-            {
-                return Vector3.zero;
-            }
 
             QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
             
@@ -147,7 +151,7 @@ namespace Pro_gen
                 }
             }
 
-            if (attempts == _maxAttempts)
+            if (attempts == _maxAttempts && !isPositionFound) // if the prop couldn't be placed in time, return Vector3.zero
             {
                 return Vector3.zero;
             }

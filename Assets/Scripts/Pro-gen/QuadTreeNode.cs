@@ -156,6 +156,11 @@ namespace Pro_gen
         {
             List<Bounds> result = new List<Bounds>();
             GetAllEmptyNodesRecursive(this, result);
+            
+            if (result.Count == 0) //if all nodes are occupied, return the biggest one i.e. the entire room
+            {
+                result.Add(bounds);
+            }
             return result;
         }
         
