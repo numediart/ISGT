@@ -91,6 +91,7 @@ public class RoomsGenerator : MonoBehaviour
     /// </summary>
     private IEnumerator GenerateRooms()
     {
+        ScreenshotsIndex = 0;
         Debug.Log("Generating Rooms");
         _timeTools.Start();
         for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
