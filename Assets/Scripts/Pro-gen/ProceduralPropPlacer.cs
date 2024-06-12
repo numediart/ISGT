@@ -30,10 +30,10 @@ namespace Pro_gen
         public void Init(RoomsGenerationScriptableObject roomGenerationData)
         {
             _roomsGenerationData = roomGenerationData;
-            numberOfProps = Mathf.RoundToInt(((float)_roomsGenerationData.ObjectNumberRatio/100) * (Math.Max(roomGenerationData.width, roomGenerationData.height)*Math.Max(roomGenerationData.widthOffset, roomGenerationData.heightOffset)*Math.Min(roomGenerationData.width, roomGenerationData.height)/2));
+            numberOfProps = Mathf.RoundToInt((((float)_roomsGenerationData.ObjectNumberRatio / 100) *
+                                             (_roomsGenerationData.width * _roomsGenerationData.height* _roomsGenerationData.heightOffset))/2);
             _groundBounds = GetGroundBounds();
             Debug.Log("Number of props: " + numberOfProps);
-            
         }
 
         public IEnumerator PlaceProps(Random random, int area)
@@ -42,7 +42,7 @@ namespace Pro_gen
             {
                 Debug.LogError("Room component not found.");
             }
-            
+
             if (_roomsGenerationData == null)
             {
                 Debug.LogError("ProGenParams not assigned.");
@@ -62,7 +62,7 @@ namespace Pro_gen
                     _roomsGenerationData.heightOffset * _roomsGenerationData.height
                 )
             );
-            
+
             _quadTree = new QuadTreeNode(roomBounds, 0);
             _quadTree.determineMaxDepth(area);
             TimeTools timeTools = new TimeTools();
@@ -73,16 +73,16 @@ namespace Pro_gen
                     _roomsGenerationData.PropsPrefabs[random.Next(_roomsGenerationData.PropsPrefabs.Count)];
                 Props propInstance = Instantiate(selectedProp, Vector3.zero,
                     Quaternion.Euler(0, NextFloat(random, 0f, 360f), 0), transform);
-                
+
                 // If object has a spawner script, use it
                 if (propInstance.TryGetComponent<PropsSpawner>(out PropsSpawner propSpawner))
                 {
                     propSpawner.Spawn(random);
                 }
-                
+
 
                 Bounds propBounds = propInstance.CalculateBounds();
-                
+
                 // wait for next fixed frame
                 Physics.SyncTransforms();
                 yield return new WaitForFixedUpdate();
@@ -129,7 +129,7 @@ namespace Pro_gen
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
 
             QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
-            
+
             while (!isPositionFound && attempts < _maxAttempts)
             {
                 position = new Vector3(
@@ -160,7 +160,7 @@ namespace Pro_gen
         }
 
         private bool CanPropsBePlaced(Transform propTransform, Bounds bounds)
-        {   
+        {
             // Calculate the new bounds based on the desired position
             bounds.center = propTransform.position;
 
@@ -265,18 +265,18 @@ namespace Pro_gen
                 new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width,
                     _roomsGenerationData.heightOffset,
                     _roomsGenerationData.heightOffset * _roomsGenerationData.height));
-            
+
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(_groundBounds.center, _groundBounds.size);
-        
+
             foreach (Props props in _selectedProps)
             {
                 Bounds bounds = props.CalculateBounds();
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);
             }
-        
-        
+
+
             if (_quadTree != null)
             {
                 _quadTree.DrawGizmo();

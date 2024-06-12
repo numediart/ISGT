@@ -5,7 +5,7 @@ namespace UI_Toolkit
         Small = 10,
         Medium = 15,
         Large = 25,
-        ExtraLarge = 36
+        ExtraLarge = 40
     }
 
     public enum PropsDensity // 1-80
@@ -18,18 +18,18 @@ namespace UI_Toolkit
 
     public enum WindowDensity // 1-80
     {
-        Low = 1,
-        Medium = 5,
-        High = 8,
-        Ultra = 10
+        Low = 10,
+        Medium = 20,
+        High = 30,
+        Ultra = 40
     }
     
 public enum DoorDensity // 1-80
     {
-        Low = 1,
-        Medium = 5,
-        High = 8,
-        Ultra = 10
+        Low = 10,
+        Medium = 20,
+        High = 30,
+        Ultra = 40
     }
     
 }

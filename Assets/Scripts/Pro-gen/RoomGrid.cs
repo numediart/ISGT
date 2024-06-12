@@ -17,15 +17,15 @@ namespace Pro_gen
 
         private Dictionary<RoomCellDirections, List<RoomCell>> _wallSections;
         private Dictionary<RoomCellDirections, int> _wallDoorPerSection;
-        
+
         public void InitGrid(int roomSeed, RoomsGenerationScriptableObject roomsGenerationData)
         {
             _roomsGenerationData = roomsGenerationData;
             _gridRandom = new Random(roomSeed);
-            _roomsGenerationData.width =_gridRandom.Next(2, _roomsGenerationData.MaxRoomWidth);
-                //_roomsGenerationData.MaxRoomWidth; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomWidth);
-            _roomsGenerationData.height =_gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
-              //  _roomsGenerationData.MaxRoomHeight; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
+            _roomsGenerationData.width = _gridRandom.Next(2, _roomsGenerationData.MaxRoomWidth);
+            //_roomsGenerationData.MaxRoomWidth; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomWidth);
+            _roomsGenerationData.height = _gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
+            //  _roomsGenerationData.MaxRoomHeight; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
             _grid = new RoomCell[_roomsGenerationData.width,
                 _roomsGenerationData
                     .height]; // initialize the grid with the width and height in pro gen scriptable Object
@@ -171,7 +171,6 @@ namespace Pro_gen
                 cell.ClearRightWall();
                 _wallSections[RoomCellDirections.Front].Add(cell);
                 _wallSections[RoomCellDirections.Left].Add(cell);
-   
             }
 
             else if (cellPosition is { x: 0, y: > 0 } &&
@@ -181,7 +180,6 @@ namespace Pro_gen
                 cell.ClearRightWall();
                 cell.ClearLeftWall();
                 _wallSections[RoomCellDirections.Front].Add(cell);
-       
             }
             else if (cellPosition.x == 0 &&
                      cellPosition.y.Equals(_roomsGenerationData.height -
@@ -191,7 +189,6 @@ namespace Pro_gen
                 cell.ClearLeftWall();
                 _wallSections[RoomCellDirections.Front].Add(cell);
                 _wallSections[RoomCellDirections.Right].Add(cell);
-
             }
 
             else if (cellPosition is { x: > 0, y: 0 } &&
@@ -210,7 +207,6 @@ namespace Pro_gen
                 cell.ClearRightWall();
                 _wallSections[RoomCellDirections.Back].Add(cell);
                 _wallSections[RoomCellDirections.Left].Add(cell);
-      
             }
 
             else if (cellPosition.x.Equals(_roomsGenerationData.width - 1) &&
@@ -230,7 +226,6 @@ namespace Pro_gen
                 cell.ClearLeftWall();
                 _wallSections[RoomCellDirections.Back].Add(cell);
                 _wallSections[RoomCellDirections.Right].Add(cell);
-         
             }
 
             else if (cellPosition.x > 0 && cellPosition.x < _roomsGenerationData.width - 1 &&
@@ -258,13 +253,34 @@ namespace Pro_gen
         {
             foreach (var wallSection in _wallSections) // loop through the wall sections (front, back, left, right)
             {
-                //check if the door is space with the parameters minDistanceBetweenDoors and maxDistanceBetweenDoors
-                int minDistanceBetweenDoors = 2; // should be in pro gen scriptable object 
-                int maxDistanceBetweenDoors = 10; // should be in pro gen scriptable object
+                int doorPerWallNumber = 0;
+                switch (wallSection.Key)
+                {
+                    case RoomCellDirections.Left:
+                        doorPerWallNumber =
+                            _roomsGenerationData.DoorPerWallNumber / 10;
+                        break;
+                    case RoomCellDirections.Right:
+                        doorPerWallNumber =
+                            _roomsGenerationData.DoorPerWallNumber / 10;
+                        break;
+                    case RoomCellDirections.Front:
+                        doorPerWallNumber =
+                            _roomsGenerationData.DoorPerWallNumber / 10;
+                        break;
+                    case RoomCellDirections.Back:
+                        doorPerWallNumber =
+                            _roomsGenerationData.DoorPerWallNumber / 10;
+                        break;
+                }
+
                 int doorNumber = 0;
                 RoomCell previousCell = null;
-                for (int j = _wallDoorPerSection[wallSection.Key]; j < _roomsGenerationData.DoorPerWallNumber; j++)
+                int attempts = 0;
+                for (int j = _wallDoorPerSection[wallSection.Key]; j < doorPerWallNumber; j++)
                 {
+                    if (attempts > doorPerWallNumber * 2)
+                        break;
                     int wallDoorIndex =
                         random.Next(0,
                             _roomsGenerationData.WallDoorPrefabs.Count); // get a random door prefab in the list
@@ -273,31 +289,14 @@ namespace Pro_gen
                         random.Next(0, wallSection.Value.Count)]; // get a random cell in the wall section
                     if (cell == previousCell) // if the cell is the same as the previous cell
                     {
+                        attempts++; // increment the attempts
                         j--; // decrement the j
                         continue; // continue to the next iteration
                     }
 
-                    if (doorNumber ==
-                        0) // if doornumber is 0 (the first Door) there is no need to check Distance and if there is already a Door in the cell
-                    {
-                        cell.ReplaceWall(wallSection.Key, wallDoor); // replace the wall with the door
-                        doorNumber++;
-                    }
-                    else
-                    {
-                        if (Vector2.Distance(cell.GetCellPosition(), previousCell!.GetCellPosition()) >
-                            minDistanceBetweenDoors &&
-                            Vector3.Distance(cell.GetCellPosition(), previousCell.GetCellPosition()) <
-                            maxDistanceBetweenDoors) // check if the distance between the current cell and the previous cell is between the minDistanceBetweenDoors and maxDistanceBetweenDoors
-                        {
-                            cell.ReplaceWall(wallSection.Key, wallDoor);
-                            doorNumber++;
-                        }
-                        else
-                        {
-                            j--;
-                        }
-                    }
+                    cell.ReplaceWall(wallSection.Key, wallDoor); // replace the wall with the door
+                    doorNumber++;
+
 
                     _wallDoorPerSection[wallSection.Key] = doorNumber;
                     previousCell = cell;
@@ -309,10 +308,35 @@ namespace Pro_gen
         {
             foreach (var wallSection in _wallSections) // loop through the wall sections (front, back, left, right)
             {
+                int WindowNumberPerWall = 0;
+
+                switch (wallSection.Key)
+                {
+                    case RoomCellDirections.Left:
+                        WindowNumberPerWall =
+                            _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.width / 2);
+                        break;
+                    case RoomCellDirections.Right:
+                        WindowNumberPerWall =
+                            _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.width / 2);
+                        break;
+                    case RoomCellDirections.Front:
+                        WindowNumberPerWall =
+                            _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.height / 2);
+                        break;
+                    case RoomCellDirections.Back:
+                        WindowNumberPerWall =
+                            _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.height / 2);
+                        break;
+                }
+
+                int attempts = 0;
                 int windowNumber = 0; // initialize the window number
                 RoomCell previousCell = null; // initialize the previous cell
-                for (int j = 0; j < _roomsGenerationData.WindowPerWallNumber; j++)
+                for (int j = 0; j < WindowNumberPerWall; j++)
                 {
+                    if (attempts > WindowNumberPerWall * 2)
+                        break;
                     int wallWindowIndex =
                         random.Next(0,
                             _roomsGenerationData.WallWindowsPrefabs.Count); // get a random window prefab in the list
@@ -321,28 +345,14 @@ namespace Pro_gen
                         random.Next(0, wallSection.Value.Count)]; // get a random cell in the wall section
                     if (cell == previousCell) // if the cell is the same as the previous cell
                     {
+                        attempts++; // increment the attempts
                         j--; // decrement the j
                         continue; // continue to the next iteration
                     }
 
-                    if (windowNumber ==
-                        0) // if window number is 0 (the first window) there is no need to check Distance and if there is already a window in the cell
-                    {
-                        cell.ReplaceWall(wallSection.Key, wallWindow);
-                        windowNumber++;
-                    }
-                    else
-                    {
-                        if (Vector2.Distance(cell.GetCellPosition(), previousCell!.GetCellPosition()) > 1)// check if the distance between the current cell and the previous cell is greater than 1 and there is no door in the cell Hardcoded value should be in the pro gen scriptable object
-                        {
-                            cell.ReplaceWall(wallSection.Key, wallWindow); // replace the wall with the window
-                            windowNumber++; // increment the window number
-                        }
-                        else
-                        {
-                            j--;
-                        }
-                    }
+
+                    cell.ReplaceWall(wallSection.Key, wallWindow);
+                    windowNumber++;
 
                     previousCell = cell; // set the previous cell to the current cell
                 }
@@ -356,11 +366,11 @@ namespace Pro_gen
                 int wallMaterialIndex =
                     _gridRandom.Next(0,
                         _roomsGenerationData.WallMaterials.Count); // get a random wall material in the list
-                
+
                 int windowMaterialIndex =
                     _gridRandom.Next(0,
                         _roomsGenerationData.WindowMaterials.Count); // get a random window material in the list
-                
+
                 foreach (var cell in wallSection.Value) // loop through the cells in the wall section
                 {
                     cell.ApplyWallTexture(wallMaterialIndex, wallSection.Key); // apply the texture to the wall
@@ -396,7 +406,6 @@ namespace Pro_gen
             }
 
             return walls;
-
         }
     }
 }
