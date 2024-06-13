@@ -65,3 +65,7 @@
     -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
     -unity-font-definition: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold%20SDF.asset?fileID=11400000&guid=13f9b7034a0090c4bbc848db93c35cbf&type=2#IBMPlexSans-SemiBold SDF");
 }
+
+.slider {
+    opacity: 1;
+}

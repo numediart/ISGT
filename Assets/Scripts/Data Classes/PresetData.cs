@@ -4,6 +4,8 @@ namespace Data_Classes
 {
     public class PresetData
     {
+        public bool SizeManualInput;
+        
         public int MaxWidth;
         public int MaxDepth;
 
@@ -16,8 +18,9 @@ namespace Data_Classes
         
         public string ExportPath; // has to be a folder path
         
-        public PresetData(int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath)
+        public PresetData(bool sizeManualInput,int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath)
         {
+            SizeManualInput = sizeManualInput;
             MaxWidth = maxWidth;
             MaxDepth = maxDepth;
             PropsRatio = propsRatio;

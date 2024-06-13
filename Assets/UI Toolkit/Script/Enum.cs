@@ -2,6 +2,7 @@ namespace UI_Toolkit
 {
     public enum RoomMaxSize
     {
+        ManualInput = -1,
         Small = 10,
         Medium = 15,
         Large = 25,
