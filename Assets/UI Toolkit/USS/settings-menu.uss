@@ -19,6 +19,7 @@
 .settingsMenu {
     max-height: 750px;
     width: 800px;
+    min-height: auto;
 }
 
 .title {

@@ -29,6 +29,9 @@ public class SettingsMenuController : MonoBehaviour
     private EnumField _doorDensity;
     
     private SliderInt _MaxSizeSlider;
+    private SliderInt _propsDensitySlider;
+    private SliderInt _windowDensitySlider;
+    private SliderInt _doorDensitySlider;
     
     private Label _pathLabel;
     
@@ -46,15 +49,41 @@ public class SettingsMenuController : MonoBehaviour
 
         _roomMaxSize = _rootVisualElement.Q<EnumField>("RoomSize");
         _MaxSizeSlider = _rootVisualElement.Q<SliderInt>("MaxSizeSlider");
+        _propsDensity = _rootVisualElement.Q<EnumField>("PropsDensity");
+        _propsDensitySlider = _rootVisualElement.Q<SliderInt>("PropsDensitySlider");
+        _windowDensity = _rootVisualElement.Q<EnumField>("WindowsDensity");
+        _windowDensitySlider = _rootVisualElement.Q<SliderInt>("WindowsDensitySlider");
+        _doorDensity = _rootVisualElement.Q<EnumField>("DoorsDensity");
+        _doorDensitySlider = _rootVisualElement.Q<SliderInt>("DoorsDensitySlider");
+        
 
-        // Hide _MaxSizeSlider by default
+        // Hide sliders for manual inputs
         _MaxSizeSlider.style.display = DisplayStyle.None;
+        _propsDensitySlider.style.display = DisplayStyle.None;
+        _windowDensitySlider.style.display = DisplayStyle.None;
+        _doorDensitySlider.style.display = DisplayStyle.None;
 
-        // Register callback for _roomMaxSize value change
+        // Register callbacks for manual inputs
         _roomMaxSize.RegisterValueChangedCallback(evt =>
         {
             _MaxSizeSlider.style.display = (RoomMaxSize)evt.newValue == RoomMaxSize.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
         });
+        
+        _propsDensity.RegisterValueChangedCallback(evt =>
+        {
+            _propsDensitySlider.style.display = (PropsDensity)evt.newValue == PropsDensity.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
+        });
+        
+        _windowDensity.RegisterValueChangedCallback(evt =>
+        {
+            _windowDensitySlider.style.display = (WindowDensity)evt.newValue == WindowDensity.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
+        });
+        
+        _doorDensity.RegisterValueChangedCallback(evt =>
+        {
+            _doorDensitySlider.style.display = (DoorDensity)evt.newValue == DoorDensity.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
+        });
+        
 
         if (!Directory.Exists(Application.dataPath + ResourcesDirectory))
             Directory.CreateDirectory(Application.dataPath + ResourcesDirectory);
