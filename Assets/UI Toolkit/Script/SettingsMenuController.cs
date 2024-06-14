@@ -28,7 +28,7 @@ public class SettingsMenuController : MonoBehaviour
     private EnumField _windowDensity;
     private EnumField _doorDensity;
     
-    private SliderInt _MaxSizeSlider;
+    private SliderInt _maxSizeSlider;
     private SliderInt _propsDensitySlider;
     private SliderInt _windowDensitySlider;
     private SliderInt _doorDensitySlider;
@@ -41,24 +41,28 @@ public class SettingsMenuController : MonoBehaviour
 
     private DropdownField _presetDropdown;
 
-
     void Awake()
     {
         _rootVisualElement = GetComponent<UIDocument>().rootVisualElement;
+        
         _presetDropdown = _rootVisualElement.Q<DropdownField>("PresetDropdown");
-
         _roomMaxSize = _rootVisualElement.Q<EnumField>("RoomSize");
-        _MaxSizeSlider = _rootVisualElement.Q<SliderInt>("MaxSizeSlider");
+        _maxSizeSlider = _rootVisualElement.Q<SliderInt>("MaxSizeSlider");
         _propsDensity = _rootVisualElement.Q<EnumField>("PropsDensity");
         _propsDensitySlider = _rootVisualElement.Q<SliderInt>("PropsDensitySlider");
         _windowDensity = _rootVisualElement.Q<EnumField>("WindowsDensity");
         _windowDensitySlider = _rootVisualElement.Q<SliderInt>("WindowsDensitySlider");
         _doorDensity = _rootVisualElement.Q<EnumField>("DoorsDensity");
         _doorDensitySlider = _rootVisualElement.Q<SliderInt>("DoorsDensitySlider");
+        _pathLabel = _rootVisualElement.Q<Label>("PathLabel");
+        _browseButton = _rootVisualElement.Q<Button>("BrowsePath");
+        _applyButton = _rootVisualElement.Q<Button>("ApplyButton");
+        _cancelButton = _rootVisualElement.Q<Button>("CancelButton");
+        _screenshotsCountPerRoom = _rootVisualElement.Q<UnsignedIntegerField>("ScreenshotsCountPerRoom");
+        _numberOfRoomsToGenerate = _rootVisualElement.Q<UnsignedIntegerField>("RoomNumber");
         
-
         // Hide sliders for manual inputs
-        _MaxSizeSlider.style.display = DisplayStyle.None;
+        _maxSizeSlider.style.display = DisplayStyle.None;
         _propsDensitySlider.style.display = DisplayStyle.None;
         _windowDensitySlider.style.display = DisplayStyle.None;
         _doorDensitySlider.style.display = DisplayStyle.None;
@@ -66,7 +70,7 @@ public class SettingsMenuController : MonoBehaviour
         // Register callbacks for manual inputs
         _roomMaxSize.RegisterValueChangedCallback(evt =>
         {
-            _MaxSizeSlider.style.display = (RoomMaxSize)evt.newValue == RoomMaxSize.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
+            _maxSizeSlider.style.display = (RoomMaxSize)evt.newValue == RoomMaxSize.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
         });
         
         _propsDensity.RegisterValueChangedCallback(evt =>
@@ -84,7 +88,6 @@ public class SettingsMenuController : MonoBehaviour
             _doorDensitySlider.style.display = (DoorDensity)evt.newValue == DoorDensity.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
         });
         
-
         if (!Directory.Exists(Application.dataPath + ResourcesDirectory))
             Directory.CreateDirectory(Application.dataPath + ResourcesDirectory);
 
@@ -94,21 +97,14 @@ public class SettingsMenuController : MonoBehaviour
             _presetDropdown.value = MainMenuController.PresetDataFilename;
     }
 
-
     /// <summary>
     ///  OnEnable method to add event handlers to the UI elements
     /// </summary>
     private void OnEnable()
     {
-        _browseButton = _rootVisualElement.Q<Button>("BrowsePath");
         _browseButton.clicked += OnBrowseButtonClicked;
-
-        _applyButton = _rootVisualElement.Q<Button>("ApplyButton");
         _applyButton.clicked += OnApplyButtonClicked;
-
-        _cancelButton = _rootVisualElement.Q<Button>("CancelButton");
         _cancelButton.clicked += OnCancelButtonClicked;
-
         _presetDropdown.RegisterValueChangedCallback(OnPresetDropdownValueChanged);
     }
 
@@ -123,18 +119,26 @@ public class SettingsMenuController : MonoBehaviour
         MainMenuController.PresetData = JsonConvert.DeserializeObject<PresetData>(presetDataJson);
 
         bool isSizeManualInput = MainMenuController.PresetData.SizeManualInput;
+        bool isPropsManualInput = MainMenuController.PresetData.PropsManualInput;
+        bool isWindowsManualInput = MainMenuController.PresetData.WindowsManualInput;
+        bool isDoorsManualInput = MainMenuController.PresetData.DoorsManualInput;
         
-        _rootVisualElement.Q<Label>("PathLabel").text = MainMenuController.PresetData.ExportPath;
-        _rootVisualElement.Q<EnumField>("RoomSize").value = isSizeManualInput ? RoomMaxSize.ManualInput : (RoomMaxSize)MainMenuController.PresetData.MaxWidth;
-        _rootVisualElement.Q<SliderInt>("MaxSizeSlider").value = MainMenuController.PresetData.MaxWidth;
-        _rootVisualElement.Q<EnumField>("PropsDensity").value = (PropsDensity)MainMenuController.PresetData.PropsRatio;
-        _rootVisualElement.Q<EnumField>("WindowsDensity").value =
-            (WindowDensity)MainMenuController.PresetData.WindowRatio;
-        _rootVisualElement.Q<EnumField>("DoorsDensity").value = (DoorDensity)MainMenuController.PresetData.DoorRatio;
-        _rootVisualElement.Q<UnsignedIntegerField>("ScreenshotsCountPerRoom").value =
-            (uint)MainMenuController.PresetData.ScreenshotsCountPerRoom;
-        _rootVisualElement.Q<UnsignedIntegerField>("RoomNumber").value =
-            (uint)MainMenuController.PresetData.NumberOfRoomsToGenerate;
+        _pathLabel.text = MainMenuController.PresetData.ExportPath;
+        
+        _roomMaxSize.value = isSizeManualInput ? RoomMaxSize.ManualInput : (RoomMaxSize)MainMenuController.PresetData.MaxWidth;
+        _maxSizeSlider.value = MainMenuController.PresetData.MaxWidth;
+        
+        _propsDensity.value = isPropsManualInput ? PropsDensity.ManualInput : (PropsDensity)MainMenuController.PresetData.PropsRatio;
+        _propsDensitySlider.value = MainMenuController.PresetData.PropsRatio;
+        
+        _windowDensity.value = isWindowsManualInput ? WindowDensity.ManualInput : (WindowDensity)MainMenuController.PresetData.WindowRatio;
+        _windowDensitySlider.value = MainMenuController.PresetData.WindowRatio;
+        
+        _doorDensity.value = isDoorsManualInput ? DoorDensity.ManualInput : (DoorDensity)MainMenuController.PresetData.DoorRatio;
+        _doorDensitySlider.value = MainMenuController.PresetData.DoorRatio;
+        
+        _screenshotsCountPerRoom.value = (uint)MainMenuController.PresetData.ScreenshotsCountPerRoom;
+        _numberOfRoomsToGenerate.value = (uint)MainMenuController.PresetData.NumberOfRoomsToGenerate;
 
         MainMenuController.PresetDataFilename = changeEvent.newValue;
     }
@@ -147,7 +151,7 @@ public class SettingsMenuController : MonoBehaviour
         // Add the FolderDialog component to the gameObject to open a folder dialog
         FolderDialog folderDialog = gameObject.AddComponent<FolderDialog>();
         string path = folderDialog.OpenFolderDialog("Select a folder");
-        _rootVisualElement.Q<Label>("PathLabel").text = path;
+        _pathLabel.text = path;
     }
 
     /// <summary>
@@ -155,24 +159,23 @@ public class SettingsMenuController : MonoBehaviour
     /// </summary>
     private void OnApplyButtonClicked()
     {
-        string path = _rootVisualElement.Q<Label>("PathLabel").text;
-        _roomMaxSize = _rootVisualElement.Q<EnumField>("RoomSize");
-        _MaxSizeSlider = _rootVisualElement.Q<SliderInt>("MaxSizeSlider");
-        _propsDensity = _rootVisualElement.Q<EnumField>("PropsDensity");
-        _windowDensity = _rootVisualElement.Q<EnumField>("WindowsDensity");
-        _doorDensity = _rootVisualElement.Q<EnumField>("DoorsDensity");
-        _screenshotsCountPerRoom = _rootVisualElement.Q<UnsignedIntegerField>("ScreenshotsCountPerRoom");
-        _numberOfRoomsToGenerate = _rootVisualElement.Q<UnsignedIntegerField>("RoomNumber");
+        string path = _pathLabel.text;
         
         bool isSizeManualInput = (int)(RoomMaxSize)_roomMaxSize.value == (int)RoomMaxSize.ManualInput;
+        bool isPropsManualInput = (int)(PropsDensity)_propsDensity.value == (int)PropsDensity.ManualInput;
+        bool isWindowsManualInput = (int)(WindowDensity)_windowDensity.value == (int)WindowDensity.ManualInput;
+        bool isDoorsManualInput = (int)(DoorDensity)_doorDensity.value == (int)DoorDensity.ManualInput;
         
         PresetData presetData = new PresetData(
             isSizeManualInput,
-            isSizeManualInput ? _MaxSizeSlider.value : (int)(RoomMaxSize)_roomMaxSize.value,
-            isSizeManualInput ? _MaxSizeSlider.value : (int)(RoomMaxSize)_roomMaxSize.value, 
-            (int)(PropsDensity)_propsDensity.value,
-            (int)(WindowDensity)_windowDensity.value, 
-            (int)(DoorDensity)_doorDensity.value,
+            isPropsManualInput,
+            isWindowsManualInput,
+            isDoorsManualInput,
+            isSizeManualInput ? _maxSizeSlider.value : (int)(RoomMaxSize)_roomMaxSize.value,
+            isSizeManualInput ? _maxSizeSlider.value : (int)(RoomMaxSize)_roomMaxSize.value, 
+            isPropsManualInput ? _propsDensitySlider.value : (int)(PropsDensity)_propsDensity.value,
+            isWindowsManualInput ? _windowDensitySlider.value : (int)(WindowDensity)_windowDensity.value,
+            isDoorsManualInput ? _doorDensitySlider.value : (int)(DoorDensity)_doorDensity.value,
             (int)_screenshotsCountPerRoom.value, 
             (int)_numberOfRoomsToGenerate.value, path);
         string presetDataJson = JsonConvert.SerializeObject(presetData);
@@ -244,7 +247,7 @@ public class SettingsMenuController : MonoBehaviour
         _rootVisualElement.Q<VisualElement>("SettingsMenu").style.display = DisplayStyle.None;
         _rootVisualElement.Q<VisualElement>("Menu").style.display = DisplayStyle.Flex;
         if(InterSceneManager.LastMaxRooms > 0)
-        _rootVisualElement.Q<VisualElement>("LastGenerationInfo").style.display = DisplayStyle.Flex;
+            _rootVisualElement.Q<VisualElement>("LastGenerationInfo").style.display = DisplayStyle.Flex;
         Destroy(this);
     }
 
@@ -254,7 +257,7 @@ public class SettingsMenuController : MonoBehaviour
     private void CreateDefaultPresetData()
     {
         PresetData presetData =
-            new PresetData(false,10, 10, 40, 20, 20, 10, 10, UnityEngine.Device.Application.dataPath + "/Export");
+            new PresetData(false, false, false, false, 10, 10, 40, 20, 20, 10, 10, UnityEngine.Device.Application.dataPath + "/Export");
         string presetDataJson = JsonConvert.SerializeObject(presetData);
 
         if (!Directory.Exists(Application.dataPath + ResourcesDirectory))
