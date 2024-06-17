@@ -68,17 +68,28 @@ public class Opening : MonoBehaviour
 
     #region Opening Visibility Management Methods
 
-    public bool IsVisible()
+    public bool IsOnScreen()
     {
-        Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
-        foreach (Renderer renderers in childRenderers)
+        gameObject.TryGetComponent<BoxCollider>(out BoxCollider openingBounds);
+        _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
+        _height = openingBounds.size.y;
+
+        float widthStep = _width / Mathf.Sqrt(_numberOfPoints);
+        float heightStep = _height / Mathf.Sqrt(_numberOfPoints);
+
+        for (float x = -_width / 2f + widthStep / 2; x < _width / 2f; x += widthStep)
         {
-            if (renderers.isVisible)
+            for (float y = -_height / 2f + heightStep / 2; y <= _height / 2f; y += heightStep)
             {
-                return true;
+                var thisTransform = transform;
+                Vector3 positionOffset = thisTransform.right * x + thisTransform.up * y;
+                Vector3 aimPoint = GetCenter() + positionOffset;
+                if (IsPointOnScreen(aimPoint))
+                {
+                    return true;
+                }
             }
         }
-
         return false;
     }
 
@@ -92,7 +103,6 @@ public class Opening : MonoBehaviour
 
     public BoundingBox2D GetVisibilityBoundingBox()
     {
-        //Display name and center 
         gameObject.TryGetComponent<BoxCollider>(out BoxCollider openingBounds);
         _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
         _height = openingBounds.size.y;

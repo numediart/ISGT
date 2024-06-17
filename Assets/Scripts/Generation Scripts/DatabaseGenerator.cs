@@ -111,6 +111,7 @@ public class DatabaseGenerator : MonoBehaviour
                                                                  DatabaseGenerationData.ScreenshotsNumberPerRoom *
                                                                  RoomsGenerator.NumberOfRoomToGenerate;
                 yield return new WaitForSecondsRealtime(0.05f);
+                // yield return WaitForSpacebarPress();
                 RoomsGenerator.TimeBetween2Screenshots = _timeTools.GetElapsedTimeInSeconds();
             }
         }
@@ -120,6 +121,14 @@ public class DatabaseGenerator : MonoBehaviour
 
 
         _room.RoomState = RoomState.DatabaseGenerated;
+    }
+    
+    private IEnumerator WaitForSpacebarPress()
+    {
+        while (!Input.GetKeyDown(KeyCode.Space))
+        {
+            yield return null;
+        }
     }
 
     /// <summary>
@@ -271,6 +280,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     private void GetOpeningsData(GameObject room, int screenshotIndex, string filename)
     {
+        Debug.LogError("GetOpeningsData");
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
         List<GameObject> walls = _room.RoomGrid.GetAllWalls();
@@ -286,8 +296,9 @@ public class DatabaseGenerator : MonoBehaviour
         {
             foreach (Transform wallChild in wall.transform)
             {
-                if (wallChild.TryGetComponent(out Opening opening) && opening.IsVisible())
+                if (wallChild.TryGetComponent(out Opening opening) && opening.IsOnScreen())
                 {
+                    Debug.Log("Opening " + opening.gameObject.name + " is visible");
                     OpeningData openingData = new OpeningData
                     {
                         DistanceToCamera = (opening.GetCenter() - cameraPosition).magnitude,
@@ -312,7 +323,9 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.BoundingBox = GetOpeningBoundingBox2D(wallChild.gameObject);
                     openingData.VisibilityBoundingBox = opening.GetVisibilityBoundingBox();
                     openingData.VisibilityRatio = opening.GetVisibilityRatio();
-
+                    
+                    Debug.Log("Visibility ratio: " + openingData.VisibilityRatio);
+                    
                     if (openingData.VisibilityRatio > 0f)
                     {
                         screenshotData.OpeningsData.Add(openingData);
