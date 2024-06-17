@@ -45,6 +45,12 @@ public class RoomsGenerator : MonoBehaviour
             RoomsGenerationData.NumberOfEmptyRoomsOnScene = MainMenuController.PresetData.NumberOfRoomsToGenerate;
             DatabaseGenerationData.ScreenshotsNumberPerRoom = MainMenuController.PresetData.ScreenshotsCountPerRoom;
             NumberOfRoomToGenerate = MainMenuController.PresetData.NumberOfRoomsToGenerate;
+            
+            Camera mainCamera = Camera.main;
+            mainCamera.fieldOfView = MainMenuController.PresetData.FieldOfView;
+            mainCamera.iso = MainMenuController.PresetData.ISO;
+            mainCamera.aperture = MainMenuController.PresetData.Aperture;
+            mainCamera.focusDistance = MainMenuController.PresetData.FocusDistance;
         }
 
         NumberOfRoomToGenerate = RoomsGenerationData.NumberOfEmptyRoomsOnScene;

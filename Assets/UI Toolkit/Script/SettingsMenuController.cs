@@ -33,6 +33,12 @@ public class SettingsMenuController : MonoBehaviour
     private SliderInt _windowDensitySlider;
     private SliderInt _doorDensitySlider;
     
+    //Camera settings
+    private SliderInt _fieldOfViewSlider;
+    private SliderInt _isoSlider;
+    private Slider _apertureSlider;
+    private Slider _focusDistanceSlider;
+    
     private Label _pathLabel;
     
     private Button _browseButton;
@@ -60,6 +66,10 @@ public class SettingsMenuController : MonoBehaviour
         _cancelButton = _rootVisualElement.Q<Button>("CancelButton");
         _screenshotsCountPerRoom = _rootVisualElement.Q<UnsignedIntegerField>("ScreenshotsCountPerRoom");
         _numberOfRoomsToGenerate = _rootVisualElement.Q<UnsignedIntegerField>("RoomNumber");
+        _fieldOfViewSlider = _rootVisualElement.Q<SliderInt>("FOVSlider");
+        _isoSlider = _rootVisualElement.Q<SliderInt>("ISOSlider");
+        _apertureSlider = _rootVisualElement.Q<Slider>("ApertureSlider");
+        _focusDistanceSlider = _rootVisualElement.Q<Slider>("FocusDistanceSlider");
         
         // Hide sliders for manual inputs
         _maxSizeSlider.style.display = DisplayStyle.None;
@@ -139,6 +149,11 @@ public class SettingsMenuController : MonoBehaviour
         
         _screenshotsCountPerRoom.value = (uint)MainMenuController.PresetData.ScreenshotsCountPerRoom;
         _numberOfRoomsToGenerate.value = (uint)MainMenuController.PresetData.NumberOfRoomsToGenerate;
+        
+        _fieldOfViewSlider.value = MainMenuController.PresetData.FieldOfView;
+        _isoSlider.value = MainMenuController.PresetData.ISO;
+        _apertureSlider.value = MainMenuController.PresetData.Aperture;
+        _focusDistanceSlider.value = MainMenuController.PresetData.FocusDistance;
 
         MainMenuController.PresetDataFilename = changeEvent.newValue;
     }
@@ -177,7 +192,12 @@ public class SettingsMenuController : MonoBehaviour
             isWindowsManualInput ? _windowDensitySlider.value : (int)(WindowDensity)_windowDensity.value,
             isDoorsManualInput ? _doorDensitySlider.value : (int)(DoorDensity)_doorDensity.value,
             (int)_screenshotsCountPerRoom.value, 
-            (int)_numberOfRoomsToGenerate.value, path);
+            (int)_numberOfRoomsToGenerate.value, 
+            path,
+            _fieldOfViewSlider.value,
+            _isoSlider.value,
+            _apertureSlider.value,
+            _focusDistanceSlider.value);
         string presetDataJson = JsonConvert.SerializeObject(presetData);
 
         // Save the preset data to a json file in the Resources directory with a unique name based on the number of files in the directory
@@ -257,7 +277,7 @@ public class SettingsMenuController : MonoBehaviour
     private void CreateDefaultPresetData()
     {
         PresetData presetData =
-            new PresetData(false, false, false, false, 10, 10, 40, 20, 20, 10, 10, UnityEngine.Device.Application.dataPath + "/Export");
+            new PresetData(false, false, false, false, 10, 10, 40, 20, 20, 10, 10, UnityEngine.Device.Application.dataPath + "/Export", 90, 200, 16f, 10f);
         string presetDataJson = JsonConvert.SerializeObject(presetData);
 
         if (!Directory.Exists(Application.dataPath + ResourcesDirectory))
