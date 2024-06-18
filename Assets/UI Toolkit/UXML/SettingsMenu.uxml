@@ -9,13 +9,7 @@
                     <ui:UnsignedIntegerField label="Number of Rooms" value="42" name="RoomNumber" />
                     <ui:UnsignedIntegerField label="Screenshots Count&#10;Per Rooms" value="42" name="ScreenshotsCountPerRoom" />
                 </ui:Foldout>
-                <ui:Foldout text="Camera Settings" name="CameraSettings" class="foldout-container">
-                    <ui:SliderInt label="FOV" high-value="179" name="FOVSlider" low-value="1" show-input-field="true" class="slider" />
-                    <ui:SliderInt label="ISO" high-value="6400" name="ISOSlider" low-value="100" show-input-field="true" class="slider" />
-                    <ui:Slider label="Aperture" high-value="15" show-input-field="true" low-value="1" name="ApertureSlider" class="slider" />
-                    <ui:Slider label="Focus Distance" high-value="30" show-input-field="true" low-value="5" name="FocusDistanceSlider" class="slider" />
-                </ui:Foldout>
-                <ui:Foldout text="Generations Settings" name="GenerationsSettings" class="foldout-container">
+                <ui:Foldout text="Generations Settings" name="GenerationsSettings" value="false" class="foldout-container">
                     <ui:EnumField label="Rooms Max Size" name="RoomSize" type="UI_Toolkit.RoomMaxSize, Assembly-CSharp" />
                     <ui:SliderInt high-value="40" name="MaxSizeSlider" show-input-field="true" direction="Horizontal" usage-hints="None" low-value="2" class="slider" />
                     <ui:EnumField label="Props Density" name="PropsDensity" type="UI_Toolkit.PropsDensity, Assembly-CSharp" />
@@ -24,6 +18,19 @@
                     <ui:SliderInt high-value="100" name="DoorsDensitySlider" show-input-field="true" direction="Horizontal" low-value="0" class="slider" />
                     <ui:EnumField label="Windows Density" name="WindowsDensity" type="UI_Toolkit.WindowDensity, Assembly-CSharp" />
                     <ui:SliderInt high-value="100" name="WindowsDensitySlider" show-input-field="true" direction="Horizontal" low-value="0" class="slider" />
+                </ui:Foldout>
+                <ui:Foldout text="Camera Settings" name="CameraSettings" value="true" class="foldout-container">
+                    <ui:Foldout text="Camera max rotation" name="MaxRotationFoldout" class="foldout-container" style="flex-direction: column;">
+                        <ui:SliderInt label="Around X" high-value="180" name="XSlider" low-value="0" show-input-field="true" class="slider" />
+                        <ui:SliderInt label="Around Y" high-value="180" name="YSlider" low-value="0" show-input-field="true" class="slider" />
+                        <ui:SliderInt label="Around Z" high-value="180" name="ZSlider" low-value="0" show-input-field="true" class="slider" />
+                    </ui:Foldout>
+                    <ui:Foldout text="Physical parameters " name="PhysicalParametersFoldout" class="foldout-container">
+                        <ui:SliderInt label="FOV" high-value="179" name="FOVSlider" low-value="1" show-input-field="true" class="slider" />
+                        <ui:SliderInt label="ISO" high-value="6400" name="ISOSlider" low-value="100" show-input-field="true" class="slider" />
+                        <ui:Slider label="Aperture" high-value="15" show-input-field="true" low-value="1" name="ApertureSlider" class="slider" />
+                        <ui:Slider label="Focus Distance" high-value="30" show-input-field="true" low-value="5" name="FocusDistanceSlider" class="slider" />
+                    </ui:Foldout>
                 </ui:Foldout>
                 <ui:Foldout text="Saved Presets" name="SavedPreset" value="true" class="foldout-container">
                     <ui:DropdownField label="Preset" name="PresetDropdown" />

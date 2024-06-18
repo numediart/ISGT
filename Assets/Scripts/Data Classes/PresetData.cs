@@ -1,4 +1,6 @@
 using System.IO;
+using System.Numerics;
+using UnityEngine;
 
 namespace Data_Classes
 {
@@ -20,6 +22,8 @@ namespace Data_Classes
         public int NumberOfRoomsToGenerate;
         
         // Camera settings
+        public Vector3Int MaxRotation;
+        
         public int FieldOfView;
         public int ISO;
         public float Aperture;
@@ -27,7 +31,7 @@ namespace Data_Classes
         
         public string ExportPath; // has to be a folder path
         
-        public PresetData(bool sizeManualInput, bool propsManualInput, bool windowsManualInput, bool doorsManualInput, int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath, int fieldOfView, int iso, float aperture, float focusDistance)
+        public PresetData(bool sizeManualInput, bool propsManualInput, bool windowsManualInput, bool doorsManualInput, int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath, int fieldOfView, int iso, float aperture, float focusDistance, Vector3Int maxRotation)
         {
             SizeManualInput = sizeManualInput;
             PropsManualInput = propsManualInput;
@@ -46,6 +50,8 @@ namespace Data_Classes
             ISO = iso;
             Aperture = aperture;
             FocusDistance = focusDistance;
+            
+            MaxRotation = maxRotation;
         }
         
     }

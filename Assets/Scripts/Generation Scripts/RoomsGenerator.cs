@@ -46,6 +46,10 @@ public class RoomsGenerator : MonoBehaviour
             DatabaseGenerationData.ScreenshotsNumberPerRoom = MainMenuController.PresetData.ScreenshotsCountPerRoom;
             NumberOfRoomToGenerate = MainMenuController.PresetData.NumberOfRoomsToGenerate;
             
+            DatabaseGenerationData.MaximumCameraXRotation = MainMenuController.PresetData.MaxRotation.x;
+            DatabaseGenerationData.MaximumCameraYRotation = MainMenuController.PresetData.MaxRotation.y;
+            DatabaseGenerationData.MaximumCameraZRotation = MainMenuController.PresetData.MaxRotation.z;
+            
             Camera mainCamera = Camera.main;
             mainCamera.fieldOfView = MainMenuController.PresetData.FieldOfView;
             mainCamera.iso = MainMenuController.PresetData.ISO;
