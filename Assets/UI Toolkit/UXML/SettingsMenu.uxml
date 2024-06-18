@@ -19,7 +19,7 @@
                     <ui:EnumField label="Windows Density" name="WindowsDensity" type="UI_Toolkit.WindowDensity, Assembly-CSharp" />
                     <ui:SliderInt high-value="100" name="WindowsDensitySlider" show-input-field="true" direction="Horizontal" low-value="0" class="slider" />
                 </ui:Foldout>
-                <ui:Foldout text="Camera Settings" name="CameraSettings" value="true" class="foldout-container">
+                <ui:Foldout text="Camera Settings" name="CameraSettings" value="false" class="foldout-container">
                     <ui:Foldout text="Camera max rotation" name="MaxRotationFoldout" class="foldout-container" style="flex-direction: column;">
                         <ui:SliderInt label="Around X" high-value="180" name="XSlider" low-value="0" show-input-field="true" class="slider" />
                         <ui:SliderInt label="Around Y" high-value="180" name="YSlider" low-value="0" show-input-field="true" class="slider" />

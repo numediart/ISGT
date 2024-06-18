@@ -112,6 +112,13 @@ public class SettingsMenuController : MonoBehaviour
 
         if (MainMenuController.PresetData != null)
             _presetDropdown.value = MainMenuController.PresetDataFilename;
+        
+        // Load the preset filename from PlayerPrefs if it exists
+        string savedPresetFilename = PlayerPrefs.GetString("PresetDataFilename", string.Empty);
+        if (!string.IsNullOrEmpty(savedPresetFilename) && _presetDropdown.choices.Contains(savedPresetFilename))
+        {
+            _presetDropdown.value = savedPresetFilename;
+        }
     }
 
     /// <summary>
@@ -167,6 +174,10 @@ public class SettingsMenuController : MonoBehaviour
         _ZSlider.value = MainMenuController.PresetData.MaxRotation.z;
 
         MainMenuController.PresetDataFilename = changeEvent.newValue;
+        
+        // Save the preset filename to PlayerPrefs
+        PlayerPrefs.SetString("PresetDataFilename", changeEvent.newValue);
+        PlayerPrefs.Save();
     }
 
     /// <summary>
