@@ -77,7 +77,10 @@ public class RoomsGenerator : MonoBehaviour
                 InGameMenuController.ETAValueLabel.text = FormattedRemainingTime();
                 _timeTools2.Start();
             }
-          
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
         }
     }
     private string FormattedRemainingTime()
