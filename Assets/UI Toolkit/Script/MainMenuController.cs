@@ -24,12 +24,18 @@ public class MainMenuController : MonoBehaviour
         {
             PresetDataFilename = PlayerPrefs.GetString("PresetDataFilename");
             string path = Application.dataPath + "/Resources/" + PresetDataFilename;
-            Debug.LogError(path);
             if (File.Exists(path))
             {
                 string presetDataJson = File.ReadAllText(path);
                 PresetData = JsonConvert.DeserializeObject<PresetData>(presetDataJson);
             }
+        }
+        
+        if (PresetData == null)
+        {
+            // Create a default PresetData
+             PresetData =
+                new PresetData(false, false, false, false, 10, 10, 40, 20, 20, 2, 1, UnityEngine.Device.Application.dataPath + "/Export", 90, 200, 16f, 10f, new Vector3Int(0, 180, 0));
         }
         
     }

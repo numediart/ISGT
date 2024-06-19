@@ -115,7 +115,7 @@ public class SettingsMenuController : MonoBehaviour
         
         // Load the preset filename from PlayerPrefs if it exists
         string savedPresetFilename = PlayerPrefs.GetString("PresetDataFilename", string.Empty);
-        if (!string.IsNullOrEmpty(savedPresetFilename) && _presetDropdown.choices.Contains(savedPresetFilename))
+        if (!string.IsNullOrEmpty(savedPresetFilename) && _presetDropdown.choices.Contains(savedPresetFilename) && File.Exists(Application.dataPath + ResourcesDirectory + "/" + savedPresetFilename))
         {
             _presetDropdown.value = savedPresetFilename;
         }
@@ -297,11 +297,9 @@ public class SettingsMenuController : MonoBehaviour
     /// <summary>
     ///  Create a default preset data file with the specified values and add it to the dropdown field
     /// </summary>
-    private void CreateDefaultPresetData()
+    public void CreateDefaultPresetData()
     {
-        PresetData presetData =
-            new PresetData(false, false, false, false, 10, 10, 40, 20, 20, 10, 10, UnityEngine.Device.Application.dataPath + "/Export", 90, 200, 16f, 10f, new Vector3Int(0, 180, 0));
-        string presetDataJson = JsonConvert.SerializeObject(presetData);
+        string presetDataJson = JsonConvert.SerializeObject(MainMenuController.PresetData);
 
         if (!Directory.Exists(Application.dataPath + ResourcesDirectory))
             Directory.CreateDirectory(Application.dataPath + ResourcesDirectory);
