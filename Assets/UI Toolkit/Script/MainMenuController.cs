@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Data_Classes;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -16,6 +18,19 @@ public class MainMenuController : MonoBehaviour
     {
         _rootUi = GetComponent<UIDocument>().rootVisualElement;
         _rootUi.Q<VisualElement>("Menu").style.display = DisplayStyle.Flex;
+        
+        // Load the PresetData from the file in playerprefs
+        if (PlayerPrefs.HasKey("PresetDataFilename"))
+        {
+            PresetDataFilename = PlayerPrefs.GetString("PresetDataFilename");
+            string path = Application.dataPath + "/Resources/" + PresetDataFilename;
+            Debug.LogError(path);
+            if (File.Exists(path))
+            {
+                string presetDataJson = File.ReadAllText(path);
+                PresetData = JsonConvert.DeserializeObject<PresetData>(presetDataJson);
+            }
+        }
         
     }
 
