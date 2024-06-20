@@ -50,11 +50,26 @@ public class RoomsGenerator : MonoBehaviour
             DatabaseGenerationData.MaximumCameraYRotation = MainMenuController.PresetData.MaxRotation.y;
             DatabaseGenerationData.MaximumCameraZRotation = MainMenuController.PresetData.MaxRotation.z;
             
-            Camera mainCamera = Camera.main;
-            mainCamera.fieldOfView = MainMenuController.PresetData.FieldOfView;
-            mainCamera.iso = MainMenuController.PresetData.ISO;
-            mainCamera.aperture = MainMenuController.PresetData.Aperture;
-            mainCamera.focusDistance = MainMenuController.PresetData.FocusDistance;
+            Camera cam = Camera.main;
+            
+            // Calculate the aspect ratio of the camera
+            float aspectRatio = cam.aspect;
+
+            // Convert diagonal FOV to radians
+            float diagonalFOVRad = MainMenuController.PresetData.FieldOfView * Mathf.Deg2Rad;
+
+            // Calculate the vertical FOV
+            float verticalFOVRad = 2f * Mathf.Atan(Mathf.Tan(diagonalFOVRad / 2f) / Mathf.Sqrt(1f + aspectRatio * aspectRatio));
+        
+            // Convert the vertical FOV back to degrees
+            float verticalFOV = verticalFOVRad * Mathf.Rad2Deg;
+
+            Debug.Log("Vertical FOV : " + verticalFOV);
+            // Assign the vertical FOV to the camera
+            cam.fieldOfView = verticalFOV;
+            cam.iso = MainMenuController.PresetData.ISO;
+            cam.aperture = MainMenuController.PresetData.Aperture;
+            cam.focusDistance = MainMenuController.PresetData.FocusDistance;
         }
 
         NumberOfRoomToGenerate = RoomsGenerationData.NumberOfEmptyRoomsOnScene;
