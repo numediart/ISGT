@@ -69,4 +69,20 @@
 
 .slider {
     opacity: 1;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    flex-basis: initial;
+    flex-shrink: 1;
+    flex-grow: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
+}
+
+.unity-text-field {
+    -unity-text-align: middle-center;
+    -unity-font-style: normal;
+    text-overflow: ellipsis;
+    -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
+    width: auto;
 }
