@@ -22,9 +22,8 @@ public class Opening : MonoBehaviour
     private float _width;
     private float _height;
     private Camera _mainCamera;
-
-    //TODO : make this a parameter
-    private static readonly float _numberOfPoints = 1000f;
+    
+    public static float NumberOfPoints;
 
     #endregion
 
@@ -36,6 +35,7 @@ public class Opening : MonoBehaviour
             Debug.LogError("Center object not assigned for opening : " + gameObject.name);
         }
         SetOpeningRandomOpenness();
+        Debug.Log(NumberOfPoints);
     }
     
     public Vector3 GetCenter()
@@ -74,8 +74,8 @@ public class Opening : MonoBehaviour
         _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
         _height = openingBounds.size.y;
 
-        float widthStep = _width / Mathf.Sqrt(_numberOfPoints);
-        float heightStep = _height / Mathf.Sqrt(_numberOfPoints);
+        float widthStep = _width / Mathf.Sqrt(NumberOfPoints);
+        float heightStep = _height / Mathf.Sqrt(NumberOfPoints);
 
         for (float x = -_width / 2f + widthStep / 2; x < _width / 2f; x += widthStep)
         {
@@ -112,8 +112,8 @@ public class Opening : MonoBehaviour
         int maxY = -1;
         _visibilityRatio = 0f;
 
-        float widthStep = _width / Mathf.Sqrt(_numberOfPoints);
-        float heightStep = _height / Mathf.Sqrt(_numberOfPoints);
+        float widthStep = _width / Mathf.Sqrt(NumberOfPoints);
+        float heightStep = _height / Mathf.Sqrt(NumberOfPoints);
 
         for (float x = -_width / 2f + widthStep / 2; x < _width / 2f; x += widthStep)
         {
@@ -124,7 +124,7 @@ public class Opening : MonoBehaviour
                 Vector3 aimPoint = GetCenter() + positionOffset;
                 if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
                 {
-                    _visibilityRatio += 1 / _numberOfPoints;
+                    _visibilityRatio += 1 / NumberOfPoints;
 
                     Vector3 screenPoint = _mainCamera.WorldToScreenPoint(aimPoint);
                     minX = (int)Mathf.Min(minX, screenPoint.x);

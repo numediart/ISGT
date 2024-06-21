@@ -43,6 +43,11 @@ public class SettingsMenuController : MonoBehaviour
     private Slider _apertureSlider;
     private Slider _focusDistanceSlider;
     
+    //Precision settings
+    private EnumField _raycastAmount;
+    
+    private SliderInt _raycastAmountSlider;
+    
     private Label _pathLabel;
     
     private Button _browseButton;
@@ -77,12 +82,15 @@ public class SettingsMenuController : MonoBehaviour
         _XSlider = _rootVisualElement.Q<SliderInt>("XSlider");
         _YSlider = _rootVisualElement.Q<SliderInt>("YSlider");
         _ZSlider = _rootVisualElement.Q<SliderInt>("ZSlider");
+        _raycastAmount = _rootVisualElement.Q<EnumField>("RaycastAmount");
+        _raycastAmountSlider = _rootVisualElement.Q<SliderInt>("RaycastAmountSlider");
         
         // Hide sliders for manual inputs
         _maxSizeSlider.style.display = DisplayStyle.None;
         _propsDensitySlider.style.display = DisplayStyle.None;
         _windowDensitySlider.style.display = DisplayStyle.None;
         _doorDensitySlider.style.display = DisplayStyle.None;
+        _raycastAmountSlider.style.display = DisplayStyle.None;
 
         // Register callbacks for manual inputs
         _roomMaxSize.RegisterValueChangedCallback(evt =>
@@ -103,6 +111,11 @@ public class SettingsMenuController : MonoBehaviour
         _doorDensity.RegisterValueChangedCallback(evt =>
         {
             _doorDensitySlider.style.display = (DoorDensity)evt.newValue == DoorDensity.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
+        });
+        
+        _raycastAmount.RegisterValueChangedCallback(evt =>
+        {
+            _raycastAmountSlider.style.display = (RaycastAmount)evt.newValue == RaycastAmount.ManualInput ? DisplayStyle.Flex : DisplayStyle.None;
         });
         
         if (!Directory.Exists(Application.dataPath + ResourcesDirectory))
@@ -146,6 +159,7 @@ public class SettingsMenuController : MonoBehaviour
         bool isPropsManualInput = MainMenuController.PresetData.PropsManualInput;
         bool isWindowsManualInput = MainMenuController.PresetData.WindowsManualInput;
         bool isDoorsManualInput = MainMenuController.PresetData.DoorsManualInput;
+        bool isRaycastManualInput = MainMenuController.PresetData.RaycastManualInput;
         
         _pathLabel.text = MainMenuController.PresetData.ExportPath;
         
@@ -172,6 +186,9 @@ public class SettingsMenuController : MonoBehaviour
         _XSlider.value = MainMenuController.PresetData.MaxRotation.x;
         _YSlider.value = MainMenuController.PresetData.MaxRotation.y;
         _ZSlider.value = MainMenuController.PresetData.MaxRotation.z;
+        
+        _raycastAmount.value = isRaycastManualInput ? RaycastAmount.ManualInput : (RaycastAmount)MainMenuController.PresetData.RaycastAmount;
+        _raycastAmountSlider.value = MainMenuController.PresetData.RaycastAmount;
 
         MainMenuController.PresetDataFilename = changeEvent.newValue;
         
@@ -202,6 +219,7 @@ public class SettingsMenuController : MonoBehaviour
         bool isPropsManualInput = (int)(PropsDensity)_propsDensity.value == (int)PropsDensity.ManualInput;
         bool isWindowsManualInput = (int)(WindowDensity)_windowDensity.value == (int)WindowDensity.ManualInput;
         bool isDoorsManualInput = (int)(DoorDensity)_doorDensity.value == (int)DoorDensity.ManualInput;
+        bool isRaycastManualInput = (int)(RaycastAmount)_raycastAmount.value == (int)RaycastAmount.ManualInput;
         
         PresetData presetData = new PresetData(
             isSizeManualInput,
@@ -220,7 +238,12 @@ public class SettingsMenuController : MonoBehaviour
             _isoSlider.value,
             _apertureSlider.value,
             _focusDistanceSlider.value,
-            new Vector3Int(_XSlider.value, _YSlider.value, _ZSlider.value));
+            new Vector3Int(_XSlider.value, _YSlider.value, _ZSlider.value),
+            isRaycastManualInput,
+            isRaycastManualInput ? _raycastAmountSlider.value : (int)(RaycastAmount)_raycastAmount.value
+            );
+        
+        
         string presetDataJson = JsonConvert.SerializeObject(presetData);
 
         // Save the preset data to a json file in the Resources directory with a unique name based on the number of files in the directory

@@ -29,9 +29,13 @@ namespace Data_Classes
         public float Aperture;
         public float FocusDistance;
         
+        // Precision settings
+        public bool RaycastManualInput;
+        public int RaycastAmount;
+        
         public string ExportPath; // has to be a folder path
         
-        public PresetData(bool sizeManualInput, bool propsManualInput, bool windowsManualInput, bool doorsManualInput, int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath, int fieldOfView, int iso, float aperture, float focusDistance, Vector3Int maxRotation)
+        public PresetData(bool sizeManualInput, bool propsManualInput, bool windowsManualInput, bool doorsManualInput, int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath, int fieldOfView, int iso, float aperture, float focusDistance, Vector3Int maxRotation, bool raycastManualInput,int raycastAmount)
         {
             SizeManualInput = sizeManualInput;
             PropsManualInput = propsManualInput;
@@ -52,6 +56,9 @@ namespace Data_Classes
             FocusDistance = focusDistance;
             
             MaxRotation = maxRotation;
+            
+            RaycastManualInput = raycastManualInput;
+            RaycastAmount = raycastAmount;
         }
         
     }

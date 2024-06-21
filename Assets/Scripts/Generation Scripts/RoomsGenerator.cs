@@ -70,6 +70,8 @@ public class RoomsGenerator : MonoBehaviour
             cam.iso = MainMenuController.PresetData.ISO;
             cam.aperture = MainMenuController.PresetData.Aperture;
             cam.focusDistance = MainMenuController.PresetData.FocusDistance;
+            
+            Opening.NumberOfPoints = MainMenuController.PresetData.RaycastAmount;
         }
 
         NumberOfRoomToGenerate = RoomsGenerationData.NumberOfEmptyRoomsOnScene;

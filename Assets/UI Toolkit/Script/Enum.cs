@@ -40,8 +40,9 @@ public enum DoorDensity // 1-80
     {
         ManualInput = -1,
         Low = 100,
-        Medium = 200,
-        High = 300,
+        Medium = 1000,
+        High = 10000,
+        Ultra = 100000
     }
     
 }

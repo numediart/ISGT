@@ -35,7 +35,7 @@ public class MainMenuController : MonoBehaviour
         {
             // Create a default PresetData
              PresetData =
-                new PresetData(false, false, false, false, 10, 10, 40, 20, 20, 10, 10, UnityEngine.Device.Application.dataPath + "/Export", 90, 200, 16f, 10f, new Vector3Int(0, 180, 0));
+                new PresetData(false, false, false, false, 10, 10, 40, 20, 20, 10, 10, UnityEngine.Device.Application.dataPath + "/Export", 90, 200, 16f, 10f, new Vector3Int(0, 180, 0), false, 1000);
         }
         
     }
