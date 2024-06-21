@@ -6,11 +6,6 @@ namespace Data_Classes
 {
     public class PresetData
     {
-        public bool SizeManualInput;
-        public bool PropsManualInput;
-        public bool WindowsManualInput;
-        public bool DoorsManualInput;
-        
         public int MaxWidth;
         public int MaxDepth;
 
@@ -30,17 +25,12 @@ namespace Data_Classes
         public float FocusDistance;
         
         // Precision settings
-        public bool RaycastManualInput;
         public int RaycastAmount;
         
         public string ExportPath; // has to be a folder path
         
-        public PresetData(bool sizeManualInput, bool propsManualInput, bool windowsManualInput, bool doorsManualInput, int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath, int fieldOfView, int iso, float aperture, float focusDistance, Vector3Int maxRotation, bool raycastManualInput,int raycastAmount)
+        public PresetData(int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath, int fieldOfView, int iso, float aperture, float focusDistance, Vector3Int maxRotation,int raycastAmount)
         {
-            SizeManualInput = sizeManualInput;
-            PropsManualInput = propsManualInput;
-            WindowsManualInput = windowsManualInput;
-            DoorsManualInput = doorsManualInput;
             MaxWidth = maxWidth;
             MaxDepth = maxDepth;
             PropsRatio = propsRatio;
@@ -57,7 +47,6 @@ namespace Data_Classes
             
             MaxRotation = maxRotation;
             
-            RaycastManualInput = raycastManualInput;
             RaycastAmount = raycastAmount;
         }
         

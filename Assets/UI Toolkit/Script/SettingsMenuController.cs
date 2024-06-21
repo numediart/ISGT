@@ -152,14 +152,18 @@ public class SettingsMenuController : MonoBehaviour
     private void OnPresetDropdownValueChanged(ChangeEvent<string> changeEvent)
     {
         string path = Application.dataPath + ResourcesDirectory;
+        
+        if (!File.Exists(path + "/" + changeEvent.newValue))
+            return;
+        
         string presetDataJson = File.ReadAllText(path + "/" + changeEvent.newValue);
         MainMenuController.PresetData = JsonConvert.DeserializeObject<PresetData>(presetDataJson);
 
-        bool isSizeManualInput = MainMenuController.PresetData.SizeManualInput;
-        bool isPropsManualInput = MainMenuController.PresetData.PropsManualInput;
-        bool isWindowsManualInput = MainMenuController.PresetData.WindowsManualInput;
-        bool isDoorsManualInput = MainMenuController.PresetData.DoorsManualInput;
-        bool isRaycastManualInput = MainMenuController.PresetData.RaycastManualInput;
+        bool isSizeManualInput = !Enum.IsDefined(typeof(RoomMaxSize), MainMenuController.PresetData.MaxWidth);
+        bool isPropsManualInput = !Enum.IsDefined(typeof(PropsDensity), MainMenuController.PresetData.PropsRatio);
+        bool isWindowsManualInput = !Enum.IsDefined(typeof(WindowDensity), MainMenuController.PresetData.WindowRatio);
+        bool isDoorsManualInput = !Enum.IsDefined(typeof(DoorDensity), MainMenuController.PresetData.DoorRatio);
+        bool isRaycastManualInput = !Enum.IsDefined(typeof(RaycastAmount), MainMenuController.PresetData.RaycastAmount);
         
         _pathLabel.text = MainMenuController.PresetData.ExportPath;
         
@@ -222,10 +226,6 @@ public class SettingsMenuController : MonoBehaviour
         bool isRaycastManualInput = (int)(RaycastAmount)_raycastAmount.value == (int)RaycastAmount.ManualInput;
         
         PresetData presetData = new PresetData(
-            isSizeManualInput,
-            isPropsManualInput,
-            isWindowsManualInput,
-            isDoorsManualInput,
             isSizeManualInput ? _maxSizeSlider.value : (int)(RoomMaxSize)_roomMaxSize.value,
             isSizeManualInput ? _maxSizeSlider.value : (int)(RoomMaxSize)_roomMaxSize.value, 
             isPropsManualInput ? _propsDensitySlider.value : (int)(PropsDensity)_propsDensity.value,
@@ -239,7 +239,6 @@ public class SettingsMenuController : MonoBehaviour
             _apertureSlider.value,
             _focusDistanceSlider.value,
             new Vector3Int(_XSlider.value, _YSlider.value, _ZSlider.value),
-            isRaycastManualInput,
             isRaycastManualInput ? _raycastAmountSlider.value : (int)(RaycastAmount)_raycastAmount.value
             );
         
