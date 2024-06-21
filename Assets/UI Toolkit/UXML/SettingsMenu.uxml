@@ -32,6 +32,10 @@
                         <ui:Slider label="Focus Distance" high-value="30" show-input-field="true" low-value="5" name="FocusDistanceSlider" class="slider" />
                     </ui:Foldout>
                 </ui:Foldout>
+                <ui:Foldout text="Precision Settings" name="PrecisionSettings" value="true" class="foldout-container">
+                    <ui:EnumField label="Raycasts amount" name="RaycastAmount" type="UI_Toolkit.RaycastAmount, Assembly-CSharp" />
+                    <ui:SliderInt high-value="10000" name="RaycastAmountSlider" show-input-field="true" direction="Horizontal" low-value="100" label="Raycasts per opening" class="slider" />
+                </ui:Foldout>
                 <ui:Foldout text="Saved Presets" name="SavedPreset" value="true" class="foldout-container">
                     <ui:DropdownField label="Preset" name="PresetDropdown" />
                 </ui:Foldout>

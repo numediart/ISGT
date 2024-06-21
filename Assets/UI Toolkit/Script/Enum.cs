@@ -35,5 +35,13 @@ public enum DoorDensity // 1-80
         High = 30,
         Ultra = 40
     }
+
+    public enum RaycastAmount
+    {
+        ManualInput = -1,
+        Low = 100,
+        Medium = 200,
+        High = 300,
+    }
     
 }
