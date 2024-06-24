@@ -1,72 +1,158 @@
-using UnityEngine;
-using InternalRealtimeCSG;
-using System.Collections.Generic;
 using System;
-using System.Linq;
+using System.Collections;
+using UnityEngine;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine.SceneManagement;
+using Utils;
 
 public class RoomsGenerator : MonoBehaviour
 {
     #region Public Fields
 
-    public List<GameObject> RoomsCreated = new List<GameObject>();
     public RoomsGenerationScriptableObject RoomsGenerationData;
-    public GeneratorsContainer GeneratorsContainer;
+    public DatabaseGenerationScriptableObject DatabaseGenerationData;
+    public bool _manualSeeds = false;
+    public static int RoomIndex = 0;
+    public static int NumberOfRoomToGenerate = 0; 
+    public static int ScreenshotsIndex = 0;
 
+    public static float TimeBetween2Screenshots = 0;
     #endregion
 
     #region Private Fields
 
-    [SerializeField] private List<int> _usedSeeds = new List<int>();
-
-    #endregion
-
-    #region Seeds Management Methods
-
-    private void InitiateSeed()
-    {
-        while (true)
-        {
-            int newSeed = UnityEngine.Random.Range(0, int.MaxValue);
-
-            if (!_usedSeeds.Contains(newSeed))
-            {
-                UnityEngine.Random.InitState(newSeed);
-                _usedSeeds.Add(newSeed);
-                break;
-            }
-        }
-    }
-
+    private Room _room;
+    [HideInInspector] [SerializeField] private int _roomSeed;
+    [HideInInspector] [SerializeField] private int _openingSeed;
+    [HideInInspector] [SerializeField] private int _objectSeed;
+    [HideInInspector] [SerializeField] private int _databaseSeed;
+    TimeTools _timeTools = new TimeTools();
+    TimeTools _timeTools2 = new TimeTools();
     #endregion
 
     #region Methods Called By Buttons
+
+    private void Awake()
+    {
+        if (MainMenuController.PresetData != null)
+        {
+            RoomsGenerationData.MaxRoomWidth = MainMenuController.PresetData.MaxWidth;
+            RoomsGenerationData.MaxRoomHeight = MainMenuController.PresetData.MaxDepth;
+            RoomsGenerationData.ObjectNumberRatio = MainMenuController.PresetData.PropsRatio;
+            RoomsGenerationData.WindowPerWallNumber = MainMenuController.PresetData.WindowRatio;
+            RoomsGenerationData.DoorPerWallNumber = MainMenuController.PresetData.DoorRatio;
+            RoomsGenerationData.NumberOfEmptyRoomsOnScene = MainMenuController.PresetData.NumberOfRoomsToGenerate;
+            DatabaseGenerationData.ScreenshotsNumberPerRoom = MainMenuController.PresetData.ScreenshotsCountPerRoom;
+            NumberOfRoomToGenerate = MainMenuController.PresetData.NumberOfRoomsToGenerate;
+            
+            DatabaseGenerationData.MaximumCameraXRotation = MainMenuController.PresetData.MaxRotation.x;
+            DatabaseGenerationData.MaximumCameraYRotation = MainMenuController.PresetData.MaxRotation.y;
+            DatabaseGenerationData.MaximumCameraZRotation = MainMenuController.PresetData.MaxRotation.z;
+            
+            Camera cam = Camera.main;
+            
+            // Calculate the aspect ratio of the camera
+            float aspectRatio = cam.aspect;
+
+            // Convert diagonal FOV to radians
+            float diagonalFOVRad = MainMenuController.PresetData.FieldOfView * Mathf.Deg2Rad;
+
+            // Calculate the vertical FOV
+            float verticalFOVRad = 2f * Mathf.Atan(Mathf.Tan(diagonalFOVRad / 2f) / Mathf.Sqrt(1f + aspectRatio * aspectRatio));
+        
+            // Convert the vertical FOV back to degrees
+            float verticalFOV = verticalFOVRad * Mathf.Rad2Deg;
+
+            Debug.Log("Vertical FOV : " + verticalFOV);
+            // Assign the vertical FOV to the camera
+            cam.fieldOfView = verticalFOV;
+            cam.iso = MainMenuController.PresetData.ISO;
+            cam.aperture = MainMenuController.PresetData.Aperture;
+            cam.focusDistance = MainMenuController.PresetData.FocusDistance;
+            
+            Opening.NumberOfPoints = MainMenuController.PresetData.RaycastAmount;
+        }
+
+        NumberOfRoomToGenerate = RoomsGenerationData.NumberOfEmptyRoomsOnScene;
+    }
+
+    private void Start()
+    {
+        StartCoroutine(GenerateRooms());
+        _timeTools2.Start();
+    }
+
+    private void Update()
+    {
+        if (_timeTools != null && _room != null)
+        {
+           // actualise l'éta toute les 2 sec pour ne pas surcharger le calcul
+            if (_timeTools2.GetElapsedTimeInSeconds() >=0.99f)
+            {
+                InGameMenuController.ElapsedTimeValueLabel.text = _timeTools.GetStringFormattedElapsedTime();
+                InGameMenuController.ETAValueLabel.text = FormattedRemainingTime();
+                _timeTools2.Start();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
+        }
+    }
+    private string FormattedRemainingTime()
+    {
+        float remainingTime =TimeBetween2Screenshots * (DatabaseGenerationData.ScreenshotsNumberPerRoom * NumberOfRoomToGenerate - ScreenshotsIndex);
+        int hours = (int)remainingTime / 3600;
+        int minutes = (int)(remainingTime % 3600) / 60;
+        int seconds = (int)(remainingTime % 3600) % 60;
+        if (hours > 0)
+            return hours + "h " + minutes + "m " + seconds + "s";
+        if (minutes > 0)
+            return minutes + "m " + seconds + "s";
+        
+        return seconds + "s";
+    }
+
 
     /// <summary>
     /// This method calls all the methods building the final rooms without painting on surfaces. 
     /// (Creation of the room shells, then the openings in the walls and finally the objects).
     /// </summary>
-    public void GenerateRooms()
+    private IEnumerator GenerateRooms()
     {
-/*        Debug.Log($"Distance between the two eyes : {Camera.main.stereoSeparation * 2f}");*/
+        ScreenshotsIndex = 0;
+        Debug.Log("Generating Rooms");
+        _timeTools.Start();
+        for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
+        {
+            RoomIndex= i + 1;
+            InGameMenuController.RoomValueLabel.text =  RoomIndex + " / " + RoomsGenerationData.NumberOfEmptyRoomsOnScene;
+            GameObject go = new GameObject("GeneratedRoom");
+            go.AddComponent<Room>();
+            go.TryGetComponent<Room>(out _room);
+            if (_manualSeeds)
+            {
+                _room.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);
+            }
 
-        InitiateSeed();
-        GeneratorsContainer.DatabaseGenerator.InitiateSeed();
+            _room.ManualSeeds = _manualSeeds;
+            _room.InitRoom(RoomsGenerationData, DatabaseGenerationData);
 
-        EmptyRoomsGeneration();
+            yield return new WaitUntil(() =>
+            {
+                if (_room.RoomState == RoomState.DatabaseGenerated)
+                {
+                    DestroyImmediate(go);
+                    return true;
+                }
 
-        GeneratorsContainer.OpeningsGenerator.OpeningsGeneration(RoomsCreated);
+                return false;
+            });
+        }
 
-        foreach (GameObject room in RoomsCreated)
-            GeneratorsContainer.ObjectsGenerator.ObjectsGeneration(room);
-    }
-
-    /// <summary>
-    /// Applies "paintings" on the surfaces of all rooms.
-    /// </summary>
-    public void ApplyMaterialsForAllRooms()
-    {
-        foreach (GameObject room in RoomsCreated)
-            ApplyMaterials(room);
+        _timeTools.Stop();
+        SceneManager.LoadScene(0);
     }
 
     /// <summary>
@@ -74,197 +160,40 @@ public class RoomsGenerator : MonoBehaviour
     /// </summary>
     public void ClearScene()
     {
-        if (RoomsCreated.Count > 0)
+        if (_room != null)
         {
-            foreach (GameObject room in RoomsCreated)
-                DestroyImmediate(room);
-        }
-
-        RoomsCreated.Clear();
-        RoomsGenerationData.MaterialsDictionary.Clear();
-    }
-
-    #endregion
-
-    #region Empty Rooms Generation Methods
-
-    /// <summary>
-    /// Instantiates randomly a quantity choosen by the user of room shells among the prefabricated room shells.
-    /// </summary>
-    private void EmptyRoomsGeneration()
-    {
-        ClearScene();
-
-        RoomsGenerationData.MaterialsDictionary.Add("Grounds", RoomsGenerationData.GroundMaterials);
-        RoomsGenerationData.MaterialsDictionary.Add("Cielings", RoomsGenerationData.CielingMaterials);
-        RoomsGenerationData.MaterialsDictionary.Add("Walls", RoomsGenerationData.WallMaterials);
-
-        for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
-        {
-            int rnd = UnityEngine.Random.Range(0, RoomsGenerationData.EmptyRooms.Count);
-
-            GameObject room = Instantiate(RoomsGenerationData.EmptyRooms[rnd], new Vector3(i * RoomsGenerationData.DistanceBetweenRoomsCenters, 0, 0), Quaternion.identity);
-            RoomsCreated.Add(room);
+            DestroyImmediate(_room.gameObject);
         }
     }
 
     #endregion
 
-    #region Materials Management Methods
-
-    /// <summary>
-    /// Applies painting on every surface of a given room.
-    /// </summary>
-    /// <param name="room"></param>
-    public void ApplyMaterials(GameObject room)
-    {
-        for (int i = 0; i < room.transform.childCount; i++)
-        {
-            GameObject category = room.transform.GetChild(i).gameObject;
-
-            if (RoomsGenerationData.MaterialsDictionary.Keys.Contains(category.name))
-            {
-                int rnd = UnityEngine.Random.Range(0, RoomsGenerationData.MaterialsDictionary[category.name].Count);
-
-                for (int j = 0; j < category.transform.childCount; j++)
-                {
-                    try
-                    {
-                        category.transform.GetChild(j).gameObject.GetComponent<MeshRenderer>().material = RoomsGenerationData.MaterialsDictionary[category.name][rnd];
-                    }
-                    catch (Exception)
-                    {
-                        GameObject brushesMeshRenderer = GetBrushesMeshRenderer(category.transform.GetChild(j).gameObject);
-                        brushesMeshRenderer.GetComponent<GeneratedMeshInstance>().RenderMaterial = RoomsGenerationData.MaterialsDictionary[category.name][rnd];
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion
 
     #region Information And Objects Getting Methods
 
     public static float GetOpeningWidth(Vector3 colliderSize)
     {
-        return (colliderSize.x > colliderSize.z) ? colliderSize.x : colliderSize.z;
+        return Mathf.Max(colliderSize.x, colliderSize.z);
     }
 
     public float GetWallWidth(GameObject wall)
     {
-        return (wall.transform.localScale.x > wall.transform.localScale.z) ? wall.transform.localScale.x : wall.transform.localScale.z;
+        var localScale = wall.transform.localScale;
+        return Mathf.Max(localScale.x, localScale.z);
     }
 
-    /// <summary>
-    /// Returns the object corresponding to one of the 4 categories of a room : Grounds, Cielings, Walls and Objects.
-    /// </summary>
-    /// <param name="room"></param>
-    /// <param name="wantedCategory"></param>
-    /// <returns></returns>
-    public static GameObject GetRoomCategory(GameObject room, RoomCategory wantedCategory)
+    public static List<GameObject> GetRoomCategoryObjects(GameObject room, RoomCategory category)
     {
-        for(int i = 0; i < room.transform.childCount; i++)
-        {
-            RoomCategory roomCategory;
-
-            if (Enum.TryParse(room.transform.GetChild(i).gameObject.name, out roomCategory) && roomCategory == wantedCategory)
-                return room.transform.GetChild(i).gameObject;
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Returns all the objects contained in a room category of a given room.
-    /// </summary>
-    /// <param name="room"></param>
-    /// <param name="wantedCategory"></param>
-    /// <returns></returns>
-    public static List<GameObject> GetRoomCategoryObjects(GameObject room, RoomCategory wantedCategory)
-    {
-        GameObject category = GetRoomCategory(room, wantedCategory);
-
         List<GameObject> categoryObjects = new List<GameObject>();
-
-        for(int i=0;i<category.transform.childCount;i++)
-            categoryObjects.Add(category.transform.GetChild(i).gameObject);
+        foreach (Transform child in room.transform)
+        {
+            if (child.CompareTag(category.ToString()))
+            {
+                categoryObjects.Add(child.gameObject);
+            }
+        }
 
         return categoryObjects;
-    }
-
-    /// <summary>
-    /// Gives the total number of doors and windows of a given room.
-    /// </summary>
-    /// <param name="room"></param>
-    /// <returns></returns>
-    public static int GetNumberOfOpenings(GameObject room)
-    {
-        int result = 0;
-
-        List<GameObject> walls = GetRoomCategoryObjects(room, RoomCategory.Walls);
-
-        foreach(GameObject wall in walls)
-        {
-            for(int i = 0; i < wall.transform.childCount; i++)
-            {
-                if (wall.transform.GetChild(i).gameObject.GetComponent<Opening>())
-                    result++;
-            }
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Returns the component Mesh Renderer of a CSG model.
-    /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public GameObject GetBrushesMeshRenderer(GameObject model)
-    {
-        GameObject brushesMeshRenderer = null;
-
-        for (int i = 0; i < model.transform.childCount; ++i)
-        {
-            if (model.transform.GetChild(i).name == "[generated-meshes]")
-                brushesMeshRenderer = model.transform.GetChild(i).GetChild(0).gameObject;
-        }
-
-        return brushesMeshRenderer;
-    }
-
-    /// <summary>
-    /// Returns the first component Mesh Collider of a CSG model.
-    /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public static GameObject GetBrushesFirstMeshCollider(GameObject model)
-    {
-        GameObject brushesMeshCollider = null;
-
-        for (int i = 0; i < model.transform.childCount; ++i)
-        {
-            GameObject generatedMeshes;
-
-            if (model.transform.GetChild(i).name == "[generated-meshes]")
-            {
-                generatedMeshes = model.transform.GetChild(i).gameObject;
-
-                for(int j = 0; j < generatedMeshes.transform.childCount; j++)
-                {
-                    if (generatedMeshes.transform.GetChild(j).gameObject.GetComponent<MeshCollider>())
-                    {
-                        brushesMeshCollider = generatedMeshes.transform.GetChild(j).gameObject;
-                        break;
-                    }
-                }
-
-                break;
-            }
-        }
-
-        return brushesMeshCollider;
     }
 
     /// <summary>
@@ -273,26 +202,26 @@ public class RoomsGenerator : MonoBehaviour
     /// <param name="room"></param>
     /// <param name="nextCameraPosition"></param>
     /// <returns></returns>
-    public static bool IsCameraInsideAWall(GameObject room, Vector3 nextCameraPosition)
+    public static bool IsCameraInsideAWall(Room room, Vector3 nextCameraPosition)
     {
-        List<GameObject> walls = GetRoomCategoryObjects(room, RoomCategory.Walls);
-        Vector3 genericWallDimensions = (walls[0].transform.childCount == 0) ? walls[0].transform.localScale :
-            walls[0].transform.GetChild(0).localScale;
-        float wallThickness = (genericWallDimensions.x < genericWallDimensions.z) ? genericWallDimensions.x : genericWallDimensions.z;
+        List<GameObject> walls = room.RoomGrid.GetAllWalls();
 
-        GameObject genericWall;
-        float wallWidth;
-        Vector3 wallToCamera;
-        float forwardDistanceToWall;
-        float sideDistanceToWall;
+        if (walls.Count == 0) return false;
+
+        Vector3 genericWallDimensions = (walls[0].transform.childCount == 0)
+            ? walls[0].transform.localScale
+            : walls[0].transform.GetChild(0).localScale;
+
+        float wallThickness = Mathf.Min(genericWallDimensions.x, genericWallDimensions.z);
 
         foreach (GameObject wall in walls)
         {
-            genericWall = (wall.transform.childCount == 0) ? wall : wall.transform.GetChild(0).gameObject;
-            wallWidth = (genericWallDimensions.x > genericWallDimensions.z) ? genericWallDimensions.x : genericWallDimensions.z;
-            wallToCamera = nextCameraPosition - genericWall.transform.position;
-            forwardDistanceToWall = Vector3.Project(wallToCamera, -genericWall.transform.forward).magnitude;
-            sideDistanceToWall = Vector3.Project(wallToCamera, genericWall.transform.right).magnitude;
+            GameObject genericWall = (wall.transform.childCount == 0) ? wall : wall.transform.GetChild(0).gameObject;
+            Vector3 wallToCamera = nextCameraPosition - genericWall.transform.position;
+            float forwardDistanceToWall = Vector3.Project(wallToCamera, -genericWall.transform.forward).magnitude;
+            float sideDistanceToWall = Vector3.Project(wallToCamera, genericWall.transform.right).magnitude;
+
+            float wallWidth = Mathf.Max(genericWallDimensions.x, genericWallDimensions.z);
 
             if (forwardDistanceToWall <= wallThickness / 2f && sideDistanceToWall < wallWidth / 2f)
                 return true;
@@ -302,12 +231,27 @@ public class RoomsGenerator : MonoBehaviour
     }
 
     #endregion
+
+    public static GameObject GetRoomCategory(GameObject room, RoomCategory wantedCategory)
+    {
+        for (int i = 0; i < room.transform.childCount; i++)
+        {
+            RoomCategory roomCategory;
+
+            if (Enum.TryParse(room.transform.GetChild(i).gameObject.name, out roomCategory) &&
+                roomCategory == wantedCategory)
+                return room.transform.GetChild(i).gameObject;
+        }
+
+        return null;
+    }
 }
+
 
 public enum RoomCategory
 {
     Grounds,
-    Cielings,
+    Ceiling,
     Walls,
     Objects
 }

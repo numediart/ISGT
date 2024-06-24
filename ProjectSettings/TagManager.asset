@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - SimObjPhysics
+  - Television
+  - Opening Ratio Sphere Parent Object
+  - Receptacle
+  - HighFriction
+  - Ground
+  - Opening Ratio Sphere
+  - Structure
+  - Door
+  - BoundingBox
+  - Walls
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -1,0 +1,62 @@
+.font {
+    -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
+    -unity-font-definition: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold%20SDF.asset?fileID=11400000&guid=13f9b7034a0090c4bbc848db93c35cbf&type=2#IBMPlexSans-SemiBold SDF");
+    font-size: 20px;
+}
+
+.unity-progress-bar {
+}
+
+.unity-progress-bar__background {
+    width: 100%;
+    background-color: rgb(234, 224, 213);
+    border-left-color: rgba(234, 224, 213, 0);
+    border-right-color: rgba(234, 224, 213, 0);
+    border-top-color: rgba(234, 224, 213, 0);
+    border-bottom-color: rgba(234, 224, 213, 0);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    height: auto;
+    max-height: none;
+}
+
+.unity-progress-bar__container {
+    width: 100%;
+    border-left-color: rgba(234, 224, 213, 0);
+    border-right-color: rgba(234, 224, 213, 0);
+    border-top-color: rgba(234, 224, 213, 0);
+    border-bottom-color: rgba(234, 224, 213, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    height: auto;
+    max-height: 100%;
+}
+
+.unity-progress-bar__progress {
+    background-color: rgb(198, 172, 143);
+    border-left-color: rgba(198, 172, 143, 0);
+    border-right-color: rgba(198, 172, 143, 0);
+    border-top-color: rgba(198, 172, 143, 0);
+    border-bottom-color: rgba(198, 172, 143, 0);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    height: auto;
+}

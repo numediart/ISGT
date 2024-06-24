@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="FileDialogExplorer" src="project://database/Assets/UI%20Toolkit/UXML/FileDialogExplorer.uxml?fileID=9197481963319205126&amp;guid=41999cc3fdf965741a84f4505fc607c6&amp;type=3#FileDialogExplorer" />
+    <Style src="project://database/Assets/UI%20Toolkit/USS/settings-menu.uss?fileID=7433441132597879392&amp;guid=cc742c3b0a293684696da73d9542f2a4&amp;type=3#settings-menu" />
+    <ui:VisualElement name="Panel" class="panel" style="flex-grow: 1;">
+        <ui:VisualElement name="SettingsMenu" class="settingsMenu" style="flex-grow: 1; background-color: rgb(198, 172, 143); border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; max-height: 700px; justify-content: flex-start; align-items: center;">
+            <ui:Label tabindex="-1" text="Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SettingsTitle" class="title" />
+            <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="ScrollContainer" mouse-wheel-scroll-size="200" horizontal-scroller-visibility="Hidden" class="scroll-container" style="max-height: 536px;">
+                <ui:Foldout text="Generals Settings" name="GeneralsSettings" value="false" class="foldout-container" style="-unity-font: url(&quot;project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&amp;guid=4f281127a5ba7994fab043e31464cee2&amp;type=3#IBMPlexSans-SemiBold&quot;); -unity-font-definition: url(&quot;project://database/Assets/Fonts/IBMPlexSans-SemiBold%20SDF.asset?fileID=11400000&amp;guid=13f9b7034a0090c4bbc848db93c35cbf&amp;type=2#IBMPlexSans-SemiBold SDF&quot;);">
+                    <ui:UnsignedIntegerField label="Number of Rooms" value="42" name="RoomNumber" />
+                    <ui:UnsignedIntegerField label="Screenshots Count&#10;Per Rooms" value="42" name="ScreenshotsCountPerRoom" />
+                </ui:Foldout>
+                <ui:Foldout text="Generations Settings" name="GenerationsSettings" value="false" class="foldout-container">
+                    <ui:EnumField label="Rooms Max Size" name="RoomSize" type="UI_Toolkit.RoomMaxSize, Assembly-CSharp" />
+                    <ui:SliderInt high-value="40" name="MaxSizeSlider" show-input-field="true" direction="Horizontal" usage-hints="None" low-value="2" class="slider" />
+                    <ui:EnumField label="Props Density" name="PropsDensity" type="UI_Toolkit.PropsDensity, Assembly-CSharp" />
+                    <ui:SliderInt high-value="100" name="PropsDensitySlider" show-input-field="true" direction="Horizontal" low-value="0" class="slider" />
+                    <ui:EnumField label="Doors Density" name="DoorsDensity" type="UI_Toolkit.DoorDensity, Assembly-CSharp" />
+                    <ui:SliderInt high-value="100" name="DoorsDensitySlider" show-input-field="true" direction="Horizontal" low-value="0" class="slider" />
+                    <ui:EnumField label="Windows Density" name="WindowsDensity" type="UI_Toolkit.WindowDensity, Assembly-CSharp" />
+                    <ui:SliderInt high-value="100" name="WindowsDensitySlider" show-input-field="true" direction="Horizontal" low-value="0" class="slider" />
+                </ui:Foldout>
+                <ui:Foldout text="Camera Settings" name="CameraSettings" value="false" class="foldout-container">
+                    <ui:Foldout text="Camera max rotation" name="MaxRotationFoldout" class="foldout-container" style="flex-direction: column;">
+                        <ui:SliderInt label="Around X" high-value="180" name="XSlider" low-value="0" show-input-field="true" class="slider" />
+                        <ui:SliderInt label="Around Y" high-value="180" name="YSlider" low-value="0" show-input-field="true" class="slider" />
+                        <ui:SliderInt label="Around Z" high-value="180" name="ZSlider" low-value="0" show-input-field="true" class="slider" />
+                    </ui:Foldout>
+                    <ui:Foldout text="Physical parameters " name="PhysicalParametersFoldout" class="foldout-container">
+                        <ui:SliderInt label="FOV" high-value="179" name="FOVSlider" low-value="1" show-input-field="true" class="slider" />
+                        <ui:SliderInt label="ISO" high-value="6400" name="ISOSlider" low-value="100" show-input-field="true" class="slider" />
+                        <ui:Slider label="Aperture" high-value="15" show-input-field="true" low-value="1" name="ApertureSlider" class="slider" />
+                        <ui:Slider label="Focus Distance" high-value="30" show-input-field="true" low-value="5" name="FocusDistanceSlider" class="slider" />
+                    </ui:Foldout>
+                </ui:Foldout>
+                <ui:Foldout text="Precision Settings" name="PrecisionSettings" value="false" class="foldout-container">
+                    <ui:EnumField label="Raycasts amount" name="RaycastAmount" type="UI_Toolkit.RaycastAmount, Assembly-CSharp" />
+                    <ui:SliderInt high-value="100000" name="RaycastAmountSlider" show-input-field="true" direction="Horizontal" low-value="100" label="Raycasts per opening" picking-mode="Ignore" class="slider" />
+                </ui:Foldout>
+                <ui:Foldout text="Saved Presets" name="SavedPreset" value="true" class="foldout-container">
+                    <ui:DropdownField label="Preset" name="PresetDropdown" />
+                </ui:Foldout>
+                <ui:Instance template="FileDialogExplorer" name="FileDialogExplorer" style="margin-top: 4%; margin-right: 1%; margin-bottom: 0; margin-left: 1%; align-items: auto; justify-content: center; align-self: auto;" />
+            </ui:ScrollView>
+            <ui:VisualElement name="CancelApplyButtonContainer" style="flex-grow: 1; flex-direction: row; align-items: center; justify-content: center; align-self: center;">
+                <ui:Button text="Cancel" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CancelButton" class="child-button" />
+                <ui:Button text="Apply" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ApplyButton" class="child-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

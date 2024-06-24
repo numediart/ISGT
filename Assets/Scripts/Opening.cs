@@ -1,184 +1,162 @@
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Opening : MonoBehaviour
 {
     #region Public Fields
 
-    [HideInInspector] public float OpenessDegree;
-    [HideInInspector] public OpeningType Type;
+    [HideInInspector] public float OpennessDegree;
+    public OpeningType Type;
     public MeansOfOpening MeansOfOpening;
-    public OpeningDirection OpeningDirection;
     public GameObject MovingPart;
-    public RoomsGenerationScriptableObject RoomsGenerationData;
-    public ObjectsGenerationScriptableObject ObjectsGenerationData;
+    public GameObject Structure;
+    public GameObject centerObj;
 
     #endregion
 
     #region Private Fields
 
-    private List<Renderer> _openingPartsRenderers = new List<Renderer>();
-    private GameObject _visibilityRatioSpheresParentObject;
     private float _visibilityRatio;
     private float _width;
     private float _height;
+    private Camera _mainCamera;
+    
+    public static float NumberOfPoints;
 
     #endregion
 
-    private void Start()
+    private void Awake()
     {
-        _visibilityRatioSpheresParentObject = GetVisibilityRatioSpheresParentObject();
-        _width = RoomsGenerator.GetOpeningWidth(gameObject.GetComponent<BoxCollider>().size);
-        _height = gameObject.GetComponent<BoxCollider>().size.y;
-
-        for (float x = -_width / 2f + _width / 20f; x < _width / 2f; x += _width / 10f)
+        _mainCamera = Camera.main;
+        if (centerObj == null)
         {
-            for (float y = -_height / 2f + _height / 20f; y <= _height / 2f; y += _height / 10f)
-            {
-                Vector3 positionOffset = transform.right * x + transform.up * y;
-                GameObject ratioSphere = Instantiate(RoomsGenerationData.OpeningRatioSpherePrefab, transform.position + positionOffset, transform.rotation, _visibilityRatioSpheresParentObject.transform);
-                ratioSphere.transform.localScale = new Vector3(_width / 10f, _height / 10f, _width / 10f + 0.1f);
-            }
+            Debug.LogError("Center object not assigned for opening : " + gameObject.name);
         }
+        SetOpeningRandomOpenness();
+        Debug.Log(NumberOfPoints);
+    }
+    
+    public Vector3 GetCenter()
+    {
+        return centerObj.transform.position;
+    }
+    
 
-        _visibilityRatioSpheresParentObject.SetActive(false);
+    private void SetOpeningRandomOpenness()
+    {
+        OpennessDegree = UnityEngine.Random.value;
 
-        for (int i = 0; i < transform.childCount; i++)
+        Vector3 openingDirection = transform.up;
+
+        switch (MeansOfOpening)
         {
-            if (transform.GetChild(i).gameObject.tag.Equals("Untagged") && transform.GetChild(i).gameObject.GetComponent<Renderer>())
-                _openingPartsRenderers.Add(transform.GetChild(i).gameObject.GetComponent<Renderer>());
+            case MeansOfOpening.Translation:
+                Vector3 openingDimensions = MovingPart.transform.GetChild(0).localScale;
+                float sideLength = openingDimensions.y;
+                MovingPart.transform.position += OpennessDegree * (sideLength / 2f) * openingDirection.normalized;
+                MovingPart.transform.GetChild(0).localScale = new Vector3(openingDimensions.x,
+                    (1 - OpennessDegree) * sideLength, openingDimensions.z);
+                break;
+            case MeansOfOpening.Rotation:
+                float adjustedOpenness = (OpennessDegree * 2f) - 1f;
+                MovingPart.transform.Rotate(openingDirection, adjustedOpenness * 120f);
+                break;
         }
     }
 
     #region Opening Visibility Management Methods
 
-    /// <summary>
-    /// Verifies if at least a part of the openig is visible or if the opening is not visible at all on the camera screen.
-    /// </summary>
-    /// <returns></returns>
-    public bool IsVisible()
+    public bool IsOnScreen()
     {
-        foreach (Renderer openingPartRenderer in _openingPartsRenderers)
+        gameObject.TryGetComponent<BoxCollider>(out BoxCollider openingBounds);
+        _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
+        _height = openingBounds.size.y;
+
+        float widthStep = _width / Mathf.Sqrt(NumberOfPoints);
+        float heightStep = _height / Mathf.Sqrt(NumberOfPoints);
+
+        for (float x = -_width / 2f + widthStep / 2; x < _width / 2f; x += widthStep)
         {
-            if (openingPartRenderer.isVisible)
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Initializes the visibility ratio and makes the visibility ratio spheres as visible as possible.
-    /// </summary>
-    public void InitializeVisibilityRatio()
-    {
-        _visibilityRatioSpheresParentObject.SetActive(true);
-
-        _visibilityRatio = 0f;
-
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).gameObject.tag.Equals("Untagged") && transform.GetChild(i).gameObject.GetComponent<Renderer>())
-                transform.GetChild(i).gameObject.GetComponent<Renderer>().enabled = false;
-        }
-
-        gameObject.GetComponent<BoxCollider>().enabled = false;
-    }
-
-    /// <summary>
-    /// Returns the visibility ratio (between 0 and 1) of this opening.
-    /// </summary>
-    /// <returns></returns>
-    public float GetVisibilityRatio()
-    {
-        Vector3 openingToCamera = Camera.main.transform.position - transform.position;
-        float cameraFacingOpeningAngle = Vector3.Angle(-transform.forward, openingToCamera);
-
-        if (Mathf.Abs(cameraFacingOpeningAngle) < 90f)
-        {
-            for (int i = 0; i < _visibilityRatioSpheresParentObject.transform.childCount; i++)
+            for (float y = -_height / 2f + heightStep / 2; y <= _height / 2f; y += heightStep)
             {
-                if (GetRatioSphereReachability(_visibilityRatioSpheresParentObject.transform.GetChild(i).gameObject) &&
-                    DatabaseGenerator.IsOnScreen(_visibilityRatioSpheresParentObject.transform.GetChild(i).gameObject))
-                    _visibilityRatio += 0.01f;
-            }
-        }
-
-        _visibilityRatioSpheresParentObject.SetActive(false);
-
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).gameObject.tag.Equals("Untagged") && transform.GetChild(i).gameObject.GetComponent<Renderer>())
-                transform.GetChild(i).gameObject.GetComponent<Renderer>().enabled = true;
-        }
-
-        gameObject.GetComponent<BoxCollider>().enabled = true;
-
-        return _visibilityRatio;
-    }
-
-    /// <summary>
-    /// Returns a boolean that indicates if the given visibility ratio sphere is directly visible on the screen or if there are objets 
-    /// and/or walls that hide it.
-    /// </summary>
-    /// <param name="sphere"></param>
-    /// <returns></returns>
-    private bool GetRatioSphereReachability(GameObject sphere)
-    {
-        GameObject mainCamera = Camera.main.gameObject;
-
-        Vector3 raycastCenterDirection = sphere.transform.position - mainCamera.transform.position;
-
-        RaycastHit hit;
-
-        if (Physics.Raycast(mainCamera.transform.position, raycastCenterDirection, out hit, float.MaxValue))
-        {
-            if ((hit.collider.gameObject.tag.Equals("Opening Ratio Sphere") && hit.collider.transform.parent.parent == transform) ||
-                (hit.collider.gameObject.transform.parent.parent == transform.parent && hit.collider.gameObject.layer != ObjectsGenerationData.ObjectsLayerIndex))
-                return true;
-        }
-
-        for (int teta = 0; teta < 360; teta += 90)
-        {
-            float maxLength = ((teta / 90) % 2 == 0) ? sphere.transform.localScale.y / 2f : sphere.transform.localScale.x / 2f;
-
-            GameObject go = new GameObject();
-            go.transform.Rotate(-transform.forward, teta);
-
-            Vector3 pointPosition = sphere.transform.position + go.transform.up.normalized * maxLength;
-
-            Vector3 newDirection = pointPosition - mainCamera.transform.position;
-
-            if (Physics.Raycast(mainCamera.transform.position, newDirection, out hit, float.MaxValue))
-            {
-                if ((hit.collider.gameObject.tag.Equals("Opening Ratio Sphere") && hit.collider.transform.parent.parent == transform) ||
-                    (hit.collider.gameObject.transform.parent.parent == transform.parent && hit.collider.gameObject.layer != ObjectsGenerationData.ObjectsLayerIndex)) 
+                var thisTransform = transform;
+                Vector3 positionOffset = thisTransform.right * x + thisTransform.up * y;
+                Vector3 aimPoint = GetCenter() + positionOffset;
+                if (IsPointOnScreen(aimPoint))
                 {
-                    Destroy(go);
                     return true;
                 }
             }
+        }
+        return false;
+    }
 
-            Destroy(go);
+    #endregion
+
+    public float GetVisibilityRatio()
+    {
+        return _visibilityRatio;
+    }
+
+
+    public BoundingBox2D GetVisibilityBoundingBox()
+    {
+        gameObject.TryGetComponent<BoxCollider>(out BoxCollider openingBounds);
+        _width = RoomsGenerator.GetOpeningWidth(openingBounds.size);
+        _height = openingBounds.size.y;
+        int minX = Screen.width + 1;
+        int maxX = -1;
+        int minY = Screen.height + 1;
+        int maxY = -1;
+        _visibilityRatio = 0f;
+
+        float widthStep = _width / Mathf.Sqrt(NumberOfPoints);
+        float heightStep = _height / Mathf.Sqrt(NumberOfPoints);
+
+        for (float x = -_width / 2f + widthStep / 2; x < _width / 2f; x += widthStep)
+        {
+            for (float y = -_height / 2f + heightStep / 2; y <= _height / 2f; y += heightStep)
+            {
+                var thisTransform = transform;
+                Vector3 positionOffset = thisTransform.right * x + thisTransform.up * y;
+                Vector3 aimPoint = GetCenter() + positionOffset;
+                if (IsPointVisible(aimPoint) && IsPointOnScreen(aimPoint))
+                {
+                    _visibilityRatio += 1 / NumberOfPoints;
+
+                    Vector3 screenPoint = _mainCamera.WorldToScreenPoint(aimPoint);
+                    minX = (int)Mathf.Min(minX, screenPoint.x);
+                    maxX = (int)Mathf.Max(maxX, screenPoint.x);
+                    minY = (int)Mathf.Min(minY, screenPoint.y);
+                    maxY = (int)Mathf.Max(maxY, screenPoint.y);
+                }
+            }
+        }
+
+        return new BoundingBox2D(new Vector2Int(minX, minY), maxX - minX, maxY - minY);
+    }
+
+    private bool IsPointVisible(Vector3 aimPoint)
+    {
+        GameObject mainCamera = _mainCamera!.gameObject;
+        Vector3 aimPointDirection = aimPoint - mainCamera.transform.position;
+
+        if (Physics.Raycast(mainCamera.transform.position, aimPointDirection, out var hit, float.MaxValue))
+        {
+            if (hit.collider.gameObject == gameObject || hit.collider.gameObject.transform.parent == transform)
+                return true;
         }
 
         return false;
     }
 
-    private GameObject GetVisibilityRatioSpheresParentObject()
+    private bool IsPointOnScreen(Vector3 point)
     {
-        for(int i = 0; i < transform.childCount; i++)
-        {
-            GameObject child = transform.GetChild(i).gameObject;
-
-            if (child.tag.Equals("Opening Ratio Sphere Parent Object"))
-                return child;
-        }
-
-        return null;
+        Vector3 screenPoint = _mainCamera!.WorldToViewportPoint(point);
+        return screenPoint.x is > 0 and < 1 && screenPoint.y is > 0 and < 1 && screenPoint.z > 0;
     }
-
-    #endregion
 }
 
 public enum OpeningType
@@ -191,12 +169,4 @@ public enum MeansOfOpening
 {
     Translation,
     Rotation
-}
-
-public enum OpeningDirection
-{
-    Up,
-    Down,
-    Right,
-    Left
 }

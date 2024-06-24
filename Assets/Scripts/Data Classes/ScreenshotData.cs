@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Numerics;
+using Newtonsoft.Json;
 
 public class ScreenshotData
 {
     public List<OpeningData> OpeningsData = new List<OpeningData>();
-    public Dictionary<string, float> CameraRotation = new Dictionary<string, float>();
+    [JsonConverter(typeof(QuaternionConverter))]
+    public UnityEngine.Quaternion CameraRotation;
 }

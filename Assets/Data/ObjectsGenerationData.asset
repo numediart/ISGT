@@ -85,7 +85,7 @@ MonoBehaviour:
   ObjectsLayerIndex: 6
   MinimumDistanceBetweenObjects: 0.5
   ObjectsMinimumNumberPerRoom: 5
-  ObjectsMaximumNumberPerRoom: 10
+  ObjectsMaximumNumberPerRoom: 8
   MaximumNumberOfObjectPlacementAttempts: 10
   MaximumNumberOfObjectsToTryToFitIn: 10
   ObjectsLayoutJSONFilePath: "D:\\Internship_Alexis_S\xE9reuse\\TEMP\\Assets\\objects_layout_example.json"
