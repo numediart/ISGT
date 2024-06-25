@@ -28,7 +28,7 @@ public class InterSceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0 && LastMaxRooms > 0 && showLastGenerationInfo)
+        if (SceneManager.GetActiveScene().buildIndex == 0 && LastMaxScreenshots > 0 && showLastGenerationInfo)
         {
             VisualElement root = FindObjectOfType<UIDocument>().rootVisualElement;
             _lastGenerationInfo = root.Q<VisualElement>("LastGenerationInfo");
