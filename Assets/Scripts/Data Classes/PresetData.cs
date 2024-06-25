@@ -29,6 +29,9 @@ namespace Data_Classes
         
         public string ExportPath; // has to be a folder path
         
+        public int ImageWidth;
+        public int ImageHeight;
+        
         public PresetData(int maxWidth, int maxDepth, int propsRatio, int windowRatio, int doorRatio, int screenshotsCountPerRoom, int numberOfRoomsToGenerate, string exportPath, int fieldOfView, int iso, float aperture, float focusDistance, Vector3Int maxRotation,int raycastAmount)
         {
             MaxWidth = maxWidth;
@@ -48,6 +51,9 @@ namespace Data_Classes
             MaxRotation = maxRotation;
             
             RaycastAmount = raycastAmount;
+            
+            ImageWidth = 1920;
+            ImageHeight = 1080;
         }
         
     }

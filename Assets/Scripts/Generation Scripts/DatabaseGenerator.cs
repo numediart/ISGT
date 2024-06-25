@@ -395,6 +395,16 @@ public class DatabaseGenerator : MonoBehaviour
             new Vector2Int(Mathf.Clamp((int)minX, 0, screenWidth), Mathf.Clamp((int)minY, 0, screenHeight));
         int boxWidth = Mathf.Clamp((int)maxX, 0, screenWidth) - boundingBoxOrigin.x;
         int boxHeight = Mathf.Clamp((int)maxY, 0, screenHeight) - boundingBoxOrigin.y;
+        
+        
+        int screenShotWidth = MainMenuController.PresetData.ImageWidth;
+        int screenShotHeight = MainMenuController.PresetData.ImageHeight;
+        
+        // Scale coordinates to screenshot size
+        boundingBoxOrigin = new Vector2Int((int)(boundingBoxOrigin.x * screenShotWidth / screenWidth),
+            (int)(boundingBoxOrigin.y * screenShotHeight / screenHeight));
+        boxWidth = (int)(boxWidth * screenShotWidth / screenWidth);
+        boxHeight = (int)(boxHeight * screenShotHeight / screenHeight);
 
         return new BoundingBox2D(boundingBoxOrigin, boxWidth, boxHeight);
     }

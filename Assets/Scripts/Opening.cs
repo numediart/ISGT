@@ -134,6 +134,15 @@ public class Opening : MonoBehaviour
                 }
             }
         }
+        int screenShotWidth = MainMenuController.PresetData.ImageWidth;
+        int screenShotHeight = MainMenuController.PresetData.ImageHeight;
+        
+        // Scale coordinates to screenshot size
+        minX = (int)(minX * screenShotWidth / Screen.width);
+        maxX = (int)(maxX * screenShotWidth / Screen.width);
+        minY = (int)(minY * screenShotHeight / Screen.height);
+        maxY = (int)(maxY * screenShotHeight / Screen.height);
+
 
         return new BoundingBox2D(new Vector2Int(minX, minY), maxX - minX, maxY - minY);
     }

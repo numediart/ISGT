@@ -5,8 +5,8 @@ using System.IO;
 public class CameraScreenshot : MonoBehaviour
 {
     public Camera cameraToCapture;
-    public int imageWidth = 1920;
-    public int imageHeight = 1080;
+    public  int imageWidth;
+    public  int imageHeight;
     public string savePath = "";
 
     void Start()
@@ -15,6 +15,9 @@ public class CameraScreenshot : MonoBehaviour
         {
             Directory.CreateDirectory(savePath);
         }
+        
+        imageWidth = MainMenuController.PresetData.ImageWidth;
+        imageHeight = MainMenuController.PresetData.ImageHeight;
     }
 
     public void CaptureScreenshot()
