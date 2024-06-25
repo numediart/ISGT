@@ -312,7 +312,7 @@ public class SettingsMenuController : MonoBehaviour
         _rootVisualElement.Q<VisualElement>("SettingsMenu").style.display = DisplayStyle.None;
         _rootVisualElement.Q<VisualElement>("Menu").style.display = DisplayStyle.Flex;
         if(InterSceneManager.LastMaxRooms > 0)
-            _rootVisualElement.Q<VisualElement>("LastGenerationInfo").style.display = DisplayStyle.Flex;
+            InterSceneManager.showLastGenerationInfo = true;
         Destroy(this);
     }
 

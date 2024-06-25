@@ -51,6 +51,7 @@ public class MainMenuController : MonoBehaviour
     {
         Debug.Log("Start Button Clicked");
         SceneManager.LoadScene(1);// Load the ProceduralGeneration scene
+        InterSceneManager.showLastGenerationInfo = true;
     }
 
     private void OnExitButtonClicked()
@@ -66,7 +67,7 @@ public class MainMenuController : MonoBehaviour
         if(_rootUi.Q<VisualElement>("SettingsMenu") != null)
             _rootUi.Q<VisualElement>("SettingsMenu").RemoveFromHierarchy();
         _rootUi.Q<VisualElement>("Panel").Add(_settingsMenuAsset.CloneTree());
-        _rootUi.Q<VisualElement>("SettingsMenu").style.display = DisplayStyle.Flex;
+        InterSceneManager.showLastGenerationInfo = false;
         gameObject.AddComponent<SettingsMenuController>();
         _rootUi.Q<VisualElement>("LastGenerationInfo").style.display = DisplayStyle.None;
     }

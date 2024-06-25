@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="FileDialogExplorer" src="project://database/Assets/UI%20Toolkit/UXML/FileDialogExplorer.uxml?fileID=9197481963319205126&amp;guid=41999cc3fdf965741a84f4505fc607c6&amp;type=3#FileDialogExplorer" />
     <Style src="project://database/Assets/UI%20Toolkit/USS/settings-menu.uss?fileID=7433441132597879392&amp;guid=cc742c3b0a293684696da73d9542f2a4&amp;type=3#settings-menu" />
-    <ui:VisualElement name="Panel" class="panel" style="flex-grow: 1;">
+    <ui:VisualElement name="Panel" class="panel" style="flex-grow: 1; background-color: rgba(34, 51, 59, 0);">
         <ui:VisualElement name="SettingsMenu" class="settingsMenu" style="flex-grow: 1; background-color: rgb(198, 172, 143); border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; max-height: 700px; justify-content: flex-start; align-items: center;">
             <ui:Label tabindex="-1" text="Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SettingsTitle" class="title" />
             <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="ScrollContainer" mouse-wheel-scroll-size="200" horizontal-scroller-visibility="Hidden" class="scroll-container" style="max-height: 536px;">
