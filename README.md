@@ -4,7 +4,7 @@
 
 What do you need to use the project :
 
- - Unity Hub
+ - Unity Hub 
  - Unity Editor 2020.3.25f1
  - Git (optional)
 
