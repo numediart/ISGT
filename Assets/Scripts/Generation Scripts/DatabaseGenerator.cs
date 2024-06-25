@@ -61,7 +61,7 @@ public class DatabaseGenerator : MonoBehaviour
             ? Application.dataPath
             : MainMenuController.PresetData.ExportPath == null
                 ? Application.dataPath
-                : MainMenuController.PresetData.ExportPath) + "/";
+                : MainMenuController.PresetData.ExportPath) + "/Export_ISGT/";
         Debug.Log("Export path: " + path);
 
         if (!Directory.Exists(path + "OpeningsData"))
@@ -159,7 +159,7 @@ public class DatabaseGenerator : MonoBehaviour
             ? Application.dataPath
             : MainMenuController.PresetData.ExportPath == null
                 ? Application.dataPath
-                : MainMenuController.PresetData.ExportPath) + "/";
+                : MainMenuController.PresetData.ExportPath) + "/Export_ISGT/";
         //Camera.main.Render();
         // You need to comment the line below if you want to use the camera stereo mode and take a screenshot with each eye.
         if (!Directory.Exists(path + "Photographs"))
