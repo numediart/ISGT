@@ -12,6 +12,7 @@ public class InterSceneManager : MonoBehaviour
     public static int LastMaxRooms = 0;
     public static int LastElapsedTime = 0;
     private VisualElement _lastGenerationInfo;
+    public static bool showLastGenerationInfo = true;
 
     void Awake()
     {
@@ -27,7 +28,7 @@ public class InterSceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0 && LastMaxRooms > 0)
+        if (SceneManager.GetActiveScene().buildIndex == 0 && LastMaxScreenshots > 0 && showLastGenerationInfo)
         {
             VisualElement root = FindObjectOfType<UIDocument>().rootVisualElement;
             _lastGenerationInfo = root.Q<VisualElement>("LastGenerationInfo");

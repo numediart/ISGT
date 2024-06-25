@@ -39,14 +39,14 @@ public class DatabaseGenerator : MonoBehaviour
     private void Awake()
     {
         _camera = Camera.main;
-        if (!Directory.Exists((MainMenuController.PresetData == null
+        if (!Directory.Exists(MainMenuController.PresetData == null
                 ? Application.dataPath
                 : MainMenuController.PresetData.ExportPath == null
                     ? Application.dataPath
-                    : MainMenuController.PresetData.ExportPath) + "/ExportVISG"))
-            Directory.CreateDirectory((MainMenuController.PresetData?.ExportPath == null
+                    : MainMenuController.PresetData.ExportPath))
+            Directory.CreateDirectory(MainMenuController.PresetData?.ExportPath == null
                 ? Application.dataPath
-                : MainMenuController.PresetData.ExportPath) + "/ExportVISG");
+                : MainMenuController.PresetData.ExportPath);
     }
 
 
@@ -61,7 +61,7 @@ public class DatabaseGenerator : MonoBehaviour
             ? Application.dataPath
             : MainMenuController.PresetData.ExportPath == null
                 ? Application.dataPath
-                : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
+                : MainMenuController.PresetData.ExportPath) + "/";
         Debug.Log("Export path: " + path);
 
         if (!Directory.Exists(path + "OpeningsData"))
@@ -159,7 +159,7 @@ public class DatabaseGenerator : MonoBehaviour
             ? Application.dataPath
             : MainMenuController.PresetData.ExportPath == null
                 ? Application.dataPath
-                : MainMenuController.PresetData.ExportPath) + "/ExportVISG/";
+                : MainMenuController.PresetData.ExportPath) + "/";
         //Camera.main.Render();
         // You need to comment the line below if you want to use the camera stereo mode and take a screenshot with each eye.
         if (!Directory.Exists(path + "Photographs"))
