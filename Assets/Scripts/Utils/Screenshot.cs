@@ -11,7 +11,7 @@ public class CameraScreenshot : MonoBehaviour
 
     void Start()
     {
-        if (!Directory.Exists(savePath))
+        if (!Directory.Exists(savePath) && savePath.Contains(MainMenuController.PresetData.ExportPath))
         {
             Directory.CreateDirectory(savePath);
         }
