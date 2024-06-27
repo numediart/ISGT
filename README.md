@@ -78,3 +78,10 @@ Each screenshot is matched with a Json containing info about the room, the seeds
     }
   }
 }
+```
+
+## Open source
+
+ISGT is fully open-source, you can fork this repository and start helping us improve the tool. To work on this project, you will need Unity version 2022.3.26f1 or higher.  <br>
+
+A more detailed documentation is on the way. 
