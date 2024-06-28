@@ -45,4 +45,12 @@ public enum DoorDensity // 1-80
         Ultra = 100000
     }
     
+    public enum Resolution
+    {
+        Standard = 1,
+        High = 2,
+        FullHD = 3,
+        QuadHD = 4,
+    }
+    
 }

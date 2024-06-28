@@ -134,8 +134,8 @@ public class Opening : MonoBehaviour
                 }
             }
         }
-        int screenShotWidth = MainMenuController.PresetData.ImageWidth;
-        int screenShotHeight = MainMenuController.PresetData.ImageHeight;
+        int screenShotWidth = 640 * MainMenuController.PresetData.Resolution;
+        int screenShotHeight = 360 * MainMenuController.PresetData.Resolution;
         
         // Scale coordinates to screenshot size
         minX = (int)(minX * screenShotWidth / Screen.width);

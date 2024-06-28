@@ -16,8 +16,8 @@ public class CameraScreenshot : MonoBehaviour
             Directory.CreateDirectory(savePath);
         }
         
-        imageWidth = MainMenuController.PresetData.ImageWidth;
-        imageHeight = MainMenuController.PresetData.ImageHeight;
+        imageWidth = 640 * MainMenuController.PresetData.Resolution;
+        imageHeight = 360 * MainMenuController.PresetData.Resolution;
     }
 
     public void CaptureScreenshot()

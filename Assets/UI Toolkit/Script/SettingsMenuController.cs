@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Utils;
 using Button = UnityEngine.UIElements.Button;
+using Resolution = UI_Toolkit.Resolution;
 
 /// <summary>
 ///  Settings menu controller class to handle the settings menu UI and events
@@ -24,6 +25,8 @@ public class SettingsMenuController : MonoBehaviour
     private UnsignedIntegerField _screenshotsCountPerRoom;
     
     private EnumField _roomMaxSize;
+    private EnumField _resolution;
+    
     private EnumField _propsDensity;
     private EnumField _windowDensity;
     private EnumField _doorDensity;
@@ -84,6 +87,7 @@ public class SettingsMenuController : MonoBehaviour
         _ZSlider = _rootVisualElement.Q<SliderInt>("ZSlider");
         _raycastAmount = _rootVisualElement.Q<EnumField>("RaycastAmount");
         _raycastAmountSlider = _rootVisualElement.Q<SliderInt>("RaycastAmountSlider");
+        _resolution = _rootVisualElement.Q<EnumField>("Resolution");
         
         // Hide sliders for manual inputs
         _maxSizeSlider.style.display = DisplayStyle.None;
@@ -170,6 +174,8 @@ public class SettingsMenuController : MonoBehaviour
         _roomMaxSize.value = isSizeManualInput ? RoomMaxSize.ManualInput : (RoomMaxSize)MainMenuController.PresetData.MaxWidth;
         _maxSizeSlider.value = MainMenuController.PresetData.MaxWidth;
         
+        _resolution.value = (Resolution)MainMenuController.PresetData.Resolution;
+        
         _propsDensity.value = isPropsManualInput ? PropsDensity.ManualInput : (PropsDensity)MainMenuController.PresetData.PropsRatio;
         _propsDensitySlider.value = MainMenuController.PresetData.PropsRatio;
         
@@ -239,7 +245,8 @@ public class SettingsMenuController : MonoBehaviour
             _apertureSlider.value,
             _focusDistanceSlider.value,
             new Vector3Int(_XSlider.value, _YSlider.value, _ZSlider.value),
-            isRaycastManualInput ? _raycastAmountSlider.value : (int)(RaycastAmount)_raycastAmount.value
+            isRaycastManualInput ? _raycastAmountSlider.value : (int)(RaycastAmount)_raycastAmount.value,
+            (int)(Resolution)_resolution.value
             );
         
         

@@ -397,8 +397,8 @@ public class DatabaseGenerator : MonoBehaviour
         int boxHeight = Mathf.Clamp((int)maxY, 0, screenHeight) - boundingBoxOrigin.y;
         
         
-        int screenShotWidth = MainMenuController.PresetData.ImageWidth;
-        int screenShotHeight = MainMenuController.PresetData.ImageHeight;
+        int screenShotWidth = 640 * MainMenuController.PresetData.Resolution;
+        int screenShotHeight = 360 * MainMenuController.PresetData.Resolution;
         
         // Scale coordinates to screenshot size
         boundingBoxOrigin = new Vector2Int((int)(boundingBoxOrigin.x * screenShotWidth / screenWidth),
