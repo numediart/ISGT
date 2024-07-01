@@ -9,7 +9,7 @@ using Random = System.Random;
 /// <summary>
 /// Class that represents a room in the VISG project.
 /// </summary>
-public class Room : MonoBehaviour
+public class ClassicRoom : AbstractRoom<ClassicRoom>
 {
     private RoomsGenerationScriptableObject roomGenerationData;
     public DatabaseGenerationScriptableObject DatabaseGenerationData;
@@ -74,7 +74,7 @@ public class Room : MonoBehaviour
     /// init method of the Room class.
     /// </summary>
     /// <param name="roomGenerationData"></param>
-    public void InitRoom(RoomsGenerationScriptableObject roomGenerationData,
+    public override void InitRoom(RoomsGenerationScriptableObject roomGenerationData,
         DatabaseGenerationScriptableObject databaseGenerationData)
     {
         this.roomGenerationData = roomGenerationData;
@@ -123,7 +123,7 @@ public class Room : MonoBehaviour
     /// <summary>
     /// This method creates the openings in the room.
     /// </summary>
-    private void CreateOpenings()
+    protected override void CreateOpenings()
     {
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
@@ -139,7 +139,7 @@ public class Room : MonoBehaviour
     /// <summary>
     /// This method fills the room with objects.
     /// </summary>
-    public void FillRoomWithObjects()
+    public override void FillRoomWithObjects()
     {
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
@@ -149,7 +149,7 @@ public class Room : MonoBehaviour
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }
 
-    private IEnumerator GenerateDatabase()
+    protected override IEnumerator GenerateDatabase()
     {
         TryGetComponent<DatabaseGenerator>(out var databaseGenerator);
         yield return new WaitUntil(() => RoomState == RoomState.Filled);
@@ -161,7 +161,7 @@ public class Room : MonoBehaviour
     /// <summary>
     /// Init seeds for the room, openings, objects and database. Method is called in the constructor.
     /// </summary>
-    private void InitSeeds()
+    protected override void InitSeeds()
     {
         _roomSeed = _seedsProvider.GetSeed();
         _roomRandom = new Random(_roomSeed);
@@ -173,7 +173,7 @@ public class Room : MonoBehaviour
         _databaseRandom = new Random(_databaseSeed);
     }
 
-    public Room GetRoom => this; // return the Room instance
+    public override ClassicRoom GetRoom => this; // return the Room instance
 }
 
 // create enum for Room State

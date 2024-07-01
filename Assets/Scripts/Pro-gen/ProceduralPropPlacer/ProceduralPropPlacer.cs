@@ -8,7 +8,7 @@ using Random = System.Random;
 
 namespace Pro_gen
 {
-    public class ProceduralPropPlacer : MonoBehaviour
+    public class ProceduralPropPlacer : AbstractProceduralPropPlacer
     {
         private RoomsGenerationScriptableObject _roomsGenerationData;
         [SerializeField] private int numberOfProps = 4;
@@ -27,7 +27,7 @@ namespace Pro_gen
             Time.fixedDeltaTime = 0.001f;
         }
 
-        public void Init(RoomsGenerationScriptableObject roomGenerationData)
+        public override void Init(RoomsGenerationScriptableObject roomGenerationData)
         {
             _roomsGenerationData = roomGenerationData;
             numberOfProps = Mathf.RoundToInt((((float)_roomsGenerationData.ObjectNumberRatio / 100) *
@@ -36,9 +36,9 @@ namespace Pro_gen
             Debug.Log("Number of props: " + numberOfProps);
         }
 
-        public IEnumerator PlaceProps(Random random, int area)
+        public override IEnumerator PlaceProps(Random random, int area)
         {
-            if (!TryGetComponent<Room>(out Room room))
+            if (!TryGetComponent<ClassicRoom>(out ClassicRoom room))
             {
                 Debug.LogError("Room component not found.");
             }
@@ -64,7 +64,7 @@ namespace Pro_gen
             );
 
             _quadTree = new QuadTreeNode(roomBounds, 0);
-            _quadTree.determineMaxDepth(area);
+            _quadTree.DetermineMaxDepth(area);
             TimeTools timeTools = new TimeTools();
             timeTools.Start();
             for (int i = 0; i < numberOfProps; i++)
@@ -113,13 +113,13 @@ namespace Pro_gen
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
             room.RoomState = RoomState.Filled;
         }
-        private Vector3? PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform, PropsCategory category)
+        protected override Vector3? PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform, PropsCategory category)
         {
             Vector3 position = Vector3.zero;
             bool isPositionFound = false;
             Vector3 propExtents = bounds.extents;
             int attempts = 0;
-            List<QuadTreeNode> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes(category);
+            List<QuadTreeNodeBase> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes(category);
             
             if (biggestEmptyNodes.Count == 0) // if there are no empty nodes
             {
@@ -128,7 +128,7 @@ namespace Pro_gen
 
             int nodeIndex = random.Next(biggestEmptyNodes.Count);
 
-            QuadTreeNode selectedNode = biggestEmptyNodes[nodeIndex];
+            QuadTreeNodeBase selectedNode = biggestEmptyNodes[nodeIndex];
 
             while (!isPositionFound && attempts < _maxAttempts)
             {
@@ -159,7 +159,7 @@ namespace Pro_gen
             return position;
         }
 
-        private bool CanPropsBePlaced(Transform propTransform, Bounds bounds)
+        protected override bool CanPropsBePlaced(Transform propTransform, Bounds bounds)
         {
             // Calculate the new bounds based on the desired position
             bounds.center = propTransform.position;
@@ -180,7 +180,7 @@ namespace Pro_gen
             return true;
         }
         
-        private void RotateProp(Transform propTransform, PropsCategory category)
+        protected override void RotateProp(Transform propTransform, PropsCategory category)
         {
             // If the object is a fridge, a shelf or a sofa, we want to align it perpendicular with the closest wall
             // If it's a bed, we want to align it with the closest wall but parallel to it
@@ -210,7 +210,7 @@ namespace Pro_gen
 
 
         
-        private GameObject findClosestWall(Transform propTransform)
+        protected override GameObject findClosestWall(Transform propTransform)
         {
             // Iterate through all the walls and find the closest one
             GameObject closestWall = null;
@@ -231,7 +231,7 @@ namespace Pro_gen
         }
 
 
-        private Bounds GetGroundBounds()
+        protected override Bounds GetGroundBounds()
         {
             Bounds groundBounds = new Bounds(Vector3.zero, Vector3.zero);
             foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
@@ -245,17 +245,17 @@ namespace Pro_gen
             return groundBounds;
         }
 
-        private float NextFloat(Random random, float min, float max)
+        protected override float NextFloat(Random random, float min, float max)
         {
             return (float)(random.NextDouble() * (max - min) + min);
         }
 
-        public List<Bounds> GetAllEmptyQuadNodes()
+        public override List<Bounds> GetAllEmptyQuadNodes()
         {
             return _quadTree.GetAllEmptyNodes();
         }
 
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
             Gizmos.color = Color.cyan;
             Vector3 roomCenter = new Vector3(_roomsGenerationData.widthOffset * _roomsGenerationData.width / 2,

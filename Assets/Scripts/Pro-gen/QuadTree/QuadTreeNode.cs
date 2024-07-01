@@ -4,48 +4,16 @@ using UnityEngine;
 
 namespace Pro_gen
 {
-    public class QuadTreeNode 
+   public class QuadTreeNode : QuadTreeNodeBase
     {
-        public Bounds bounds;
-        private readonly List<Props> _objects;
-        private QuadTreeNode[] _children;
-        private readonly int _depth;
-
-        private bool isWallNode;
-        private int max_depth;
-
         public QuadTreeNode(Bounds bounds, int depth, int maxDepth = 5)
-        {
-            this.bounds = bounds;
-            _objects = new List<Props>();
-            _children = null;
-            _depth = depth;
-            max_depth = maxDepth;
-            
-            //Check if the node contains a wall
-            Collider[] intersectingColliders = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity);
-            foreach (var collider in intersectingColliders)
-            {
-                if (collider.CompareTag("Walls") || collider.CompareTag("Door"))
-                {
-                    isWallNode = true;
-                    break;
-                }
-            }
-        }
+            : base(bounds, depth, maxDepth) { }
 
-        public void determineMaxDepth(int area)
-        {
-            max_depth = 5 + (int) (4 * (Mathf.Sqrt(area) / 40f));
-        }
-        
-
-        public void Insert(Props prop)
+        public override void Insert(Props prop)
         {
             Collider[] intersectingColliders = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity);
-            
-            
-            //Check if any part of the prop is inside the bounds, collider have tag 'BoundingBox'
+
+            // Check if any part of the prop is inside the bounds, collider have tag 'BoundingBox'
             bool isInside = false;
             foreach (var collider in intersectingColliders)
             {
@@ -55,32 +23,28 @@ namespace Pro_gen
                     break;
                 }
             }
-            
+
             if (!isInside)
                 return;
-            
-            
-            
-            //Insert the prop in the current node
+
+            // Insert the prop in the current node
             _objects.Add(prop);
-            
-            //Try to subdivide the node if it's not at max depth
+
+            // Try to subdivide the node if it's not at max depth
             if (_depth < max_depth)
             {
                 Subdivide();
-                //Insert the prop in the children nodes
-                foreach(var child in _children)
+                // Insert the prop in the children nodes
+                foreach (var child in _children)
                 {
                     child.Insert(prop);
                 }
             }
         }
-        
-
-        public List<QuadTreeNode> FindBiggestEmptyNodes(PropsCategory category)
+        public override List<QuadTreeNodeBase> FindBiggestEmptyNodes(PropsCategory category)
         {
-            List<QuadTreeNode> result = new List<QuadTreeNode>();
-            List<QuadTreeNode> bestResult = new List<QuadTreeNode>();
+            List<QuadTreeNodeBase> result = new List<QuadTreeNodeBase>();
+            List<QuadTreeNodeBase> bestResult = new List<QuadTreeNodeBase>();
             int minDepth = int.MaxValue;
             FindBiggestEmptyNodesRecursive(this, ref minDepth, result, bestResult, category);
             if (bestResult.Count > 0)
@@ -90,7 +54,7 @@ namespace Pro_gen
             return result;
         }
 
-        private void FindBiggestEmptyNodesRecursive(QuadTreeNode node, ref int minDepth, List<QuadTreeNode> result, List<QuadTreeNode> bestResult, PropsCategory category)
+        private void FindBiggestEmptyNodesRecursive(QuadTreeNode node, ref int minDepth, List<QuadTreeNodeBase> result, List<QuadTreeNodeBase> bestResult, PropsCategory category)
         {
             if (node._objects.Count == 0)
             {
@@ -118,14 +82,14 @@ namespace Pro_gen
             {
                 foreach (var child in node._children)
                 {
-                    FindBiggestEmptyNodesRecursive(child, ref minDepth, result, bestResult, category);
+                    FindBiggestEmptyNodesRecursive((QuadTreeNode)child, ref minDepth, result, bestResult, category);
                 }
             }
         }
 
         private bool IsBestChoice(QuadTreeNode node, PropsCategory category)
         {
-            //If the object is a sofa, a fridge, a bed or a shelf, we want a wall node
+            // If the object is a sofa, a fridge, a bed or a shelf, we want a wall node
             if (category == PropsCategory.Sofa || category == PropsCategory.Fridge || category == PropsCategory.Bed)
             {
                 return node.isWallNode;
@@ -133,16 +97,13 @@ namespace Pro_gen
             return false;
         }
 
-        
-
-        private void Subdivide()
+        protected override void Subdivide()
         {
-            
             if (_children != null)
                 return;
-            _children = new QuadTreeNode[4];
+            _children = new QuadTreeNodeBase[4];
             Vector3 size = bounds.size / 2f;
-            //Conserve same height
+            // Conserve same height
             size.y = bounds.size.y;
             Vector3 center = bounds.center;
 
@@ -151,19 +112,19 @@ namespace Pro_gen
             _children[2] = new QuadTreeNode(new Bounds(center + new Vector3(-size.x / 2, 0, size.z / 2), size), _depth + 1, max_depth);
             _children[3] = new QuadTreeNode(new Bounds(center + new Vector3(size.x / 2, 0, size.z / 2), size), _depth + 1, max_depth);
         }
-        
-        public List<Bounds> GetAllEmptyNodes()
+
+        public override List<Bounds> GetAllEmptyNodes()
         {
             List<Bounds> result = new List<Bounds>();
             GetAllEmptyNodesRecursive(this, result);
-            
-            if (result.Count == 0) //if all nodes are occupied, return the biggest one i.e. the entire room
+
+            if (result.Count == 0) // if all nodes are occupied, return the biggest one i.e. the entire room
             {
                 result.Add(bounds);
             }
             return result;
         }
-        
+
         private void GetAllEmptyNodesRecursive(QuadTreeNode node, List<Bounds> result)
         {
             if (node._objects.Count == 0)
@@ -174,12 +135,12 @@ namespace Pro_gen
             {
                 foreach (var child in node._children)
                 {
-                    GetAllEmptyNodesRecursive(child, result);
+                    GetAllEmptyNodesRecursive((QuadTreeNode)child, result);
                 }
             }
         }
 
-        public void DrawGizmo()
+        public override void DrawGizmo()
         {
             Gizmos.color = _objects.Count == 0 ? Color.green : Color.magenta;
             Gizmos.DrawWireCube(bounds.center, bounds.size);
@@ -191,7 +152,5 @@ namespace Pro_gen
                 }
             }
         }
-
-
     }
 }

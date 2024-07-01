@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -308,34 +307,33 @@ namespace Pro_gen
         {
             foreach (var wallSection in _wallSections) // loop through the wall sections (front, back, left, right)
             {
-                int WindowNumberPerWall = 0;
+                int windowNumberPerWall = 0;
 
                 switch (wallSection.Key)
                 {
                     case RoomCellDirections.Left:
-                        WindowNumberPerWall =
+                        windowNumberPerWall =
                             _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.width / 2);
                         break;
                     case RoomCellDirections.Right:
-                        WindowNumberPerWall =
+                        windowNumberPerWall =
                             _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.width / 2);
                         break;
                     case RoomCellDirections.Front:
-                        WindowNumberPerWall =
+                        windowNumberPerWall =
                             _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.height / 2);
                         break;
                     case RoomCellDirections.Back:
-                        WindowNumberPerWall =
+                        windowNumberPerWall =
                             _roomsGenerationData.WindowPerWallNumber / 10 * (_roomsGenerationData.height / 2);
                         break;
                 }
 
                 int attempts = 0;
-                int windowNumber = 0; // initialize the window number
                 RoomCell previousCell = null; // initialize the previous cell
-                for (int j = 0; j < WindowNumberPerWall; j++)
+                for (int j = 0; j < windowNumberPerWall; j++)
                 {
-                    if (attempts > WindowNumberPerWall * 2)
+                    if (attempts > windowNumberPerWall * 2)
                         break;
                     int wallWindowIndex =
                         random.Next(0,
@@ -349,10 +347,8 @@ namespace Pro_gen
                         j--; // decrement the j
                         continue; // continue to the next iteration
                     }
-
-
+                    
                     cell.ReplaceWall(wallSection.Key, wallWindow);
-                    windowNumber++;
 
                     previousCell = cell; // set the previous cell to the current cell
                 }
