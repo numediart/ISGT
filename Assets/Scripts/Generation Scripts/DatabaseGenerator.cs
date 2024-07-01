@@ -28,7 +28,7 @@ public class DatabaseGenerator : MonoBehaviour
     private int _cameraIndex = 0;
     private List<Bounds> _emptyQuadNodesCenters;
     private TimeTools _timeTools = new TimeTools();
-    private Room _room;
+    private ClassicRoom _room;
     private Camera _camera;
 
     private int _timeBetween2Screenshots;
@@ -50,7 +50,7 @@ public class DatabaseGenerator : MonoBehaviour
     }
 
 
-    public void Init(Room room)
+    public void Init(ClassicRoom room)
     {
         _room = room;
         _random = new Random(_room.DatabaseSeed);
@@ -418,7 +418,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <param name="screenshotIndex"></param>
     private void StoreData(ScreenshotData screenshotData, int screenshotIndex, string filename)
     {
-        Room room = _room;
+        ClassicRoom room = _room;
         CombinedData combinedData = new CombinedData
         {
             SeedsData = new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed),

@@ -22,7 +22,7 @@ public class RoomsGenerator : MonoBehaviour
 
     #region Private Fields
 
-    private Room _room;
+    private ClassicRoom _room;
     [HideInInspector] [SerializeField] private int _roomSeed;
     [HideInInspector] [SerializeField] private int _openingSeed;
     [HideInInspector] [SerializeField] private int _objectSeed;
@@ -129,8 +129,8 @@ public class RoomsGenerator : MonoBehaviour
             RoomIndex= i + 1;
             InGameMenuController.RoomValueLabel.text =  RoomIndex + " / " + RoomsGenerationData.NumberOfEmptyRoomsOnScene;
             GameObject go = new GameObject("GeneratedRoom");
-            go.AddComponent<Room>();
-            go.TryGetComponent<Room>(out _room);
+            go.AddComponent<ClassicRoom>();
+            go.TryGetComponent<ClassicRoom>(out _room);
             if (_manualSeeds)
             {
                 _room.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);
@@ -202,7 +202,7 @@ public class RoomsGenerator : MonoBehaviour
     /// <param name="room"></param>
     /// <param name="nextCameraPosition"></param>
     /// <returns></returns>
-    public static bool IsCameraInsideAWall(Room room, Vector3 nextCameraPosition)
+    public static bool IsCameraInsideAWall(ClassicRoom room, Vector3 nextCameraPosition)
     {
         List<GameObject> walls = room.RoomGrid.GetAllWalls();
 
