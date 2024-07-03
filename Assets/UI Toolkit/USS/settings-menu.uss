@@ -80,10 +80,7 @@
     align-items: stretch;
     visibility: visible;
     overflow: visible;
-}
-
-.unity-text-input {
-    -unity-text-align: upper-center;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .slider {
@@ -100,6 +97,7 @@
     width: 98%;
     height: 50px;
     background-image: none;
+    padding-left: 146px;
 }
 
 .slider #unity-dragger {
@@ -130,19 +128,19 @@
     overflow: hidden;
     margin-top: 14px;
     margin-bottom: 14px;
+    -unity-background-image-tint-color: rgb(234, 224, 213);
 }
 
 .slider #unity-tracker {
-    background-color: rgb(255, 242, 215);
+    background-color: rgb(234, 224, 213);
     flex-grow: 1;
     top: 0;
     position: relative;
     margin-top: 0;
-    margin-right: 0;
+    margin-right: 7px;
     margin-bottom: 0;
     margin-left: 0;
     padding-top: 0;
-    padding-right: 0;
     padding-bottom: 0;
     padding-left: 0;
     border-top-width: 0;
@@ -153,4 +151,70 @@
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
+}
+
+.slider-small {
+    padding-left: -3px;
+}
+
+.unity-text-field .unity-text-element {
+    -unity-text-align: upper-center;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.unity-text-field__input {
+    background-color: rgb(234, 224, 213);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-left-color: rgb(163, 125, 82);
+    border-right-color: rgb(163, 125, 82);
+    border-top-color: rgb(163, 125, 82);
+    border-bottom-color: rgb(163, 125, 82);
+}
+
+.unity-scroller__low-button {
+    display: none;
+    visibility: visible;
+}
+
+.unity-scroller__high-button {
+    display: none;
+    visibility: visible;
+}
+
+.unity-scroller #unity-dragger {
+    -unity-background-image-tint-color: rgb(234, 224, 213);
+    background-color: rgb(234, 224, 213);
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+}
+
+.unity-scroller #unity-tracker {
+    background-color: rgb(234, 224, 213);
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    display: none;
+}
+
+.unity-scroller {
+    margin-top: -20px;
+    margin-bottom: -20px;
+}
+
+.slider .unity-label {
+    padding-top: 13px;
+    padding-right: 0;
+    margin-top: 0;
+    margin-right: -30px;
+    margin-bottom: 0;
 }
