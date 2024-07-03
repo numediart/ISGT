@@ -6,34 +6,33 @@ using UnityEngine.UIElements;
 
 public class CustomSlider : MonoBehaviour
 {
-    private VisualElement m_Root;
+    private VisualElement root;
     
-    private List<VisualElement> m_Sliders = new List<VisualElement>();
+    private List<VisualElement> sliders = new List<VisualElement>();
     
     // Start is called before the first frame update
   
 
     void AddElements()
     {
-        foreach (var slider in m_Sliders)
+        foreach (var slider in sliders)
         {
             var dragger = slider.Q<VisualElement>("unity-dragger");
-            var m_Bar = new VisualElement();
-            dragger.Add(m_Bar);
-            m_Bar.name = "Bar";
-            m_Bar.AddToClassList("bar");
+            var bar = new VisualElement();
+            dragger.Add(bar);
+            bar.name = "Bar";
+            bar.AddToClassList("bar");
         }
     }
-
+    
     // Update is called once per frame
     void Update()
     {
-        if(m_Sliders.Count == 0)
+        if(sliders.Count == 0)
         {
-            m_Root = GetComponent<UIDocument>().rootVisualElement;
+            root = GetComponent<UIDocument>().rootVisualElement;
             // Get all sliders using their class selector
-            m_Sliders = new List<VisualElement>(m_Root.Query<VisualElement>().Class("slider").ToList());
-            Debug.Log(m_Sliders.Count);
+            sliders = new List<VisualElement>(root.Query<VisualElement>().Class("slider").ToList());
             AddElements();
         }
     }

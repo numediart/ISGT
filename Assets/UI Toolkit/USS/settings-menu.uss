@@ -72,8 +72,18 @@
     -unity-font-style: normal;
     text-overflow: ellipsis;
     -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
-    width: auto;
+    width: 48px;
     display: flex;
+    align-self: center;
+    justify-content: flex-start;
+    height: 40px;
+    align-items: stretch;
+    visibility: visible;
+    overflow: visible;
+}
+
+.unity-text-input {
+    -unity-text-align: upper-center;
 }
 
 .slider {
@@ -88,36 +98,42 @@
     -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
     position: relative;
     width: 98%;
-    height: 80px;
-    background-image: url("project://database/Assets/Sprites/Slider.png?fileID=21300000&guid=b3309b0ff0d9f7d4a83e492b6208fe65&type=3#Slider");
+    height: 50px;
+    background-image: none;
 }
 
 .slider #unity-dragger {
-    background-color: rgb(242, 255, 0);
+    background-color: rgb(49, 53, 57);
     border-top-width: 0;
     border-right-width: 0;
     border-bottom-width: 0;
     border-left-width: 0;
-    width: 20px;
+    width: 23px;
     height: 100%;
     top: 0;
     margin-top: 0;
     margin-right: 0;
     margin-bottom: 0;
     margin-left: 0;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    align-self: auto;
+    justify-content: space-between;
+    align-items: auto;
+    background-image: url("project://database/Assets/Sprites/Handle.png?fileID=21300000&guid=6cda78f106530f548ad8eb521bba7248&type=3#Handle");
 }
 
 .slider #unity-drag-container {
-    background-color: rgb(0, 0, 0);
-    margin-top: 25px;
-    margin-bottom: 25px;
-    margin-right: 40px;
-    margin-left: 40px;
+    background-color: rgba(0, 0, 0, 0);
     overflow: hidden;
+    margin-top: 14px;
+    margin-bottom: 14px;
 }
 
 .slider #unity-tracker {
-    background-color: rgb(19, 19, 19);
+    background-color: rgb(255, 242, 215);
     flex-grow: 1;
     top: 0;
     position: relative;
@@ -133,11 +149,8 @@
     border-right-width: 0;
     border-bottom-width: 0;
     border-left-width: 0;
-}
-
-.bar {
-    width: 2000px;
-    height: 100%;
-    background-color: rgb(255, 99, 0);
-    align-self: flex-end;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
