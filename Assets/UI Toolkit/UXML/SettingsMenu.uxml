@@ -38,7 +38,7 @@
                     <ui:SliderInt high-value="100000" name="RaycastAmountSlider" show-input-field="true" direction="Horizontal" low-value="100" label="Raycasts per opening" picking-mode="Ignore" class="slider" />
                 </ui:Foldout>
                 <ui:Foldout text="Saved Presets" name="SavedPreset" value="true" class="foldout-container">
-                    <ui:DropdownField label="Preset" name="PresetDropdown" />
+                    <ui:DropdownField label="Preset" name="PresetDropdown" style="border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px;" />
                 </ui:Foldout>
                 <ui:Instance template="FileDialogExplorer" name="FileDialogExplorer" style="margin-top: 4%; margin-right: 1%; margin-bottom: 0; margin-left: 1%; align-items: auto; justify-content: center; align-self: auto;" />
             </ui:ScrollView>
