@@ -13,7 +13,7 @@ namespace Pro_gen
         protected bool isWallNode;
         protected int max_depth;
 
-        public QuadTreeNodeBase(Bounds bounds, int depth, int maxDepth = 5)
+        protected QuadTreeNodeBase(Bounds bounds, int depth, int maxDepth = 5)
         {
             this.Bounds = bounds;
             _objects = new List<Props>();

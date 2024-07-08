@@ -63,8 +63,7 @@ public class RoomsGenerator : MonoBehaviour
 
             // Convert the vertical FOV back to degrees
             float verticalFOV = verticalFOVRad * Mathf.Rad2Deg;
-
-            Debug.Log("Vertical FOV : " + verticalFOV);
+            
             // Assign the vertical FOV to the camera
             cam.fieldOfView = verticalFOV;
             cam.iso = MainMenuController.PresetData.ISO;
@@ -87,7 +86,7 @@ public class RoomsGenerator : MonoBehaviour
     {
         if (_timeTools != null && _room != null)
         {
-            // actualise l'éta toute les 2 sec pour ne pas surcharger le calcul
+            // Update state every second to avoid performance issues
             if (_timeTools2.GetElapsedTimeInSeconds() >= 0.99f)
             {
                 InGameMenuController.ElapsedTimeValueLabel.text = _timeTools.GetStringFormattedElapsedTime();
@@ -131,7 +130,6 @@ public class RoomsGenerator : MonoBehaviour
     private IEnumerator GenerateRooms()
     {
         ScreenshotsIndex = 0;
-        Debug.Log("Generating Rooms");
         _timeTools.Start();
         for (int i = 0; i < RoomsGenerationData.NumberOfRoomsToGenerate; i++)
         {

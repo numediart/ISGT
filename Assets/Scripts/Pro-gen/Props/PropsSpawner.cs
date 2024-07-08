@@ -28,6 +28,7 @@ namespace Pro_gen
             }
         }
         
+        // Spawn a TV on the spawn point which is on top of TV stand
         private void SpawnTV()
         {
             int randomIndex = _random.Next(_SpawnablePrefabs.Count + 1);
@@ -39,12 +40,11 @@ namespace Pro_gen
             
             GameObject TV = Instantiate(_SpawnablePrefabs[randomIndex], _SpawnPoints[0].transform.position, Quaternion.identity);
             
-            //Make the TV go up by half of its height
+            //Make the TV go up by half of its height, so that it is on top of the TV stand
             TV.transform.position += new Vector3(0, TV.transform.localScale.y / 2, 0);
             
             //Make TV rotation equal to the forward of this, and add a random rotation between -6 and 6 degrees
             TV.transform.rotation = transform.rotation;
-            
             
             float randomRotation = _random.Next(-60, 60);
             TV.transform.Rotate(0, randomRotation / 10, 0);
@@ -53,6 +53,7 @@ namespace Pro_gen
             TV.transform.parent = _SpawnPoints[0].transform;
         }
         
+        // Spawn chairs on the spawn points which are around the table, and make them look at the table
         private void SpawnChairs()
         {
             foreach (var spawnPoint in _SpawnPoints)
@@ -86,6 +87,7 @@ namespace Pro_gen
             }
         }
         
+        // Spawn an armchair on the spawn point which is in front of the desk and make it look at it
         private void SpawnArmchairs()
         {
             int randomIndex = _random.Next(_SpawnablePrefabs.Count + 1);
@@ -108,10 +110,7 @@ namespace Pro_gen
             
             //Make the chair a child of the spawn point
             chair.transform.parent = _SpawnPoints[0].transform;
-            
-            
         }
-
     }
 
     enum TypeOfProp

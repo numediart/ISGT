@@ -2,6 +2,10 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+
+/// <summary>
+/// // Convert Quaternions to JSON strings and vice versa
+/// </summary>
 public class QuaternionConverter : JsonConverter
 {
     public override bool CanConvert(System.Type objectType)

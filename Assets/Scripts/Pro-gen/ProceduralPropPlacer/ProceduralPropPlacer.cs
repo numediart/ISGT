@@ -30,7 +30,6 @@ namespace Pro_gen
             numberOfProps = Mathf.RoundToInt((((float)_roomsGenerationData.ObjectNumberRatio / 100) *
                                              (_roomsGenerationData.width * _roomsGenerationData.height* _roomsGenerationData.heightOffset))/2);
             _groundBounds = GetGroundBounds();
-            Debug.Log("Number of props: " + numberOfProps);
         }
 
         /// <summary>
