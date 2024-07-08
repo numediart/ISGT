@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Pro_gen;
+using Pro_gen.RoomCell;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "ScriptableObjects/RoomsGenerationScriptableObject", order = 1)]
@@ -42,13 +43,5 @@ public class RoomsGenerationScriptableObject : ScriptableObject
     public int WindowPerWallNumber;
     public int DoorPerWallNumber;
     
-    public int NumberOfEmptyRoomsOnScene; 
-    public float MinimumDistanceBetweenBorders;
-    public int WindowPerWallMinimumNumber;
-    public int WindowPerWallMaximumNumber;
-    public int DoorPerRoomMinimumNumber;
-    public int DoorPerRoomMaximumNumber;
-    public int DoorPerWallMaximumNumber;
-    public int WindowPerRoomMinimumNumber;
-    public int WindowPerRoomMaximumNumber;
+    public int NumberOfRoomsToGenerate; 
 }

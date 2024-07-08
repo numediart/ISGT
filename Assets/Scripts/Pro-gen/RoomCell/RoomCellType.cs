@@ -1,4 +1,4 @@
-namespace Pro_gen
+namespace Pro_gen.RoomCell
 {
     /// <summary>
     /// Enum representing the different types of cells that can be found in a room.

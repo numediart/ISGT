@@ -1,32 +1,29 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using Pro_gen.QuadTree;
 using UnityEngine;
 using Utils;
-using QuadTreeNode = Pro_gen.QuadTreeNode;
 using Random = System.Random;
 
 namespace Pro_gen
 {
     public class ProceduralPropPlacer : AbstractProceduralPropPlacer
     {
-        private RoomsGenerationScriptableObject _roomsGenerationData;
-        [SerializeField] private int numberOfProps = 4;
-        [SerializeField] private List<Props> _selectedProps;
-        [SerializeField] private List<Bounds> _selectedPropsBounds;
-        private QuadTreeNode _quadTree;
-        private readonly int _maxAttempts = 25;
-        private List<Vector3> _propsPositions;
-        private Bounds _groundBounds;
-
-        private void Awake()
+  
+        
+        private new void Awake()
         {
             _selectedProps = new List<Props>();
             _selectedPropsBounds = new List<Bounds>();
             _propsPositions = new List<Vector3>();
             Time.fixedDeltaTime = 0.001f;
         }
+        
 
+        /// <summary>
+        ///  Initialize the Procedural Prop Placer with the  room generation data and calculate the number of props to place
+        /// </summary>
+        /// <param name="roomGenerationData"></param>
         public override void Init(RoomsGenerationScriptableObject roomGenerationData)
         {
             _roomsGenerationData = roomGenerationData;
@@ -36,9 +33,15 @@ namespace Pro_gen
             Debug.Log("Number of props: " + numberOfProps);
         }
 
+        /// <summary>
+        ///  Place the props in the room using a quad tree structure to optimize the placement
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="area"></param>
+        /// <returns></returns>
         public override IEnumerator PlaceProps(Random random, int area)
         {
-            if (!TryGetComponent<ClassicRoom>(out ClassicRoom room))
+            if (!TryGetComponent(out ClassicRoom room))
             {
                 Debug.LogError("Room component not found.");
             }
@@ -75,7 +78,7 @@ namespace Pro_gen
                     Quaternion.Euler(0, NextFloat(random, 0f, 360f), 0), transform);
 
                 // If object has a spawner script, use it
-                if (propInstance.TryGetComponent<PropsSpawner>(out PropsSpawner propSpawner))
+                if (propInstance.TryGetComponent(out PropsSpawner propSpawner))
                 {
                     propSpawner.Spawn(random);
                 }
@@ -113,6 +116,16 @@ namespace Pro_gen
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
             room.RoomState = RoomState.Filled;
         }
+        
+        /// <summary>
+        /// Check if the prop can be placed in the room and return its position if it can
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="roomBounds"></param>
+        /// <param name="bounds"></param>
+        /// <param name="propTransform"></param>
+        /// <param name="category"></param>
+        /// <returns></returns>
         protected override Vector3? PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform, PropsCategory category)
         {
             Vector3 position = Vector3.zero;
@@ -133,11 +146,11 @@ namespace Pro_gen
             while (!isPositionFound && attempts < _maxAttempts)
             {
                 position = new Vector3(
-                    NextFloat(random, selectedNode.bounds.min.x + propExtents.x,
-                        selectedNode.bounds.max.x - propExtents.x),
+                    NextFloat(random, selectedNode.Bounds.min.x + propExtents.x,
+                        selectedNode.Bounds.max.x - propExtents.x),
                     _groundBounds.max.y - bounds.min.y, // Adjust the height to align with the ground,
-                    NextFloat(random, selectedNode.bounds.min.z + propExtents.z,
-                        selectedNode.bounds.max.z - propExtents.z)
+                    NextFloat(random, selectedNode.Bounds.min.z + propExtents.z,
+                        selectedNode.Bounds.max.z - propExtents.z)
                 );
                 propTransform.position = position;
                 RotateProp(propTransform, category);
@@ -159,6 +172,12 @@ namespace Pro_gen
             return position;
         }
 
+        /// <summary>
+        /// Check if the prop can be placed in the room without intersecting with walls or other props
+        /// </summary>
+        /// <param name="propTransform"></param>
+        /// <param name="bounds"></param>
+        /// <returns></returns>
         protected override bool CanPropsBePlaced(Transform propTransform, Bounds bounds)
         {
             // Calculate the new bounds based on the desired position
@@ -180,6 +199,11 @@ namespace Pro_gen
             return true;
         }
         
+        /// <summary>
+        /// Rotate the prop based on its category and the closest wall
+        /// </summary>
+        /// <param name="propTransform"></param>
+        /// <param name="category"></param>
         protected override void RotateProp(Transform propTransform, PropsCategory category)
         {
             // If the object is a fridge, a shelf or a sofa, we want to align it perpendicular with the closest wall
@@ -208,8 +232,11 @@ namespace Pro_gen
             }
         }
 
-
-        
+        /// <summary>
+        /// Find the closest wall to the prop and return it
+        /// </summary>
+        /// <param name="propTransform"></param>
+        /// <returns></returns>
         protected override GameObject findClosestWall(Transform propTransform)
         {
             // Iterate through all the walls and find the closest one
@@ -229,16 +256,19 @@ namespace Pro_gen
             return minDistance < 3f ? closestWall : null;
             
         }
-
-
+        
+        /// <summary>
+        ///  Get the bounds of the ground in the room
+        /// </summary>
+        /// <returns></returns>
         protected override Bounds GetGroundBounds()
         {
             Bounds groundBounds = new Bounds(Vector3.zero, Vector3.zero);
-            foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+            foreach (Renderer childRenderer in GetComponentsInChildren<Renderer>())
             {
-                if (renderer.CompareTag("Ground"))
+                if (childRenderer.CompareTag("Ground"))
                 {
-                    groundBounds.Encapsulate(renderer.bounds);
+                    groundBounds.Encapsulate(childRenderer.bounds);
                 }
             }
 
@@ -250,8 +280,13 @@ namespace Pro_gen
             return (float)(random.NextDouble() * (max - min) + min);
         }
 
+        /// <summary>
+        ///  Get all empty quad nodes in the quad tree
+        /// </summary>
+        /// <returns></returns>
         public override List<Bounds> GetAllEmptyQuadNodes()
         {
+            Debug.Log("Getting all empty quad nodes");
             return _quadTree.GetAllEmptyNodes();
         }
 

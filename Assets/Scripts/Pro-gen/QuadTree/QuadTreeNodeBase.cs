@@ -6,7 +6,7 @@ namespace Pro_gen
 {
     public abstract class QuadTreeNodeBase
     {
-        public Bounds bounds;
+        public Bounds Bounds;
         protected List<Props> _objects;
         protected QuadTreeNodeBase[] _children;
         protected int _depth;
@@ -15,7 +15,7 @@ namespace Pro_gen
 
         public QuadTreeNodeBase(Bounds bounds, int depth, int maxDepth = 5)
         {
-            this.bounds = bounds;
+            this.Bounds = bounds;
             _objects = new List<Props>();
             _children = null;
             _depth = depth;

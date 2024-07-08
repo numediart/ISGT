@@ -1,5 +1,8 @@
 namespace Data_Classes
 {
+    /// <summary>
+    /// Store camera data in JSON File
+    /// </summary>
     public class CameraData
     {
         public float FieldOfView;

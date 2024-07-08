@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine.SceneManagement;
 using Utils;
 
@@ -12,12 +11,13 @@ public class RoomsGenerator : MonoBehaviour
 
     public RoomsGenerationScriptableObject RoomsGenerationData;
     public DatabaseGenerationScriptableObject DatabaseGenerationData;
-    public bool _manualSeeds = false;
+    public bool ManualSeeds = false;
     public static int RoomIndex = 0;
-    public static int NumberOfRoomToGenerate = 0; 
+    public static int NumberOfRoomToGenerate = 0;
     public static int ScreenshotsIndex = 0;
 
     public static float TimeBetween2Screenshots = 0;
+
     #endregion
 
     #region Private Fields
@@ -29,6 +29,7 @@ public class RoomsGenerator : MonoBehaviour
     [HideInInspector] [SerializeField] private int _databaseSeed;
     TimeTools _timeTools = new TimeTools();
     TimeTools _timeTools2 = new TimeTools();
+
     #endregion
 
     #region Methods Called By Buttons
@@ -42,16 +43,14 @@ public class RoomsGenerator : MonoBehaviour
             RoomsGenerationData.ObjectNumberRatio = MainMenuController.PresetData.PropsRatio;
             RoomsGenerationData.WindowPerWallNumber = MainMenuController.PresetData.WindowRatio;
             RoomsGenerationData.DoorPerWallNumber = MainMenuController.PresetData.DoorRatio;
-            RoomsGenerationData.NumberOfEmptyRoomsOnScene = MainMenuController.PresetData.NumberOfRoomsToGenerate;
+            RoomsGenerationData.NumberOfRoomsToGenerate = MainMenuController.PresetData.NumberOfRoomsToGenerate;
             DatabaseGenerationData.ScreenshotsNumberPerRoom = MainMenuController.PresetData.ScreenshotsCountPerRoom;
             NumberOfRoomToGenerate = MainMenuController.PresetData.NumberOfRoomsToGenerate;
-            
             DatabaseGenerationData.MaximumCameraXRotation = MainMenuController.PresetData.MaxRotation.x;
             DatabaseGenerationData.MaximumCameraYRotation = MainMenuController.PresetData.MaxRotation.y;
             DatabaseGenerationData.MaximumCameraZRotation = MainMenuController.PresetData.MaxRotation.z;
-            
             Camera cam = Camera.main;
-            
+
             // Calculate the aspect ratio of the camera
             float aspectRatio = cam.aspect;
 
@@ -59,8 +58,9 @@ public class RoomsGenerator : MonoBehaviour
             float diagonalFOVRad = MainMenuController.PresetData.FieldOfView * Mathf.Deg2Rad;
 
             // Calculate the vertical FOV
-            float verticalFOVRad = 2f * Mathf.Atan(Mathf.Tan(diagonalFOVRad / 2f) / Mathf.Sqrt(1f + aspectRatio * aspectRatio));
-        
+            float verticalFOVRad =
+                2f * Mathf.Atan(Mathf.Tan(diagonalFOVRad / 2f) / Mathf.Sqrt(1f + aspectRatio * aspectRatio));
+
             // Convert the vertical FOV back to degrees
             float verticalFOV = verticalFOVRad * Mathf.Rad2Deg;
 
@@ -70,11 +70,11 @@ public class RoomsGenerator : MonoBehaviour
             cam.iso = MainMenuController.PresetData.ISO;
             cam.aperture = MainMenuController.PresetData.Aperture;
             cam.focusDistance = MainMenuController.PresetData.FocusDistance;
-            
+
             Opening.NumberOfPoints = MainMenuController.PresetData.RaycastAmount;
         }
 
-        NumberOfRoomToGenerate = RoomsGenerationData.NumberOfEmptyRoomsOnScene;
+        NumberOfRoomToGenerate = RoomsGenerationData.NumberOfRoomsToGenerate;
     }
 
     private void Start()
@@ -87,22 +87,31 @@ public class RoomsGenerator : MonoBehaviour
     {
         if (_timeTools != null && _room != null)
         {
-           // actualise l'éta toute les 2 sec pour ne pas surcharger le calcul
-            if (_timeTools2.GetElapsedTimeInSeconds() >=0.99f)
+            // actualise l'éta toute les 2 sec pour ne pas surcharger le calcul
+            if (_timeTools2.GetElapsedTimeInSeconds() >= 0.99f)
             {
                 InGameMenuController.ElapsedTimeValueLabel.text = _timeTools.GetStringFormattedElapsedTime();
                 InGameMenuController.ETAValueLabel.text = FormattedRemainingTime();
                 _timeTools2.Start();
             }
         }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene(0);
         }
     }
+
+
+    /// <summary>
+    ///  This method formats the remaining time to generate the rooms. It returns a string with the remaining time in hours, minutes and seconds.
+    /// </summary>
+    /// <returns></returns>
     private string FormattedRemainingTime()
     {
-        float remainingTime =TimeBetween2Screenshots * (DatabaseGenerationData.ScreenshotsNumberPerRoom * NumberOfRoomToGenerate - ScreenshotsIndex);
+        float remainingTime = TimeBetween2Screenshots *
+                              (DatabaseGenerationData.ScreenshotsNumberPerRoom * NumberOfRoomToGenerate -
+                               ScreenshotsIndex);
         int hours = (int)remainingTime / 3600;
         int minutes = (int)(remainingTime % 3600) / 60;
         int seconds = (int)(remainingTime % 3600) % 60;
@@ -110,7 +119,7 @@ public class RoomsGenerator : MonoBehaviour
             return hours + "h " + minutes + "m " + seconds + "s";
         if (minutes > 0)
             return minutes + "m " + seconds + "s";
-        
+
         return seconds + "s";
     }
 
@@ -124,19 +133,18 @@ public class RoomsGenerator : MonoBehaviour
         ScreenshotsIndex = 0;
         Debug.Log("Generating Rooms");
         _timeTools.Start();
-        for (int i = 0; i < RoomsGenerationData.NumberOfEmptyRoomsOnScene; i++)
+        for (int i = 0; i < RoomsGenerationData.NumberOfRoomsToGenerate; i++)
         {
-            RoomIndex= i + 1;
-            InGameMenuController.RoomValueLabel.text =  RoomIndex + " / " + RoomsGenerationData.NumberOfEmptyRoomsOnScene;
+            RoomIndex = i + 1;
+            InGameMenuController.RoomValueLabel.text = RoomIndex + " / " + RoomsGenerationData.NumberOfRoomsToGenerate;
             GameObject go = new GameObject("GeneratedRoom");
-            go.AddComponent<ClassicRoom>();
-            go.TryGetComponent<ClassicRoom>(out _room);
-            if (_manualSeeds)
+            _room = go.AddComponent<ClassicRoom>();
+            if (ManualSeeds)
             {
                 _room.SetSeeds(_roomSeed, _openingSeed, _objectSeed, _databaseSeed);
             }
 
-            _room.ManualSeeds = _manualSeeds;
+            _room.ManualSeeds = ManualSeeds;
             _room.InitRoom(RoomsGenerationData, DatabaseGenerationData);
 
             yield return new WaitUntil(() =>
@@ -155,17 +163,6 @@ public class RoomsGenerator : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    /// <summary>
-    /// Destroy all the rooms created in the unity scene.
-    /// </summary>
-    public void ClearScene()
-    {
-        if (_room != null)
-        {
-            DestroyImmediate(_room.gameObject);
-        }
-    }
-
     #endregion
 
 
@@ -176,82 +173,5 @@ public class RoomsGenerator : MonoBehaviour
         return Mathf.Max(colliderSize.x, colliderSize.z);
     }
 
-    public float GetWallWidth(GameObject wall)
-    {
-        var localScale = wall.transform.localScale;
-        return Mathf.Max(localScale.x, localScale.z);
-    }
-
-    public static List<GameObject> GetRoomCategoryObjects(GameObject room, RoomCategory category)
-    {
-        List<GameObject> categoryObjects = new List<GameObject>();
-        foreach (Transform child in room.transform)
-        {
-            if (child.CompareTag(category.ToString()))
-            {
-                categoryObjects.Add(child.gameObject);
-            }
-        }
-
-        return categoryObjects;
-    }
-
-    /// <summary>
-    /// Verifies if the camera position is located inside one of the walls of a given room.
-    /// </summary>
-    /// <param name="room"></param>
-    /// <param name="nextCameraPosition"></param>
-    /// <returns></returns>
-    public static bool IsCameraInsideAWall(ClassicRoom room, Vector3 nextCameraPosition)
-    {
-        List<GameObject> walls = room.RoomGrid.GetAllWalls();
-
-        if (walls.Count == 0) return false;
-
-        Vector3 genericWallDimensions = (walls[0].transform.childCount == 0)
-            ? walls[0].transform.localScale
-            : walls[0].transform.GetChild(0).localScale;
-
-        float wallThickness = Mathf.Min(genericWallDimensions.x, genericWallDimensions.z);
-
-        foreach (GameObject wall in walls)
-        {
-            GameObject genericWall = (wall.transform.childCount == 0) ? wall : wall.transform.GetChild(0).gameObject;
-            Vector3 wallToCamera = nextCameraPosition - genericWall.transform.position;
-            float forwardDistanceToWall = Vector3.Project(wallToCamera, -genericWall.transform.forward).magnitude;
-            float sideDistanceToWall = Vector3.Project(wallToCamera, genericWall.transform.right).magnitude;
-
-            float wallWidth = Mathf.Max(genericWallDimensions.x, genericWallDimensions.z);
-
-            if (forwardDistanceToWall <= wallThickness / 2f && sideDistanceToWall < wallWidth / 2f)
-                return true;
-        }
-
-        return false;
-    }
-
     #endregion
-
-    public static GameObject GetRoomCategory(GameObject room, RoomCategory wantedCategory)
-    {
-        for (int i = 0; i < room.transform.childCount; i++)
-        {
-            RoomCategory roomCategory;
-
-            if (Enum.TryParse(room.transform.GetChild(i).gameObject.name, out roomCategory) &&
-                roomCategory == wantedCategory)
-                return room.transform.GetChild(i).gameObject;
-        }
-
-        return null;
-    }
-}
-
-
-public enum RoomCategory
-{
-    Grounds,
-    Ceiling,
-    Walls,
-    Objects
 }

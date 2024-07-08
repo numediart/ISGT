@@ -52,11 +52,12 @@ public class DatabaseGenerator : MonoBehaviour
 
     public void Init(ClassicRoom room)
     {
+        Debug.Log("Database Generation Init");
         _room = room;
         _random = new Random(_room.DatabaseSeed);
         this._emptyQuadNodesCenters = room.EmptyQuadNodesCenters;
 
-
+        Debug.Log("Database seed: " + room.DatabaseSeed);
         string path = (MainMenuController.PresetData == null
             ? Application.dataPath
             : MainMenuController.PresetData.ExportPath == null
@@ -71,7 +72,6 @@ public class DatabaseGenerator : MonoBehaviour
 
         _openingsDataFolderPath = path + "OpeningsData";
         _timeTools = new TimeTools();
-
         DatabaseGenerationData = room.DatabaseGenerationData;
     }
 
@@ -81,6 +81,7 @@ public class DatabaseGenerator : MonoBehaviour
     /// <returns></returns>
     public IEnumerator DatabaseGeneration()
     {
+        Debug.Log("Database Generation");
         _random = new Random(_room.DatabaseSeed);
         InGameMenuController.ProgressBar.value = 0;
         InGameMenuController.ProgressLabel.text = "Room_" + _room.Id;

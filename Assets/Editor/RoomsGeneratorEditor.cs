@@ -14,7 +14,7 @@ public class RoomsGeneratorEditor : Editor
         
         RoomsGenerator script = (RoomsGenerator)target;
         
-        if (script._manualSeeds)
+        if (script.ManualSeeds)
         {
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_roomSeed"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_openingSeed"));

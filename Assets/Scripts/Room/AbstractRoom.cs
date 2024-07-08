@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Pro_gen;
+using Pro_gen.RoomGrid;
 using UnityEngine;
 using Utils;
 using Random = System.Random;
@@ -11,8 +12,7 @@ using Random = System.Random;
 /// </summary>
 public abstract class AbstractRoom<T> : MonoBehaviour
 {
-    protected RoomsGenerationScriptableObject roomGenerationData;
-    protected DatabaseGenerationScriptableObject databaseGenerationData;
+    protected RoomsGenerationScriptableObject _roomGenerationData;
     protected GameObject _roomObject;
     protected Vector3 _position;
     protected Quaternion _rotation;
@@ -35,6 +35,7 @@ public abstract class AbstractRoom<T> : MonoBehaviour
 
     protected int _roomIdx;
 
+    public DatabaseGenerationScriptableObject DatabaseGenerationData;
     public bool ManualSeeds
     {
         set => _manualSeeds = value;
@@ -65,7 +66,6 @@ public abstract class AbstractRoom<T> : MonoBehaviour
         _roomObject = gameObject;
         _roomObject.AddComponent<RoomGrid>();
         _roomObject.AddComponent<ProceduralPropPlacer>();
-        _roomObject.AddComponent<DatabaseGenerator>();
         RoomState = RoomState.Empty;
     }
 

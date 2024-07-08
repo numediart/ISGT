@@ -1,63 +1,17 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Pro_gen;
+using Pro_gen.RoomGrid;
 using UnityEngine;
 using Utils;
 using Random = System.Random;
 
 /// <summary>
-/// Class that represents a room in the VISG project.
+/// Class that represents a classic room in the ISGT project.
 /// </summary>
 public class ClassicRoom : AbstractRoom<ClassicRoom>
 {
-    private RoomsGenerationScriptableObject roomGenerationData;
-    public DatabaseGenerationScriptableObject DatabaseGenerationData;
-    private GameObject _roomObject; //
-    private Vector3 _position;
-    private Quaternion _rotation;
-    private bool _manualSeeds;
-    private Random _roomRandom;
-    private Random _openingRandom;
-    private Random _objectRandom;
-    private Random _databaseRandom;
-
-    [SerializeField] private string _id; //unique id of the room (use for screenshot data)
-    [SerializeField] private int _roomSeed;
-    [SerializeField] private int _openingSeed;
-    [SerializeField] private int _objectSeed;
-    [SerializeField] private int _databaseSeed;
-
-    private RoomGrid _roomGrid;
-    private ProceduralPropPlacer _proceduralPropPlacer;
-
-    private SeedsProvider _seedsProvider;
-
-    private int _roomIdx;
-
-    public bool ManualSeeds
-    {
-        set => _manualSeeds = value;
-    }
-
-    public int RoomSeed => _roomSeed;
-    public int OpeningSeed => _openingSeed;
-    public int ObjectSeed => _objectSeed;
-    public int DatabaseSeed => _databaseSeed;
-    
-    public int DeltaTimeRoomGeneration { get; private set; }
-
-    public RoomState RoomState { get; set; }
-    public Random DatabaseRandom => _databaseRandom;
-    public string Id => _id; //unique id of the room (use for screenshot data)
-    public GameObject RoomObject => _roomObject;
-
-    public List<Bounds> EmptyQuadNodesCenters { get; set; }
-
-    public RoomGrid RoomGrid => _roomGrid;
-
-
-    private void Awake()
+    private new void Awake()
     {
         _objectRandom = new Random(_objectSeed);
         _databaseRandom = new Random(_databaseSeed);
@@ -74,10 +28,11 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
     /// init method of the Room class.
     /// </summary>
     /// <param name="roomGenerationData"></param>
+    /// <param name="databaseGenerationData"></param>
     public override void InitRoom(RoomsGenerationScriptableObject roomGenerationData,
         DatabaseGenerationScriptableObject databaseGenerationData)
     {
-        this.roomGenerationData = roomGenerationData;
+        this._roomGenerationData = roomGenerationData;
         this.DatabaseGenerationData = databaseGenerationData;
         _seedsProvider = new SeedsProvider();
         _id = Guid.NewGuid().ToString();
@@ -86,9 +41,8 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
             InitSeeds();
         }
 
-
         name = "Room_" + _id;
-        bool isRoomGridComponent = TryGetComponent<RoomGrid>(out _roomGrid);
+        bool isRoomGridComponent = TryGetComponent(out _roomGrid);
         if (!isRoomGridComponent)
         {
             Debug.Log("Room Grid is null");
@@ -97,29 +51,16 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
 
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
-        _roomGrid.InitGrid(_roomSeed, this.roomGenerationData);
-        TryGetComponent<ProceduralPropPlacer>(out _proceduralPropPlacer);
-        _proceduralPropPlacer.Init(this.roomGenerationData);
+        _roomGrid.InitGrid(_roomSeed, this._roomGenerationData);
+        TryGetComponent(out _proceduralPropPlacer);
+        _proceduralPropPlacer.Init(this._roomGenerationData);
         CreateOpenings();
         FillRoomWithObjects();
         timeTools.Stop();
         DeltaTimeRoomGeneration = timeTools.GetElapsedTime();
         StartCoroutine(GenerateDatabase());
     }
-
-    public void SetSeeds(int roomSeed, int openingSeed, int objectSeed, int databaseSeed)
-    {
-        _manualSeeds = true;
-        _roomSeed = roomSeed;
-        _openingSeed = openingSeed;
-        _objectSeed = objectSeed;
-        _databaseSeed = databaseSeed;
-        _roomRandom = new Random(_roomSeed);
-        _openingRandom = new Random(_openingSeed);
-        _objectRandom = new Random(_objectSeed);
-        _databaseRandom = new Random(_databaseSeed);
-    }
-
+    
     /// <summary>
     /// This method creates the openings in the room.
     /// </summary>
@@ -144,17 +85,22 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
         StartCoroutine(_proceduralPropPlacer.PlaceProps(_objectRandom,
-            roomGenerationData.width * roomGenerationData.height)); // place the props in the room
+            _roomGenerationData.width * _roomGenerationData.height)); // place the props in the room
         timeTools.Stop();
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }
 
+    
+    /// <summary>
+    /// Generate the database of the room.(take screenshots, generate the database and save it in a json file)
+    /// </summary>
+    /// <returns></returns>
     protected override IEnumerator GenerateDatabase()
     {
         TryGetComponent<DatabaseGenerator>(out var databaseGenerator);
         yield return new WaitUntil(() => RoomState == RoomState.Filled);
         EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
-        databaseGenerator.Init(this);
+        databaseGenerator.Init(GetComponent<ClassicRoom>());
         StartCoroutine(databaseGenerator.DatabaseGeneration());
     }
 

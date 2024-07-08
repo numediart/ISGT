@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Pro_gen.RoomCell;
 using UnityEngine;
 using Random = System.Random;
 
 
-namespace Pro_gen
+namespace Pro_gen.RoomGrid
 {
     public class RoomGrid : MonoBehaviour
     {
@@ -12,9 +13,9 @@ namespace Pro_gen
 
         //   [SerializeField] private ProceduralPropPlacer _proceduralPropPlacer;
         private Random _gridRandom;
-        private RoomCell[,] _grid;
+        private RoomCell.RoomCell[,] _grid;
 
-        private Dictionary<RoomCellDirections, List<RoomCell>> _wallSections;
+        private Dictionary<RoomCellDirections, List<RoomCell.RoomCell>> _wallSections;
         private Dictionary<RoomCellDirections, int> _wallDoorPerSection;
 
         public void InitGrid(int roomSeed, RoomsGenerationScriptableObject roomsGenerationData)
@@ -25,18 +26,18 @@ namespace Pro_gen
             //_roomsGenerationData.MaxRoomWidth; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomWidth);
             _roomsGenerationData.height = _gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
             //  _roomsGenerationData.MaxRoomHeight; // _gridRandom.Next(2, _roomsGenerationData.MaxRoomHeight);
-            _grid = new RoomCell[_roomsGenerationData.width,
+            _grid = new RoomCell.RoomCell[_roomsGenerationData.width,
                 _roomsGenerationData
                     .height]; // initialize the grid with the width and height in pro gen scriptable Object
             _wallSections =
                 new
                     Dictionary<RoomCellDirections,
-                        List<RoomCell>> // initialize the wall sections with the directions store all the cells that have walls in the same direction
+                        List<RoomCell.RoomCell>> // initialize the wall sections with the directions store all the cells that have walls in the same direction
                     {
-                        { RoomCellDirections.Front, new List<RoomCell>() },
-                        { RoomCellDirections.Back, new List<RoomCell>() },
-                        { RoomCellDirections.Left, new List<RoomCell>() },
-                        { RoomCellDirections.Right, new List<RoomCell>() }
+                        { RoomCellDirections.Front, new List<RoomCell.RoomCell>() },
+                        { RoomCellDirections.Back, new List<RoomCell.RoomCell>() },
+                        { RoomCellDirections.Left, new List<RoomCell.RoomCell>() },
+                        { RoomCellDirections.Right, new List<RoomCell.RoomCell>() }
                     };
             _wallDoorPerSection =
                 new
@@ -74,11 +75,11 @@ namespace Pro_gen
         /// Generate the room starting from the current cell and visit all the cells that are not visited to generate the room by clearing the walls of the cells
         /// </summary>
         /// <param name="currentCell"></param>
-        private void GenerateCell(RoomCell currentCell)
+        private void GenerateCell(RoomCell.RoomCell currentCell)
         {
             currentCell.Visit(); // visit the current cell (remove the unvisited block)
             ClearWalls(currentCell); // clear the walls of the current cell according to the position of the cell in the grid
-            RoomCell nextCell;
+            RoomCell.RoomCell nextCell;
             do
             {
                 nextCell = GetNextUnvisitedCell(currentCell); // get the next unvisited cell
@@ -94,9 +95,9 @@ namespace Pro_gen
         /// </summary>
         /// <param name="currentCell"></param>
         /// <returns></returns>
-        private RoomCell GetNextUnvisitedCell(RoomCell currentCell)
+        private RoomCell.RoomCell GetNextUnvisitedCell(RoomCell.RoomCell currentCell)
         {
-            IEnumerable<RoomCell>
+            IEnumerable<RoomCell.RoomCell>
                 unvisitedCells = GetUnvisitedCells(currentCell); // get the unvisited cells around the current cell
             return unvisitedCells.FirstOrDefault();
         }
@@ -106,7 +107,7 @@ namespace Pro_gen
         /// </summary>
         /// <param name="currentCell"></param>
         /// <returns></returns>
-        private IEnumerable<RoomCell> GetUnvisitedCells(RoomCell currentCell)
+        private IEnumerable<RoomCell.RoomCell> GetUnvisitedCells(RoomCell.RoomCell currentCell)
         {
             Vector2
                 cellPosition =
@@ -160,7 +161,7 @@ namespace Pro_gen
         /// Clear the walls of the cell according to the position of the cell in the grid
         /// </summary>
         /// <param name="cell"></param>
-        private void ClearWalls(RoomCell cell)
+        private void ClearWalls(RoomCell.RoomCell cell)
         {
             Vector2
                 cellPosition = cell.GetCellPosition(); // return the position of the cell in the grid (index x and y)
@@ -274,7 +275,7 @@ namespace Pro_gen
                 }
 
                 int doorNumber = 0;
-                RoomCell previousCell = null;
+                RoomCell.RoomCell previousCell = null;
                 int attempts = 0;
                 for (int j = _wallDoorPerSection[wallSection.Key]; j < doorPerWallNumber; j++)
                 {
@@ -330,7 +331,7 @@ namespace Pro_gen
                 }
 
                 int attempts = 0;
-                RoomCell previousCell = null; // initialize the previous cell
+                RoomCell.RoomCell previousCell = null; // initialize the previous cell
                 for (int j = 0; j < windowNumberPerWall; j++)
                 {
                     if (attempts > windowNumberPerWall * 2)
@@ -393,9 +394,9 @@ namespace Pro_gen
         public List<GameObject> GetAllWalls()
         {
             List<GameObject> walls = new List<GameObject>();
-            foreach (KeyValuePair<RoomCellDirections, List<RoomCell>> wallSection in _wallSections)
+            foreach (KeyValuePair<RoomCellDirections, List<RoomCell.RoomCell>> wallSection in _wallSections)
             {
-                foreach (RoomCell cell in wallSection.Value)
+                foreach (RoomCell.RoomCell cell in wallSection.Value)
                 {
                     walls.Add(cell.GetActiveWall(wallSection.Key));
                 }

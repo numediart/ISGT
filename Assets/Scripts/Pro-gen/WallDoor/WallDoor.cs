@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class that instantiate door on prefabn door hole
+/// </summary>
 public class WallDoor : MonoBehaviour
 {
     [SerializeField] private List<GameObject> _doorPrefabs;
