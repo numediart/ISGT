@@ -36,33 +36,6 @@
     padding-left: 0;
 }
 
-.child-button {
-    -unity-text-align: middle-center;
-    font-size: 20px;
-    -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
-    -unity-font-definition: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold%20SDF.asset?fileID=11400000&guid=13f9b7034a0090c4bbc848db93c35cbf&type=2#IBMPlexSans-SemiBold SDF");
-    width: 50%;
-    align-items: center;
-    justify-content: space-between;
-    align-self: center;
-    margin-top: 1%;
-    background-color: rgb(234, 224, 213);
-    border-left-color: rgb(163, 125, 82);
-    border-right-color: rgb(163, 125, 82);
-    border-top-color: rgb(163, 125, 82);
-    border-bottom-color: rgb(163, 125, 82);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-top-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    height: 50px;
-    margin-bottom: 2%;
-}
-
 .foldout-container {
     -unity-font: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold.ttf?fileID=12800000&guid=4f281127a5ba7994fab043e31464cee2&type=3#IBMPlexSans-SemiBold");
     -unity-font-definition: url("project://database/Assets/Fonts/IBMPlexSans-SemiBold%20SDF.asset?fileID=11400000&guid=13f9b7034a0090c4bbc848db93c35cbf&type=2#IBMPlexSans-SemiBold SDF");
@@ -290,4 +263,27 @@
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
+}
+
+.unity-toggle :hover {
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    -unity-font-style: normal;
+    font-size: 15px;
+}
+
+.unity-foldout__input {
+    transition-duration: 0.25s;
+    transition-timing-function: ease-in-out;
+}
+
+.unity-toggle :active {
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    -unity-font-style: normal;
+    font-size: 16px;
+}
+
+#RaycastAmountSlider .unity-text-field {
+    width: 76px;
 }

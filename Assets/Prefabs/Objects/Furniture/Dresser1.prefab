@@ -586,7 +586,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300054, guid: ad88b6a0284ac8443adbfdf1e585c71a, type: 3}
 --- !u!1 &6118535801201820738
@@ -599,7 +599,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6118535801201820732}
   - component: {fileID: 6118535801201820733}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BoundingBox
   m_TagString: BoundingBox
   m_Icon: {fileID: 0}

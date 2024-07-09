@@ -35,14 +35,14 @@
                 </ui:Foldout>
                 <ui:Foldout text="Precision Settings" name="PrecisionSettings" value="false" class="foldout-container">
                     <ui:EnumField label="Raycasts amount" name="RaycastAmount" type="UI_Toolkit.RaycastAmount, Assembly-CSharp" />
-                    <ui:SliderInt high-value="100000" name="RaycastAmountSlider" show-input-field="true" direction="Horizontal" low-value="100" label="Raycasts per opening" picking-mode="Ignore" class="slider" />
+                    <ui:SliderInt high-value="100000" name="RaycastAmountSlider" show-input-field="true" direction="Horizontal" low-value="100" label="Rayscasts&#10;per opening" picking-mode="Ignore" class="slider" style="text-overflow: clip; -unity-text-align: upper-left;" />
                 </ui:Foldout>
                 <ui:Foldout text="Saved Presets" name="SavedPreset" value="true" class="foldout-container">
                     <ui:DropdownField label="Preset" name="PresetDropdown" style="border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px;" />
                 </ui:Foldout>
                 <ui:Instance template="FileDialogExplorer" name="FileDialogExplorer" style="margin-top: 4%; margin-right: 1%; margin-bottom: 0; margin-left: 1%; align-items: auto; justify-content: center; align-self: auto;" />
             </ui:ScrollView>
-            <ui:VisualElement name="CancelApplyButtonContainer" style="flex-grow: 1; flex-direction: row; align-items: stretch; justify-content: center; align-self: auto; max-height: 80px;">
+            <ui:VisualElement name="CancelApplyButtonContainer" style="flex-grow: 1; flex-direction: row; align-items: center; justify-content: center; align-self: center; max-height: 80px; width: 400px;">
                 <ui:Button text="Return" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CancelButton" class="child-button" />
                 <ui:Button text="Apply" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ApplyButton" class="child-button" />
             </ui:VisualElement>
