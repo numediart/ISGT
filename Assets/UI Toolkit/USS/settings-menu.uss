@@ -283,3 +283,7 @@
     -unity-font-style: normal;
     font-size: 16px;
 }
+
+#RaycastAmountSlider .unity-text-field {
+    width: 76px;
+}
