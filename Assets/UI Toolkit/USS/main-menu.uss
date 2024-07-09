@@ -35,6 +35,16 @@
     top: 3%;
 }
 
+.button-container {
+    width: 100%;
+    max-height: 287px;
+    margin-top: 4%;
+    align-items: center;
+    justify-content: space-between;
+    align-self: center;
+    transition-timing-function: ease-in-out;
+}
+
 .child-button {
     -unity-text-align: middle-center;
     font-size: 30px;
@@ -59,20 +69,15 @@
     border-top-right-radius: 10px;
     border-bottom-left-radius: 10px;
     height: 75px;
-}
-
-.button-container {
-    width: 100%;
-    max-height: 250px;
-    margin-top: 4%;
-    align-items: center;
-    justify-content: space-between;
-    align-self: center;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-out-sine;
+    margin-right: 20px;
+    margin-left: 20px;
 }
 
 .child-button:hover {
     scale: 1.1 1.1;
     transition-property: scale;
     transition-duration: 0.25s;
-    transition-timing-function: ease-in-out;
+    transition-timing-function: ease-out-sine;
 }
