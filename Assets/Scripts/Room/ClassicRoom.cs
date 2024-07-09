@@ -32,6 +32,7 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
     public override void InitRoom(RoomsGenerationScriptableObject roomGenerationData,
         DatabaseGenerationScriptableObject databaseGenerationData)
     {
+        ReportingTools reportingTools = new ReportingTools();
         this._roomGenerationData = roomGenerationData;
         this.DatabaseGenerationData = databaseGenerationData;
         _seedsProvider = new SeedsProvider();
@@ -51,16 +52,28 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
 
         TimeTools timeTools = new TimeTools();
         timeTools.Start();
+        reportingTools.StartTimer();
         _roomGrid.InitGrid(_roomSeed, this._roomGenerationData);
+        reportingTools.EndTimer();
+        /*ReportingTools.AppendInJson(reportingTools.GetElapsedTime(),
+            "ROOM_GENERATION_TIME_" + (RoomsGenerator.RoomIndex - 1));*/
+        RoomsGenerator.RoomGenerationTime = reportingTools.GetElapsedTime();
         TryGetComponent(out _proceduralPropPlacer);
-        _proceduralPropPlacer.Init(this._roomGenerationData);
+
+        _proceduralPropPlacer.Init(this._roomGenerationData);   
+        reportingTools.StartTimer();
         CreateOpenings();
+        reportingTools.EndTimer();
+        /*ReportingTools.AppendInJson(reportingTools.GetElapsedTime(),
+            "OPENINGS_GENERATION_TIME_" + (RoomsGenerator.RoomIndex - 1));*/
+        RoomsGenerator.OpeningGenerationTime = reportingTools.GetElapsedTime();
         FillRoomWithObjects();
+
         timeTools.Stop();
         DeltaTimeRoomGeneration = timeTools.GetElapsedTime();
         StartCoroutine(GenerateDatabase());
     }
-    
+
     /// <summary>
     /// This method creates the openings in the room.
     /// </summary>
@@ -90,7 +103,7 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
         Debug.Log("Time to place objects: " + timeTools.GetElapsedTime());
     }
 
-    
+
     /// <summary>
     /// Generate the database of the room.(take screenshots, generate the database and save it in a json file)
     /// </summary>
@@ -101,7 +114,14 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
         yield return new WaitUntil(() => RoomState == RoomState.Filled);
         EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
         databaseGenerator.Init(GetComponent<ClassicRoom>());
+        ReportingTools reportingTools = new ReportingTools();
+        reportingTools.StartTimer();
         StartCoroutine(databaseGenerator.DatabaseGeneration());
+        yield return new WaitUntil(() => RoomState == RoomState.DatabaseGenerated);
+        reportingTools.EndTimer();
+       /* ReportingTools.AppendInJson(reportingTools.GetElapsedTime(),
+            "DATABASE_GENERATION_TIME_" + (RoomsGenerator.RoomIndex - 1));*/
+        RoomsGenerator.DatabaseGenerationTime = reportingTools.GetElapsedTime();
     }
 
     /// <summary>

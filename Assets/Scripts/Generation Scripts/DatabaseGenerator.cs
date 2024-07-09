@@ -12,9 +12,9 @@ using Random = System.Random;
 public class DatabaseGenerator : MonoBehaviour
 {
     #region Public Fields
-    
+
     public DatabaseGenerationScriptableObject DatabaseGenerationData;
-    
+
     #endregion
 
     #region Private Fields
@@ -51,7 +51,7 @@ public class DatabaseGenerator : MonoBehaviour
         _room = room;
         _random = new Random(_room.DatabaseSeed);
         _emptyQuadNodesCenters = room.EmptyQuadNodesCenters;
-        
+
         string path = (MainMenuController.PresetData == null
             ? Application.dataPath
             : MainMenuController.PresetData.ExportPath == null
@@ -77,7 +77,7 @@ public class DatabaseGenerator : MonoBehaviour
         _random = new Random(_room.DatabaseSeed);
         InGameMenuController.ProgressBar.value = 0;
         InGameMenuController.ProgressLabel.text = "Room_" + _room.Id;
-      
+
         for (int j = 0; j < DatabaseGenerationData.ScreenshotsNumberPerRoom; j++)
         {
             _timeTools.Start();
@@ -89,10 +89,11 @@ public class DatabaseGenerator : MonoBehaviour
             yield return new WaitForSecondsRealtime(0.05f);
             RoomsGenerator.TimeBetween2Screenshots = _timeTools.GetElapsedTimeInSeconds();
         }
+
         _camera.transform.rotation = Quaternion.identity;
         _room.RoomState = RoomState.DatabaseGenerated;
     }
-    
+
     /// <summary>
     /// Takes a screenshot and calls the openings data getting method.
     /// </summary>
@@ -104,8 +105,8 @@ public class DatabaseGenerator : MonoBehaviour
     private void TakeScreenshots(GameObject room, string roomID, int screenshotIndex)
     {
         InGameMenuController.ProgressBar.value =
-        RoomsGenerator.ScreenshotsIndex * 100f /
-                    (DatabaseGenerationData.ScreenshotsNumberPerRoom * RoomsGenerator.NumberOfRoomToGenerate);
+            RoomsGenerator.ScreenshotsIndex * 100f /
+            (DatabaseGenerationData.ScreenshotsNumberPerRoom * RoomsGenerator.NumberOfRoomToGenerate);
         InGameMenuController.ProgressBar.title = "Progress: " +
                                                  InGameMenuController.ProgressBar.value +
                                                  " /  " + InGameMenuController.ProgressBar.highValue + "%";
@@ -119,7 +120,7 @@ public class DatabaseGenerator : MonoBehaviour
             : MainMenuController.PresetData.ExportPath == null
                 ? Application.dataPath
                 : MainMenuController.PresetData.ExportPath) + "/Export_ISGT/";
-        
+
         if (!Directory.Exists(path + "Photographs"))
         {
             Directory.CreateDirectory(path + "Photographs");
@@ -131,13 +132,13 @@ public class DatabaseGenerator : MonoBehaviour
         }
 
         string filename = $"{DateTime.UtcNow:yyyy-MM-ddTHH-mm-ss.fffZ}-P{screenshotIndex + 1}";
-        
+
         Camera.main.TryGetComponent<CameraScreenshot>(out var cameraScreenshot);
         cameraScreenshot.savePath = path + "Photographs/Room-" + roomID + "/" + filename + ".png";
         cameraScreenshot.CaptureScreenshot();
         GetOpeningsData(room, screenshotIndex, filename);
     }
-    
+
     #region Random Camera Coordinates Calculation Methods
 
     /// <summary>
@@ -161,7 +162,7 @@ public class DatabaseGenerator : MonoBehaviour
                 EmptyNode.max.z - NextDouble(_random, 0, EmptyNode.size.z));
             float yComponent = NextDouble(_random, 0.5f, 2);
             nextCameraPosition = new Vector3(xComponent, yComponent, zComponent);
-            
+
             // Make sure the camera is not too close to obstacles like walls, doors, windows or objects
             Collider[] colliders =
                 Physics.OverlapSphere(nextCameraPosition, DatabaseGenerationData.CameraMinimumDistanceFromWall);
@@ -258,7 +259,7 @@ public class DatabaseGenerator : MonoBehaviour
                     openingData.BoundingBox = opening.GetFullBoundingBox();
                     openingData.VisibilityBoundingBox = opening.GetVisibilityBoundingBox();
                     openingData.VisibilityRatio = opening.GetVisibilityRatio();
-                    
+
                     // Only store openings data if it's visible on the screenshot
                     if (openingData.VisibilityRatio > 0f)
                     {
@@ -267,10 +268,9 @@ public class DatabaseGenerator : MonoBehaviour
                 }
             }
         }
+
         StoreData(screenshotData, screenshotIndex, filename);
     }
-
-    
 
 
     /// <summary>
@@ -285,7 +285,6 @@ public class DatabaseGenerator : MonoBehaviour
         ClassicRoom room = _room;
         CombinedData combinedData = new CombinedData
         {
-            SeedsData = new SeedsData(room.RoomSeed, room.OpeningSeed, room.ObjectSeed, room.DatabaseSeed),
             CameraData = new CameraData(_camera.fieldOfView, _camera.nearClipPlane, _camera.farClipPlane,
                 _camera.pixelRect.x, _camera.pixelRect.y, _camera.pixelWidth, _camera.pixelHeight, _camera.depth,
                 _camera.orthographic),
@@ -306,7 +305,6 @@ public class DatabaseGenerator : MonoBehaviour
 
     private class CombinedData
     {
-        public SeedsData SeedsData { get; set; }
         public CameraData CameraData { get; set; }
         public ScreenshotData ScreenshotData { get; set; }
     }

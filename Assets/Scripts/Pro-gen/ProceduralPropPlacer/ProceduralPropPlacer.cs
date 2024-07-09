@@ -9,8 +9,6 @@ namespace Pro_gen
 {
     public class ProceduralPropPlacer : AbstractProceduralPropPlacer
     {
-  
-        
         private new void Awake()
         {
             _selectedProps = new List<Props>();
@@ -18,7 +16,7 @@ namespace Pro_gen
             _propsPositions = new List<Vector3>();
             Time.fixedDeltaTime = 0.001f;
         }
-        
+
 
         /// <summary>
         ///  Initialize the Procedural Prop Placer with the  room generation data and calculate the number of props to place
@@ -28,7 +26,8 @@ namespace Pro_gen
         {
             _roomsGenerationData = roomGenerationData;
             numberOfProps = Mathf.RoundToInt((((float)_roomsGenerationData.ObjectNumberRatio / 100) *
-                                             (_roomsGenerationData.width * _roomsGenerationData.height* _roomsGenerationData.heightOffset))/2);
+                                              (_roomsGenerationData.width * _roomsGenerationData.height *
+                                               _roomsGenerationData.heightOffset)) / 2);
             _groundBounds = GetGroundBounds();
         }
 
@@ -40,6 +39,8 @@ namespace Pro_gen
         /// <returns></returns>
         public override IEnumerator PlaceProps(Random random, int area)
         {
+            ReportingTools reportingTools = new ReportingTools();
+            reportingTools.StartTimer();
             if (!TryGetComponent(out ClassicRoom room))
             {
                 Debug.LogError("Room component not found.");
@@ -88,14 +89,16 @@ namespace Pro_gen
                 // wait for next fixed frame
                 Physics.SyncTransforms();
                 yield return new WaitForFixedUpdate();
-                Vector3? positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform, propInstance.PropsCategory);
+                Vector3? positionInRoom = PropsPossiblePosition(random, roomBounds, propBounds, propInstance.transform,
+                    propInstance.PropsCategory);
 
                 if (positionInRoom == null) // if there is no empty node anymore, stop placing props
                 {
                     Destroy(propInstance.gameObject);
                     break;
                 }
-                else if (positionInRoom == Vector3.zero) // if the prop couldn't be placed, in the max attempts, destroy it
+                else if
+                    (positionInRoom == Vector3.zero) // if the prop couldn't be placed, in the max attempts, destroy it
                 {
                     Destroy(propInstance.gameObject);
                 }
@@ -112,10 +115,15 @@ namespace Pro_gen
             }
 
             timeTools.Stop();
+            reportingTools.EndTimer();
+           /* ReportingTools.AppendInJson(reportingTools.GetElapsedTime(),
+                "OBJECTS_GENERATION_TIME_" + (RoomsGenerator.RoomIndex - 1));*/
+            RoomsGenerator.ObjectGenerationTime = reportingTools.GetElapsedTime();
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
+            RoomsGenerator.NumberOfPropsPlaced = _propsPositions.Count;
             room.RoomState = RoomState.Filled;
         }
-        
+
         /// <summary>
         /// Check if the prop can be placed in the room and return its position if it can
         /// </summary>
@@ -125,14 +133,15 @@ namespace Pro_gen
         /// <param name="propTransform"></param>
         /// <param name="category"></param>
         /// <returns></returns>
-        protected override Vector3? PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds, Transform propTransform, PropsCategory category)
+        protected override Vector3? PropsPossiblePosition(Random random, Bounds roomBounds, Bounds bounds,
+            Transform propTransform, PropsCategory category)
         {
             Vector3 position = Vector3.zero;
             bool isPositionFound = false;
             Vector3 propExtents = bounds.extents;
             int attempts = 0;
             List<QuadTreeNodeBase> biggestEmptyNodes = _quadTree.FindBiggestEmptyNodes(category);
-            
+
             if (biggestEmptyNodes.Count == 0) // if there are no empty nodes
             {
                 return null;
@@ -163,7 +172,8 @@ namespace Pro_gen
                 }
             }
 
-            if (attempts == _maxAttempts && !isPositionFound) // if the prop couldn't be placed in time, return Vector3.zero
+            if (attempts == _maxAttempts &&
+                !isPositionFound) // if the prop couldn't be placed in time, return Vector3.zero
             {
                 return Vector3.zero;
             }
@@ -197,7 +207,7 @@ namespace Pro_gen
 
             return true;
         }
-        
+
         /// <summary>
         /// Rotate the prop based on its category and the closest wall
         /// </summary>
@@ -250,12 +260,11 @@ namespace Pro_gen
                     closestWall = wall;
                 }
             }
-            
-            
+
+
             return minDistance < 3f ? closestWall : null;
-            
         }
-        
+
         /// <summary>
         ///  Get the bounds of the ground in the room
         /// </summary>

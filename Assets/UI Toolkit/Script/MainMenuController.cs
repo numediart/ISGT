@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using Utils;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -18,7 +19,6 @@ public class MainMenuController : MonoBehaviour
     {
         _rootUi = GetComponent<UIDocument>().rootVisualElement;
         _rootUi.Q<VisualElement>("Menu").style.display = DisplayStyle.Flex;
-        
         // Load the PresetData from the file in playerprefs
         if (PlayerPrefs.HasKey("PresetDataFilename"))
         {
@@ -50,8 +50,10 @@ public class MainMenuController : MonoBehaviour
     private void OnStartButtonClicked()
     {
         Debug.Log("Start Button Clicked");
+        ReportingTools.reportingIndex++;
         SceneManager.LoadScene(1);// Load the ProceduralGeneration scene
         InterSceneManager.showLastGenerationInfo = true;
+
     }
 
     private void OnExitButtonClicked()

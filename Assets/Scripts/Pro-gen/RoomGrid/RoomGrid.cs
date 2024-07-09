@@ -302,6 +302,7 @@ namespace Pro_gen.RoomGrid
                     previousCell = cell;
                 }
             }
+            RoomsGenerator.NumberOfDoorsPlaced = _wallDoorPerSection.Sum(x => x.Value);
         }
 
         public void RandomReplaceActiveWithWindowConstraint(Random random)
@@ -354,6 +355,7 @@ namespace Pro_gen.RoomGrid
                     previousCell = cell; // set the previous cell to the current cell
                 }
             }
+            RoomsGenerator.NumberOfWindowsPlaced = _wallSections.Sum(x => x.Value.Count);
         }
 
         public void ApplyTextures()

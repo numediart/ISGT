@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using Data_Classes;
+using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
 using Utils;
 
@@ -15,8 +17,23 @@ public class RoomsGenerator : MonoBehaviour
     public static int RoomIndex = 0;
     public static int NumberOfRoomToGenerate = 0;
     public static int ScreenshotsIndex = 0;
-
     public static float TimeBetween2Screenshots = 0;
+
+    public static int RoomGenerationTime = 0;
+    public static int OpeningGenerationTime = 0;
+    public static int ObjectGenerationTime = 0;
+    public static int DatabaseGenerationTime = 0;
+
+    public static int NumberOfPropsPlaced = 0;
+    public static int NumberOfWindowsPlaced = 0;
+    public static int NumberOfDoorsPlaced = 0;
+
+    public static string RoomId;
+
+    public static int RoomSeed;
+    public static int OpeningSeed;
+    public static int ObjectSeed;
+    public static int DatabaseSeed;
 
     #endregion
 
@@ -63,7 +80,7 @@ public class RoomsGenerator : MonoBehaviour
 
             // Convert the vertical FOV back to degrees
             float verticalFOV = verticalFOVRad * Mathf.Rad2Deg;
-            
+
             // Assign the vertical FOV to the camera
             cam.fieldOfView = verticalFOV;
             cam.iso = MainMenuController.PresetData.ISO;
@@ -144,11 +161,17 @@ public class RoomsGenerator : MonoBehaviour
 
             _room.ManualSeeds = ManualSeeds;
             _room.InitRoom(RoomsGenerationData, DatabaseGenerationData);
+            RoomSeed = _room.RoomSeed;
+            OpeningSeed = _room.OpeningSeed;
+            ObjectSeed = _room.ObjectSeed;
+            DatabaseSeed = _room.DatabaseSeed;
+            RoomId = _room.Id;
 
             yield return new WaitUntil(() =>
             {
                 if (_room.RoomState == RoomState.DatabaseGenerated)
                 {
+                    SaveMetaDataPerRoom();
                     DestroyImmediate(go);
                     return true;
                 }
@@ -172,4 +195,41 @@ public class RoomsGenerator : MonoBehaviour
     }
 
     #endregion
+
+    private static void SaveMetaDataPerRoom()
+    {
+        string path = MainMenuController.PresetData.ExportPath + "/Export_ISGT/OpeningsData" + "/Room-" + RoomId +
+                      "/Room-Metadata.json";
+        string data = JsonConvert.SerializeObject(new
+        {
+            RoomId = RoomId,
+            SeedsData = new
+            {
+                RoomSeed = RoomSeed,
+                OpeningSeed = OpeningSeed,
+                ObjectSeed = ObjectSeed,
+                DatabaseSeed = DatabaseSeed,
+                Tip = "Seeds used to generate the room"
+            },
+            GenerationTime = new
+            {
+                RoomGenerationTime,
+                OpeningGenerationTime,
+                ObjectGenerationTime,
+                DatabaseGenerationTime,
+                TotalGenerationTime = RoomGenerationTime + OpeningGenerationTime + ObjectGenerationTime +
+                                      DatabaseGenerationTime,
+                Tip = "All Generation Times are in milliseconds"
+            },
+
+            PlacementData = new
+            {
+                NumberOfPropsPlaced,
+                NumberOfWindowsPlaced,
+                NumberOfDoorsPlaced,
+                Tip = "Number of props, windows and doors placed in the room"
+            }
+        }, Formatting.Indented);
+        System.IO.File.WriteAllText(path, data);
+    }
 }
