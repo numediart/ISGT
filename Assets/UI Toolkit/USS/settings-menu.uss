@@ -264,3 +264,22 @@
     border-bottom-width: 2px;
     border-left-width: 2px;
 }
+
+.unity-toggle :hover {
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    -unity-font-style: normal;
+    font-size: 15px;
+}
+
+.unity-foldout__input {
+    transition-duration: 0.25s;
+    transition-timing-function: ease-in-out;
+}
+
+.unity-toggle :active {
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    -unity-font-style: normal;
+    font-size: 16px;
+}
