@@ -915,7 +915,6 @@ GameObject:
   - component: {fileID: 6769881987548774645}
   - component: {fileID: 5964993007026108943}
   - component: {fileID: 4076917799148932922}
-  - component: {fileID: 6062983851149056290}
   - component: {fileID: -8697704586207292591}
   m_Layer: 0
   m_Name: TV_Stand_206_2
@@ -1000,28 +999,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6062983851149056290
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6772863443692269205}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!114 &-8697704586207292591
 MonoBehaviour:
   m_ObjectHideFlags: 0
