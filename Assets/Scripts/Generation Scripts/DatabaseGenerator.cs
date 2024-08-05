@@ -92,6 +92,7 @@ public class DatabaseGenerator : MonoBehaviour
 
         _camera.transform.rotation = Quaternion.identity;
         _room.RoomState = RoomState.DatabaseGenerated;
+        Destroy(this,0);
     }
 
     /// <summary>

@@ -172,7 +172,9 @@ public class RoomsGenerator : MonoBehaviour
                 if (_room.RoomState == RoomState.DatabaseGenerated)
                 {
                     SaveMetaDataPerRoom();
-                    DestroyImmediate(go);
+                    Destroy(go,0);
+                    _room.Destroy();
+                    Destroy(_room,0);
                     return true;
                 }
 

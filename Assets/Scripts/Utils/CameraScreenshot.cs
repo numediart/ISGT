@@ -7,8 +7,8 @@ namespace Utils
     public class CameraScreenshot : MonoBehaviour
     {
         public Camera cameraToCapture;
-        public  int imageWidth;
-        public  int imageHeight;
+        public int imageWidth;
+        public int imageHeight;
         public string savePath = "";
 
         void Start()
@@ -17,7 +17,7 @@ namespace Utils
             {
                 Directory.CreateDirectory(savePath);
             }
-        
+
             imageWidth = 640 * MainMenuController.PresetData.Resolution;
             imageHeight = 360 * MainMenuController.PresetData.Resolution;
         }
@@ -49,11 +49,13 @@ namespace Utils
             // Réinitialisez la caméra et RenderTexture
             cameraToCapture.targetTexture = null;
             RenderTexture.active = null;
-            Destroy(rt);
+            Destroy(rt,0);
 
             // Sauvegardez l'image dans un fichier
             byte[] bytes = screenShot.EncodeToPNG();
             File.WriteAllBytes(savePath, bytes);
+
+            Destroy(screenShot, 0);
             yield return null;
         }
     }

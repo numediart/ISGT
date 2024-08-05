@@ -113,7 +113,7 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
         TryGetComponent<DatabaseGenerator>(out var databaseGenerator);
         yield return new WaitUntil(() => RoomState == RoomState.Filled);
         EmptyQuadNodesCenters = _proceduralPropPlacer.GetAllEmptyQuadNodes();
-        databaseGenerator.Init(GetComponent<ClassicRoom>());
+        databaseGenerator.Init(this);
         ReportingTools reportingTools = new ReportingTools();
         reportingTools.StartTimer();
         StartCoroutine(databaseGenerator.DatabaseGeneration());
@@ -122,6 +122,8 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
        /* ReportingTools.AppendInJson(reportingTools.GetElapsedTime(),
             "DATABASE_GENERATION_TIME_" + (RoomsGenerator.RoomIndex - 1));*/
         RoomsGenerator.DatabaseGenerationTime = reportingTools.GetElapsedTime();
+ 
+        Destroy(databaseGenerator,0);
     }
 
     /// <summary>
@@ -137,6 +139,14 @@ public class ClassicRoom : AbstractRoom<ClassicRoom>
         _objectRandom = new Random(_objectSeed);
         _databaseSeed = _seedsProvider.CreateSubSeed();
         _databaseRandom = new Random(_databaseSeed);
+    }
+
+    public void Destroy()
+    {
+        Destroy(_roomGrid,0);
+        Destroy(_proceduralPropPlacer,0);
+        Destroy(_roomObject,0);
+        DestroyImmediate(this, true);
     }
 
     public override ClassicRoom GetRoom => this; // return the Room instance

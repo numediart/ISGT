@@ -122,6 +122,7 @@ namespace Pro_gen
             Debug.Log($"{_propsPositions.Count} Props placed in " + timeTools.GetElapsedTime() + " milliseconds.");
             RoomsGenerator.NumberOfPropsPlaced = _propsPositions.Count;
             room.RoomState = RoomState.Filled;
+            Destroy(this);
         }
 
         /// <summary>
@@ -294,7 +295,6 @@ namespace Pro_gen
         /// <returns></returns>
         public override List<Bounds> GetAllEmptyQuadNodes()
         {
-            Debug.Log("Getting all empty quad nodes");
             return _quadTree.GetAllEmptyNodes();
         }
 
